@@ -1,19 +1,25 @@
 package com.example.aqua_v2;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.app.Dialog;
+import android.app.appsearch.AppSearchBatchResult;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.Switch;
 
 import com.example.aqua_v2.fragments.DeviceDashboardActivity;
 import com.example.aqua_v2.fragments.GreenhouseDashboardActivity;
@@ -22,21 +28,40 @@ import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class DashboardActivity extends AppCompatActivity {
+
+    Switch switcher;
+    boolean nightMode;
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
     ImageButton settingBtn, closeBtn;
     MaterialButton cancelBtn, changePassword, editProfile;
     ViewPager pager;
     PagerAdapter pagerAdapter;
 
-
+    public Map<String, ?> get () {
+        return sharedPreferences.getAll();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
+        nightMode = sharedPreferences.getBoolean("night", false);
+if (nightMode){
+    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+}else if(!nightMode){
+    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+}else{
+    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+}
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+
         settingBtn = findViewById(R.id.settingBtn);
+
         Dialog dialog = new Dialog(DashboardActivity.this);
 
         PopupMenu popupMenu = new PopupMenu(this, settingBtn);
@@ -45,6 +70,7 @@ public class DashboardActivity extends AppCompatActivity {
         popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
         popupMenu.getMenu().add(Menu.NONE, 2, 2, "Member");
         popupMenu.getMenu().add(Menu.NONE, 3, 3, "Logout");
+
 
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -115,8 +141,32 @@ public class DashboardActivity extends AppCompatActivity {
                     dialog.setCancelable(false);
                     dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                     closeBtn = dialog.findViewById(R.id.closeBtn);
-
                     dialog.show();
+
+                    switcher = dialog.findViewById(R.id.themeSwitch);
+
+                    if (nightMode) {
+                        switcher.setChecked(true);
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    }else{
+                        switcher.setChecked(false);
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    }
+                    switcher.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (nightMode) {
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                                editor = sharedPreferences.edit();
+                                editor.putBoolean("night", false);
+                            } else {
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                                editor = sharedPreferences.edit();
+                                editor.putBoolean("night", true);
+                            }
+                            editor.commit();
+                        }
+                    });
 //                  close btn
                     closeBtn.setOnClickListener(new View.OnClickListener() {
                         @Override

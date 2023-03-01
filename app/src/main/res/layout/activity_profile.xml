@@ -3,24 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="@color/white"
-    app:cardCornerRadius="20dp">
+    app:cardCornerRadius="20dp"
+    style="@style/modalBackground"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView
+                style="@style/text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
                 android:text="Profile"
-                android:textColor="@color/black"
                 android:textSize="25dp"
                 android:textStyle="bold" />
 
@@ -44,51 +46,56 @@
             </androidx.cardview.widget.CardView>
 
         </RelativeLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_margin="20dp"
-            android:padding="3dp"
-           >
+            android:orientation="vertical"
+            android:padding="3dp">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp"
+                style="@style/cardBackground"
 
                 >
+
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                   >
+                    android:layout_height="wrap_content">
+
                     <TextView
+                        style="@style/text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
-                        android:textColor="@color/black"
-                        android:text="User ID"
-                        android:layout_margin="10dp"
-                        />
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:text="User ID" />
                 </RelativeLayout>
 
             </androidx.cardview.widget.CardView>
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
-
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp"
+                style="@style/cardBackground"
                 >
+
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
+                    android:layout_height="wrap_content">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -99,112 +106,111 @@
                         android:layout_marginEnd="10dp"
                         android:layout_marginBottom="10dp"
                         android:text="Name"
-                        android:textColor="@color/black"/>
+                        style="@style/text"/>
                 </RelativeLayout>
 
             </androidx.cardview.widget.CardView>
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp"
+                style="@style/cardBackground"
 
                 >
+
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
+                    android:layout_height="wrap_content">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
+                        android:layout_margin="10dp"
                         android:text="User Level"
-                        android:layout_margin="10dp"
-                        android:textColor="@color/black"
-                        />
+                        style="@style/text" />
                 </RelativeLayout>
 
             </androidx.cardview.widget.CardView>
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
-
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp"
+                style="@style/cardBackground"
                 >
+
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
+                    android:layout_height="wrap_content">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
+                        android:layout_margin="10dp"
                         android:text="Birthdate"
-                        android:layout_margin="10dp"
-                        android:textColor="@color/black"
-                        />
+                        style="@style/text" />
                 </RelativeLayout>
 
             </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
+
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
-                >
+                app:cardCornerRadius="20dp"
+                style="@style/cardBackground">
+
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
+                    android:layout_height="wrap_content">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
-                        android:text="E-mail Address"
                         android:layout_margin="10dp"
-                        android:textColor="@color/black"
-                        />
+                        android:text="E-mail Address"
+                        style="@style/text" />
                 </RelativeLayout>
 
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/editProfile"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/black"
-                        android:text="Edit Profile"
-                        android:textAllCaps="false"
-                        android:layout_centerHorizontal="true"
-                        android:backgroundTint="#6cbce2"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        app:cornerRadius="20dp"
-                        />
-
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/editProfile"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:backgroundTint="#6cbce2"
+                android:text="Edit Profile"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                app:cornerRadius="20dp" />
 
 
+            <com.google.android.material.button.MaterialButton
 
-                    <com.google.android.material.button.MaterialButton
+                android:id="@+id/changePassword"
 
-                        android:id="@+id/changePassword"
-
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/black"
-                        android:text="Change Password"
-                        android:textAllCaps="false"
-                        android:backgroundTint="#6cbce2"
-                        android:layout_centerHorizontal="true"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-app:cornerRadius="20dp"
-                        />
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:backgroundTint="#6cbce2"
+                android:text="Change Password"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                app:cornerRadius="20dp" />
 
         </LinearLayout>
 
