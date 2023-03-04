@@ -13,4 +13,20 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="text">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="background">
+        <item name="android:background">@color/white</item>
+    </style>
+
+    <style name="cardBackground">
+        <item name="android:backgroundTint">@color/white</item>
+    </style>
+
+    <style name="modalBackground">
+        <item name="android:backgroundTint">#242526</item>
+    </style>
 </resources>
