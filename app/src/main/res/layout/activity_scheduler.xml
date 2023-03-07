@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/cardBackground"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="20dp">
 
     <TextView
         android:id="@+id/textView4"
+        style="@style/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
         android:text="Scheduler"
-        android:textColor="@color/black"
         android:textSize="25dp"
         android:textStyle="bold" />
 
@@ -27,12 +27,12 @@
             android:layout_height="wrap_content">
 
             <TextView
+                style="@style/text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
                 android:text="Scheduler"
-                android:textColor="@color/black"
                 android:textSize="25dp"
                 android:textStyle="bold" />
 
@@ -70,19 +70,17 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/textView5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="10dp"
                     android:layout_weight="0"
                     android:text="Timer:"
-                    android:textColor="@color/black"
+                    style="@style/text"
                     android:textSize="25dp"
                     android:textStyle="bold" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/oldPassword"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="228dp"
                     android:layout_height="wrap_content"
@@ -116,14 +114,13 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/textView5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:layout_marginTop="10dp"
                         android:layout_weight="0"
                         android:text="Unit:"
-                        android:textColor="@color/black"
+                        style="@style/text"
                         android:textSize="25dp"
                         android:textStyle="bold" />
 
@@ -167,7 +164,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_weight="0"
                     android:text="Value:"
-                    android:textColor="@color/black"
+                    style="@style/text"
                     android:textSize="25dp"
                     android:textStyle="bold" />
 

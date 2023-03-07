@@ -2,49 +2,31 @@ package com.example.aqua_v2;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 
 import android.app.Dialog;
-import android.app.appsearch.AppSearchBatchResult;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.Switch;
 
-import com.example.aqua_v2.fragments.DeviceDashboardActivity;
-import com.example.aqua_v2.fragments.GreenhouseDashboardActivity;
-import com.example.aqua_v2.fragments.WaterLevelDashboardActivity;
 import com.google.android.material.button.MaterialButton;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-public class DashboardActivity extends AppCompatActivity {
-
+public class WaterActivity extends AppCompatActivity {
     Switch switcher;
     boolean nightMode;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-
+    //    settings variables
     ImageButton settingBtn, closeBtn;
     MaterialButton cancelBtn, changePassword, editProfile;
-    ViewPager pager;
-    PagerAdapter pagerAdapter;
-
-    public Map<String, ?> get() {
-        return sharedPreferences.getAll();
-    }
+    //    pump button variable
+    MaterialButton wPumpBtn, snapABtn, snapBBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,12 +40,14 @@ public class DashboardActivity extends AppCompatActivity {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         }
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dashboard);
-
+        setContentView(R.layout.activity_pumps);
 
         settingBtn = findViewById(R.id.settingBtn);
+        wPumpBtn = findViewById(R.id.wpumpschedBtn);
+        snapABtn = findViewById(R.id.snapaschedBtn);
+        snapBBtn = findViewById(R.id.snapbschedBtn);
 
-        Dialog dialog = new Dialog(DashboardActivity.this);
+        Dialog dialog = new Dialog(WaterActivity.this);
 
         PopupMenu popupMenu = new PopupMenu(this, settingBtn);
 
@@ -71,8 +55,6 @@ public class DashboardActivity extends AppCompatActivity {
         popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
         popupMenu.getMenu().add(Menu.NONE, 2, 2, "Member");
         popupMenu.getMenu().add(Menu.NONE, 3, 3, "Logout");
-
-
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
@@ -179,7 +161,7 @@ public class DashboardActivity extends AppCompatActivity {
 
 //                    Member menu
                 } else if (id == 2) {
-                    Intent intent = new Intent(DashboardActivity.this, MemberListActivity.class);
+                    Intent intent = new Intent(WaterActivity.this, MemberListActivity.class);
                     startActivity(intent);
                 }
 //                lag-out menu
@@ -212,26 +194,65 @@ public class DashboardActivity extends AppCompatActivity {
 
 
         });
-
-
         settingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 popupMenu.show();
             }
         });
-
-
-        List<Fragment> list = new ArrayList<>();
-        list.add(new GreenhouseDashboardActivity());
-        list.add(new WaterLevelDashboardActivity());
-        list.add(new DeviceDashboardActivity());
-
-
-        pager = findViewById(R.id.pager);
-        pagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), list);
-        pager.setAdapter(pagerAdapter);
+//        water pump schedualer
+        wPumpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.setContentView(R.layout.activity_scheduler);
+                dialog.setCancelable(false);
+                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                closeBtn = dialog.findViewById(R.id.closeBtn);
+                dialog.show();
+//                  close button
+                closeBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+            }
+        });
+//        snap a scheduler
+        snapABtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.setContentView(R.layout.activity_scheduler);
+                dialog.setCancelable(false);
+                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                closeBtn = dialog.findViewById(R.id.closeBtn);
+                dialog.show();
+//                  close button
+                closeBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+            }
+        });
+//        snap b schedualer
+        snapBBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.setContentView(R.layout.activity_scheduler);
+                dialog.setCancelable(false);
+                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                closeBtn = dialog.findViewById(R.id.closeBtn);
+                dialog.show();
+//                  close button
+                closeBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+            }
+        });
     }
-
-
 }
