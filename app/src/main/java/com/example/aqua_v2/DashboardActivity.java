@@ -12,26 +12,43 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.Switch;
+import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.aqua_v2.fragments.DeviceDashboardActivity;
 import com.example.aqua_v2.fragments.GreenhouseDashboardActivity;
 import com.example.aqua_v2.fragments.WaterLevelDashboardActivity;
+import com.example.aqua_v2.model.Weather;
 import com.google.android.material.button.MaterialButton;
+import com.google.gson.JsonObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DashboardActivity extends AppCompatActivity {
+import retrofit2.Call;
+import retrofit2.Callback;
 
+public class DashboardActivity extends AppCompatActivity {
+    private static final String TAG = "DashboardActivity";
     Switch switcher;
     boolean nightMode;
     SharedPreferences sharedPreferences;
@@ -42,9 +59,9 @@ public class DashboardActivity extends AppCompatActivity {
     ViewPager pager;
     PagerAdapter pagerAdapter;
 
-    public Map<String, ?> get() {
-        return sharedPreferences.getAll();
-    }
+    TextView temperatureTxt, weatherTxt;
+    ImageView weatherIcon;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +79,9 @@ public class DashboardActivity extends AppCompatActivity {
 
 
         settingBtn = findViewById(R.id.settingBtn);
+        temperatureTxt = findViewById(R.id.temperatureTxt);
+        weatherTxt = findViewById(R.id.weatherTxt);
+        weatherIcon = findViewById(R.id.weather_icon);
 
         Dialog dialog = new Dialog(DashboardActivity.this);
 
@@ -220,6 +240,86 @@ public class DashboardActivity extends AppCompatActivity {
                 popupMenu.show();
             }
         });
+
+
+//        weather forecast
+      
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String url = "https://api.open-meteo.com/v1/forecast?latitude=14.65&longitude=121.05&hourly=temperature_2m&current_weather=true";
+
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONObject currentWeather = response.getJSONObject("current_weather");
+
+                            String temp = currentWeather.getString("temperature");
+                            int wCode = currentWeather.getInt("weathercode");
+
+                            temperatureTxt.setText(temp + "°C");
+                            if(wCode == 0){
+                                weatherTxt.setText("Clear");
+                                weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.clear));
+                            }
+                            else if(wCode == 1 || wCode == 2 || wCode == 3){
+                                weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.partly_cloudy));
+                                switch (wCode){
+                                    case 1:
+                                        weatherTxt.setText("Mainly Clear");
+                                        break;
+                                    case 2:
+                                        weatherTxt.setText("Partly Cloudy");
+                                        break;
+                                    case 3:
+                                        weatherTxt.setText("Overcast");
+                                        break;
+                                }
+                            }else if(wCode == 45 || wCode == 48){
+                                weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.fog));
+                                switch (wCode){
+                                    case 45:
+                                        weatherTxt.setText("Fog");
+                                        break;
+                                    case 48:
+                                        weatherTxt.setText("Depositing Rime Fog");
+                                        break;
+                                }
+                            }else if(wCode == 51 || wCode == 53 || wCode == 55 ){
+                                weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.fog));
+                                switch (wCode){
+                                    case 51:
+                                        weatherTxt.setText("Drizzle: Light ");
+                                        break;
+                                    case 53:
+                                        weatherTxt.setText("Drizzle: Moderate");
+                                        break;
+                                    case 55:
+                                        weatherTxt.setText("Drizzle: Dense Intensity");
+                                        break;
+                                }
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        temperatureTxt.setText("error ");
+                    }
+                });
+                RequestQueue requestQueue = Volley.newRequestQueue(DashboardActivity.this);
+                requestQueue.add(jsonObjectRequest);
+            }
+        },100);
+
+
 
 
         List<Fragment> list = new ArrayList<>();
