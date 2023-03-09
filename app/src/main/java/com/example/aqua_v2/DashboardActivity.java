@@ -1,34 +1,61 @@
 package com.example.aqua_v2;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
-import android.app.appsearch.AppSearchBatchResult;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.aqua_v2.fragments.DeviceDashboardActivity;
 import com.example.aqua_v2.fragments.GreenhouseDashboardActivity;
 import com.example.aqua_v2.fragments.WaterLevelDashboardActivity;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
+
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -42,9 +69,13 @@ public class DashboardActivity extends AppCompatActivity {
     ViewPager pager;
     PagerAdapter pagerAdapter;
 
-    public Map<String, ?> get() {
-        return sharedPreferences.getAll();
-    }
+    FusedLocationProviderClient fusedLocationProviderClient;
+    TextView temperatureTxt, weatherTxt, dateTxt, cityTxt;
+    ImageView weatherIcon;
+    private final static int REQUEST_CODE = 100;
+
+   public static double latitude;
+   public static double longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +93,12 @@ public class DashboardActivity extends AppCompatActivity {
 
 
         settingBtn = findViewById(R.id.settingBtn);
+        temperatureTxt = findViewById(R.id.temperatureTxt);
+        weatherTxt = findViewById(R.id.weatherTxt);
+        weatherIcon = findViewById(R.id.weather_icon);
+        dateTxt = findViewById(R.id.dateTxt);
+        cityTxt = findViewById(R.id.cityTxt);
+
 
         Dialog dialog = new Dialog(DashboardActivity.this);
 
@@ -221,6 +258,96 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
+//location
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        getLastLocation();
+
+
+//        weather forecast
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//
+//                String url ="https://api.open-meteo.com/v1/forecast?latitude="+latitude+"&longitude="+longitude+"&current_weather=true";
+//
+//                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        try {
+//                            JSONObject currentWeather = response.getJSONObject("current_weather");
+//
+//                            String temp = currentWeather.getString("temperature");
+//                            int wCode = currentWeather.getInt("weathercode");
+//                            temperatureTxt.setText(temp + "°C");
+//                            if (wCode == 0) {
+//                                weatherTxt.setText("Clear");
+//                                weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.clear));
+//                            } else if (wCode == 1 || wCode == 2 || wCode == 3) {
+//                                weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.partly_cloudy));
+//                                switch (wCode) {
+//                                    case 1:
+//                                        weatherTxt.setText("Mainly Clear");
+//                                        break;
+//                                    case 2:
+//                                        weatherTxt.setText("Partly Cloudy");
+//                                        break;
+//                                    case 3:
+//                                        weatherTxt.setText("Overcast");
+//                                        break;
+//                                }
+//                            } else if (wCode == 45 || wCode == 48) {
+//                                weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.fog));
+//                                switch (wCode) {
+//                                    case 45:
+//                                        weatherTxt.setText("Fog");
+//                                        break;
+//                                    case 48:
+//                                        weatherTxt.setText("Depositing Rime Fog");
+//                                        break;
+//                                }
+//                            } else if (wCode == 51 || wCode == 53 || wCode == 55) {
+//                                weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.fog));
+//                                switch (wCode) {
+//                                    case 51:
+//                                        weatherTxt.setText("Drizzle: Light ");
+//                                        break;
+//                                    case 53:
+//                                        weatherTxt.setText("Drizzle: Moderate");
+//                                        break;
+//                                    case 55:
+//                                        weatherTxt.setText("Drizzle: Dense Intensity");
+//                                        break;
+//                                }
+//                            }
+//                            else {
+//                                weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.partly_cloudy));
+//                                weatherTxt.setText("Something went Wrong");
+//                            }
+//
+//
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                    }
+//                }, new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        temperatureTxt.setText("error ");
+//                    }
+//                });
+//                RequestQueue requestQueue = Volley.newRequestQueue(DashboardActivity.this);
+//                requestQueue.add(jsonObjectRequest);
+//            }
+//        }, 1000);
+
+        Calendar calendar = Calendar.getInstance();
+        String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
+        dateTxt.setText(currentDate);
+
 
         List<Fragment> list = new ArrayList<>();
         list.add(new GreenhouseDashboardActivity());
@@ -231,6 +358,136 @@ public class DashboardActivity extends AppCompatActivity {
         pager = findViewById(R.id.pager);
         pagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), list);
         pager.setAdapter(pagerAdapter);
+
+    }
+
+    private void getTempWeatherCode(double latitude, double longitude) {
+        String url ="https://api.open-meteo.com/v1/forecast?latitude="+latitude+"&longitude="+longitude+"&current_weather=true";
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONObject currentWeather = response.getJSONObject("current_weather");
+
+                    String temp = currentWeather.getString("temperature");
+                    int wCode = currentWeather.getInt("weathercode");
+                    temperatureTxt.setText(temp + "°C");
+                    if (wCode == 0) {
+                        weatherTxt.setText("Clear");
+                        weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.clear));
+                    } else if (wCode == 1 || wCode == 2 || wCode == 3) {
+                        weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.partly_cloudy));
+                        switch (wCode) {
+                            case 1:
+                                weatherTxt.setText("Mainly Clear");
+                                break;
+                            case 2:
+                                weatherTxt.setText("Partly Cloudy");
+                                break;
+                            case 3:
+                                weatherTxt.setText("Overcast");
+                                break;
+                        }
+                    } else if (wCode == 45 || wCode == 48) {
+                        weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.fog));
+                        switch (wCode) {
+                            case 45:
+                                weatherTxt.setText("Fog");
+                                break;
+                            case 48:
+                                weatherTxt.setText("Depositing Rime Fog");
+                                break;
+                        }
+                    } else if (wCode == 51 || wCode == 53 || wCode == 55) {
+                        weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.fog));
+                        switch (wCode) {
+                            case 51:
+                                weatherTxt.setText("Drizzle: Light ");
+                                break;
+                            case 53:
+                                weatherTxt.setText("Drizzle: Moderate");
+                                break;
+                            case 55:
+                                weatherTxt.setText("Drizzle: Dense Intensity");
+                                break;
+                        }
+                    }
+                    else {
+                        weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.partly_cloudy));
+                        weatherTxt.setText("Something went Wrong");
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                temperatureTxt.setText("error ");
+            }
+        });
+        RequestQueue requestQueue = Volley.newRequestQueue(DashboardActivity.this);
+        requestQueue.add(jsonObjectRequest);
+    }
+
+
+    private void getLastLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient.getLastLocation()
+                    .addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if (location != null) {
+                                Geocoder geocoder = new Geocoder(DashboardActivity.this, Locale.getDefault());
+                                List<Address> addresses = null;
+                                try {
+                                    addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                                    latitude = addresses.get(0).getLatitude();
+                                    longitude = addresses.get(0).getLongitude();
+                                    DecimalFormat decimalFormat = new DecimalFormat("#.0000");
+
+                                    double la = Double.parseDouble(decimalFormat.format(latitude));
+                                    double lo = Double.parseDouble(decimalFormat.format(longitude));
+                                    getTempWeatherCode(la, lo);
+                                    cityTxt.setText(addresses.get(0).getLocality()+ ", PH");
+
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+
+                            }
+
+                        }
+                    });
+
+
+        } else {
+
+            askPermission();
+
+        }
+    }
+
+    private void askPermission() {
+        ActivityCompat.requestPermissions(DashboardActivity.this, new String[]
+                {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getLastLocation();
+            } else {
+                Toast.makeText(this, "Required Permission", Toast.LENGTH_SHORT).show();
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
 
