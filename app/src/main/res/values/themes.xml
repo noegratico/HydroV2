@@ -27,6 +27,6 @@
     </style>
 
     <style name="modalBackground">
-        <item name="android:backgroundTint">#242526</item>
+        <item name="android:backgroundTint">@color/white</item>
     </style>
 </resources>

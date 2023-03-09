@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="100dp"
     android:orientation="vertical"
+    style="@style/background"
     tools:context=".MemberListActivity">
 
     <LinearLayout
@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Devices"
-            android:textColor="@color/black"
+            style="@style/text"
             android:textSize="35dp"
             android:textStyle="bold" />
 
@@ -45,6 +45,7 @@
 
 
     <androidx.cardview.widget.CardView
+        style="@style/cardBackground"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
@@ -71,7 +72,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Grow Light Status"
-                    android:textColor="@color/black"
+                    style="@style/text"
                     android:textSize="30dp"
                     android:textStyle="bold" />
 
@@ -125,7 +126,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Cooling Fan Status"
-                    android:textColor="@color/black"
+                    style="@style/text"
                     android:textSize="30dp"
                     android:textStyle="bold" />
 
@@ -139,7 +140,7 @@
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/snapaschedBtn"
+                android:id="@+id/coolingFanStatusBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="150dp"
@@ -170,7 +171,7 @@
             android:orientation="vertical">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/snapbschedBtn2"
+                android:id="@+id/liveCameraBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="150dp"
@@ -179,7 +180,7 @@
                 android:textColor="@color/black" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/snapbschedBtn"
+                android:id="@+id/pairedDevicesBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="150dp"

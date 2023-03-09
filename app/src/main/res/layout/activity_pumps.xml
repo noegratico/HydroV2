@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/modalBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginBottom="100dp"
@@ -17,10 +18,10 @@
         android:layout_marginRight="20dp">
 
         <TextView
+            style="@style/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Pumps"
-            android:textColor="@color/black"
             android:textSize="35dp"
             android:textStyle="bold" />
 
@@ -50,6 +51,7 @@
         android:layout_margin="20dp"
         app:cardCornerRadius="14dp"
         app:cardElevation="4dp"
+        style="@style/cardBackground"
 
         >
 
@@ -71,7 +73,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Water Pump Status"
-                    android:textColor="@color/black"
+                    style="@style/text"
                     android:textSize="30dp"
                     android:textStyle="bold" />
 
@@ -113,7 +115,8 @@
             android:layout_height="97dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            style="@style/cardBackground">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -125,7 +128,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Snap A Pump Status"
-                    android:textColor="@color/black"
+                    style="@style/text"
                     android:textSize="30dp"
                     android:textStyle="bold" />
 
@@ -158,6 +161,7 @@
         android:layout_margin="20dp"
         app:cardCornerRadius="14dp"
         app:cardElevation="4dp"
+        style="@style/cardBackground"
 
         >
 
@@ -179,7 +183,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Snap B Pump Status"
-                    android:textColor="@color/black"
+                    style="@style/text"
                     android:textSize="30dp"
                     android:textStyle="bold" />
 
