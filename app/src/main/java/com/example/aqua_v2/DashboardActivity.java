@@ -31,10 +31,12 @@ public class DashboardActivity extends AppCompatActivity {
     PagerAdapter pagerAdapter;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
 
         settingBtn = findViewById(R.id.settingBtn);
         Dialog dialog = new Dialog(DashboardActivity.this);
