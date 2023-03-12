@@ -19,6 +19,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -44,6 +45,9 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,6 +59,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 
 public class DashboardActivity extends AppCompatActivity {
@@ -65,7 +70,7 @@ public class DashboardActivity extends AppCompatActivity {
     SharedPreferences.Editor editor;
 
     ImageButton settingBtn, closeBtn;
-    MaterialButton cancelBtn, changePassword, editProfile;
+    MaterialButton cancelBtn, changePassword, editProfile, logout;
     ViewPager pager;
     PagerAdapter pagerAdapter;
 
@@ -76,6 +81,8 @@ public class DashboardActivity extends AppCompatActivity {
 
    public static double latitude;
    public static double longitude;
+
+   private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,15 +106,33 @@ public class DashboardActivity extends AppCompatActivity {
         dateTxt = findViewById(R.id.dateTxt);
         cityTxt = findViewById(R.id.cityTxt);
 
+        FirebaseUser user = mAuth.getCurrentUser();
 
         Dialog dialog = new Dialog(DashboardActivity.this);
 
         PopupMenu popupMenu = new PopupMenu(this, settingBtn);
 
-        popupMenu.getMenu().add(Menu.NONE, 0, 0, "Profile");
-        popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
-        popupMenu.getMenu().add(Menu.NONE, 2, 2, "Member");
-        popupMenu.getMenu().add(Menu.NONE, 3, 3, "Logout");
+        if(user != null) {
+                user.getIdToken(true).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+                    @Override
+                    public void onSuccess(GetTokenResult result) {
+                        boolean isAdmin = result.getClaims().containsKey("admin") && (boolean) result.getClaims().get("admin");
+                        if(isAdmin) {
+                            popupMenu.getMenu().add(Menu.NONE, 0, 0, "Profile");
+                            popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
+                            popupMenu.getMenu().add(Menu.NONE, 2, 2, "Member");
+                            popupMenu.getMenu().add(Menu.NONE, 3, 3, "Logout");
+                        }else{
+                            popupMenu.getMenu().add(Menu.NONE, 0, 0, "Profile");
+                            popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
+                            popupMenu.getMenu().add(Menu.NONE, 3, 2, "Logout");
+                        }
+                    }
+                });
+
+
+        }
+
 
 
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -228,6 +253,18 @@ public class DashboardActivity extends AppCompatActivity {
                     cancelBtn = dialog.findViewById(R.id.cancel_button);
 
                     dialog.show();
+                    logout = dialog.findViewById(R.id.logoutBtn);
+
+                    logout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            FirebaseAuth.getInstance().signOut();
+                            Intent logoutIntent = new Intent(DashboardActivity.this, MainActivity.class);
+                            logoutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(logoutIntent);
+                            finish();
+                        }
+                    });
                     cancelBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

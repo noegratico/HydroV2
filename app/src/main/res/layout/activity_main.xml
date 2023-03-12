@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    style="@style/background"
     tools:context=".MainActivity">
 
 
@@ -34,7 +34,7 @@
         app:startIconTint="@color/black">
 
         <com.google.android.material.textfield.TextInputEditText
-
+            android:id="@+id/usernameInputTxt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -59,6 +59,7 @@
         app:startIconTint="@color/black">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordInputTxt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:password="true" />
