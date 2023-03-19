@@ -14,13 +14,15 @@ import java.util.ArrayList;
 
 public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyViewHolder> {
     private ArrayList<User> userList;
+    private RecycleViewClickListener listener;
 
-    public recyclerAdapter(ArrayList<User> userList) {
+    public recyclerAdapter(ArrayList<User> userList, RecycleViewClickListener listener) {
         this.userList = userList;
+        this.listener = listener;
     }
 
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView nameText;
         private TextView idText;
 
@@ -28,9 +30,13 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
             super(view);
             idText = view.findViewById(R.id.userId);
             nameText = view.findViewById(R.id.userName);
-
+            view.setOnClickListener(this);
         }
 
+        @Override
+        public void onClick(View v) {
+listener.onCLick(v, getAdapterPosition());
+        }
     }
 
 
@@ -52,5 +58,9 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
     @Override
     public int getItemCount() {
         return userList.size();
+    }
+
+    public interface RecycleViewClickListener {
+        void onCLick(View v, int position);
     }
 }

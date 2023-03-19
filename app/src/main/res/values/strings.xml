@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Aqua_v2</string>
+    <string-array name="user_level">
+        <item>Member</item>
+        <item>Admin</item>
+    </string-array>
 </resources>

@@ -21,8 +21,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/logo"
-        android:layout_marginVertical="5dp"
         android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="5dp"
         android:hint="Username"
         android:textColorHint="@color/black"
         app:boxCornerRadiusBottomEnd="10dp"
@@ -33,10 +33,11 @@
         app:startIconTint="@color/black">
 
         <com.google.android.material.textfield.TextInputEditText
-
+            android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/emailAddress"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -56,7 +57,7 @@
         app:startIconTint="@color/black">
 
         <com.google.android.material.textfield.TextInputEditText
-
+            android:id="@+id/email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -80,40 +81,33 @@
         app:startIconTint="@color/black">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:password="true" />
     </com.google.android.material.textfield.TextInputLayout>
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/confirm_password"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+<com.google.android.material.card.MaterialCardView
+    android:id="@+id/adminHolder"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/password"
+    android:layout_marginHorizontal="20dp"
+    app:cardCornerRadius="10dp"
+    app:strokeColor="#757575"
+    app:strokeWidth="1dp"
+    >
+    <Spinner
+        android:id="@+id/adminTxt"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/password"
-        android:layout_marginVertical="5dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:hint="Confirm password"
-        android:textColorHint="@color/black"
-        app:boxCornerRadiusBottomEnd="10dp"
-        app:boxCornerRadiusBottomStart="10dp"
-        app:boxCornerRadiusTopEnd="10dp"
-        app:boxCornerRadiusTopStart="10dp"
-        app:startIconDrawable="@drawable/ic_baseline_lock_24"
-        app:startIconTint="@color/black">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:password="true" />
-    </com.google.android.material.textfield.TextInputLayout>
-
+        android:layout_height="50dp"
+        android:paddingStart="20dp"/>
+</com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/register_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/confirm_password"
+        android:layout_below="@id/adminHolder"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
@@ -121,26 +115,26 @@
         android:layout_marginBottom="20dp"
         android:backgroundTint="#6cbce2"
         android:padding="15dp"
-        android:text="Register" />
+        android:text="Add Member" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/register_btn"
-        android:gravity="center">
+    <!--    <LinearLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_below="@+id/register_btn"-->
+    <!--        android:gravity="center">-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Have existing account? "
-            android:textColor="@color/black" />
+    <!--        <TextView-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="Have existing account? "-->
+    <!--            android:textColor="@color/black" />-->
 
-        <TextView
-            android:id="@+id/loginBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Log in"
-            android:textColor="#0000ff"/>
+    <!--        <TextView-->
+    <!--            android:id="@+id/loginBtn"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="Log in"-->
+    <!--            android:textColor="#0000ff"/>-->
 
-    </LinearLayout>
+    <!--    </LinearLayout>-->
 </RelativeLayout>

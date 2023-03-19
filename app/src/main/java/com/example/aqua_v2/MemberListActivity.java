@@ -1,5 +1,6 @@
 package com.example.aqua_v2;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -10,19 +11,31 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Switch;
 
 import com.example.aqua_v2.model.User;
+import com.example.aqua_v2.model.UserList;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MemberListActivity extends AppCompatActivity {
 
@@ -30,11 +43,14 @@ public class MemberListActivity extends AppCompatActivity {
     boolean nightMode;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+    private FirebaseFunctions mFunctions;
 
     ImageButton settingBtn, closeBtn, editInfo, activateBtn, deactivateBtn;
     MaterialButton cancelBtn, changePassword, editProfile, logout;
+    FloatingActionButton addUser;
     RecyclerView recyclerView;
-    private ArrayList<User> userList;
+    private recyclerAdapter.RecycleViewClickListener listener;
+    private List<User> userList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +68,8 @@ public class MemberListActivity extends AppCompatActivity {
 
         settingBtn = findViewById(R.id.settingBtn);
         recyclerView = findViewById(R.id.recycleView);
+        addUser = findViewById(R.id.floatingActionButton);
+        mFunctions = FirebaseFunctions.getInstance();
         Dialog dialog = new Dialog(MemberListActivity.this);
 
         PopupMenu popupMenu = new PopupMenu(this, settingBtn);
@@ -314,22 +332,74 @@ public class MemberListActivity extends AppCompatActivity {
 //                });
 //            }
 //        });
-
-        userList = new ArrayList<>();
-        setUserInfo();
+//      add user
+        addUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MemberListActivity.this, RegisterActivity.class));
+                finish();
+            }
+        });
         setAdapter();
-
     }
 
     private void setAdapter() {
-        recyclerAdapter adapter = new recyclerAdapter(userList);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(adapter);
+        mFunctions
+                .getHttpsCallable("listUsers")
+                .call()
+                .addOnSuccessListener(result -> {
+                    HashMap<String, ArrayList<HashMap<String, Object>>> data = (HashMap<String, ArrayList<HashMap<String, Object>>>) result.getData();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        userList = data.get("users").stream().map(userRecord -> {
+                            User user = new User((String)userRecord.get("id"), (String)userRecord.get("name"));
+                            user.setEmail((String)userRecord.get("email"));
+                            user.setUserLevel((String)userRecord.get("userLevel"));
+                            return user;
+                        }).collect(Collectors.toList());
+                    }
+                    recyclerAdapter adapter = new recyclerAdapter((ArrayList<User>) userList, listener);
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                        recyclerView.setLayoutManager(layoutManager);
+                        recyclerView.setItemAnimator(new DefaultItemAnimator());
+                        recyclerView.setAdapter(adapter);
+                });
+//                .continueWith(new Continuation<HttpsCallableResult, String>() {
+//                    @Override
+//                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                        // This continuation runs on either success or failure, but if the task
+                        // has failed then getResult() will throw an Exception which will be
+                        // propagated down.
+                       // String result = (String) task.getResult().getData();
+//                        userList = result.getUserList();
+//                        recyclerAdapter adapter = new recyclerAdapter((ArrayList<User>) userList, listener);
+//                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+//                        recyclerView.setLayoutManager(layoutManager);
+//                        recyclerView.setItemAnimator(new DefaultItemAnimator());
+//                        recyclerView.setAdapter(adapter);
+                    //    return result;
+//                    }
+//                }).addOnCompleteListener(task -> {
+//                   task.getException().printStackTrace();
+//                });
+
+        setOnClickListener();
     }
 
+    private void setOnClickListener() {
+        listener = new recyclerAdapter.RecycleViewClickListener() {
+            @Override
+            public void onCLick(View v, int position) {
+                Intent intent = new Intent(getApplicationContext(), ManageUserActivity.class);
+                intent.putExtra("name" , userList.get(position).getName());
+                intent.putExtra("id", userList.get(position). getId());
+                startActivity(intent);
+            }
+        };
+    }
+
+
     private void setUserInfo() {
+
         userList.add(new User("1", "Lina"));
         userList.add(new User("2", "Windranger"));
         userList.add(new User("3", "Sniper"));

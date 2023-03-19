@@ -30,6 +30,7 @@ public class DeviceDashboardActivity extends Fragment {
                 startActivity(device);
             }
         });
+
         return rootView;
     }
 }
