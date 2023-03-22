@@ -81,9 +81,11 @@ public class DashboardActivity extends AppCompatActivity {
     public static double longitude;
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseUser user = mAuth.getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        checkUser();
         showsplash();
         sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
         nightMode = sharedPreferences.getBoolean("night", false);
@@ -106,7 +108,6 @@ public class DashboardActivity extends AppCompatActivity {
         cityTxt = findViewById(R.id.cityTxt);
         userLvlTxt = findViewById(R.id.userLvlTxt);
 
-        FirebaseUser user = mAuth.getCurrentUser();
 
         Dialog dialog = new Dialog(DashboardActivity.this);
 
@@ -318,6 +319,13 @@ public class DashboardActivity extends AppCompatActivity {
 
     }
 
+    private void checkUser() {
+        if (user == null) {
+            startActivity(new Intent(DashboardActivity.this, MainActivity.class));
+            finish();
+        }
+    }
+
     private void getTempWeatherCode(double latitude, double longitude) {
         String url = "https://api.open-meteo.com/v1/forecast?latitude=" + latitude + "&longitude=" + longitude + "&current_weather=true";
 
@@ -455,7 +463,7 @@ public class DashboardActivity extends AppCompatActivity {
         dialog.setCancelable(true);
         dialog.show();
 
-        final Handler handler  = new Handler();
+        final Handler handler = new Handler();
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {

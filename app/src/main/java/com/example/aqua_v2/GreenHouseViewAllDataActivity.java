@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Switch;
-import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
@@ -22,7 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 
-public class GreenHouseActivity extends AppCompatActivity {
+public class GreenHouseViewAllDataActivity extends AppCompatActivity {
     Switch switcher;
     boolean nightMode;
     SharedPreferences sharedPreferences;
@@ -30,11 +29,9 @@ public class GreenHouseActivity extends AppCompatActivity {
 
     ImageButton settingBtn, closeBtn;
     MaterialButton cancelBtn, changePassword, editProfile, logout;
-    MaterialButton viewAllDataBtn;
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser user = mAuth.getCurrentUser();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
@@ -47,23 +44,14 @@ public class GreenHouseActivity extends AppCompatActivity {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         }
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_green_house);
+        setContentView(R.layout.activity_green_house_view_all_data);
+
         settingBtn = findViewById(R.id.settingBtn);
-        viewAllDataBtn = findViewById(R.id.viewAllDataBtn);
-
-        viewAllDataBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               startActivity(new Intent(GreenHouseActivity.this, GreenHouseViewAllDataActivity.class));
-
-            }
-        });
         showSetting();
     }
-
     private void showSetting() {
         PopupMenu popupMenu = new PopupMenu(this, settingBtn);
-        Dialog dialog = new Dialog(GreenHouseActivity.this);
+        Dialog dialog = new Dialog(GreenHouseViewAllDataActivity.this);
         if (user != null) {
             user.getIdToken(true).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
                 @Override
@@ -187,7 +175,7 @@ public class GreenHouseActivity extends AppCompatActivity {
 
 //                    Member menu
                     } else if (id == 2) {
-                        Intent intent = new Intent(GreenHouseActivity.this, MemberListActivity.class);
+                        Intent intent = new Intent(GreenHouseViewAllDataActivity.this, MemberListActivity.class);
                         startActivity(intent);
                     }
 //                lag-out menu
@@ -205,7 +193,7 @@ public class GreenHouseActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 FirebaseAuth.getInstance().signOut();
-                                Intent logoutIntent = new Intent(GreenHouseActivity.this, MainActivity.class);
+                                Intent logoutIntent = new Intent(GreenHouseViewAllDataActivity.this, MainActivity.class);
                                 logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(logoutIntent);
                                 finish();
@@ -240,7 +228,5 @@ public class GreenHouseActivity extends AppCompatActivity {
                 popupMenu.show();
             }
         });
-
-
     }
 }

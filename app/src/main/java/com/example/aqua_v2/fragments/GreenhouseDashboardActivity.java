@@ -1,5 +1,6 @@
 package com.example.aqua_v2.fragments;
 
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,7 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.aqua_v2.GreenHouseActivity;
 import com.example.aqua_v2.R;
+import com.example.aqua_v2.WaterConditionActivity;
 import com.example.aqua_v2.model.Sensors;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -22,7 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class GreenhouseDashboardActivity extends Fragment {
-    TextView temp, hum, ec, ph;
+    TextView temp, hum, ec, ph, greenHouseTxt, waterConditionTxt;
 
     @Nullable
     @Override
@@ -34,6 +37,8 @@ public class GreenhouseDashboardActivity extends Fragment {
         hum = (TextView) rootView.findViewById(R.id.greenHouseHum);
         ec = (TextView) rootView.findViewById(R.id.greenHouseEc);
         ph = (TextView) rootView.findViewById(R.id.greenHousePh);
+        greenHouseTxt = (TextView) rootView.findViewById(R.id.greenTxt);
+        waterConditionTxt = (TextView) rootView.findViewById(R.id.greenHouseTxt);
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference();
@@ -51,7 +56,21 @@ public class GreenhouseDashboardActivity extends Fragment {
 
             }
         });
+        greenHouseTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                startActivity(new Intent(getActivity(), GreenHouseActivity.class));
+                getActivity().finish();
+            }
+        });
+        waterConditionTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(),  WaterConditionActivity.class));
+                getActivity().finish();
+            }
+        });
 
         return rootView;
     }

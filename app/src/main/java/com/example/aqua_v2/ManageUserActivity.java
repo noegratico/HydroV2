@@ -1,17 +1,39 @@
 package com.example.aqua_v2;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.functions.FirebaseFunctions;
 
-public class ManageUserActivity extends AppCompatActivity {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+public class ManageUserActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, View.OnClickListener {
 
     TextInputEditText name, email, password;
+    MaterialButton verifyBtn, updateBtn;
+    private Spinner spinner;
+    boolean isVerify = true;
+
+    private String sName = "";
+    private String sEmail = "";
+    private String sUserLevel = "";
+    private String id = "";
+
+    private String selectedUserLevel = "member";
+
+    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -20,22 +42,74 @@ public class ManageUserActivity extends AppCompatActivity {
         name = findViewById(R.id.name);
         email = findViewById(R.id.email);
         password = findViewById(R.id.passwordInput);
-        String id = "", sName = "";
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            sName = extras.getString("name");
-            id = extras.getString("id");
-        }
-        name.setText(sName);
-        email.setText(id);
-        Spinner spinner = (Spinner) findViewById(R.id.adminTxt);
-// Create an ArrayAdapter using the string array and a default spinner layout
+        verifyBtn = findViewById(R.id.verifyBtn);
+        updateBtn = findViewById(R.id.updateBtn);
+        spinner = (Spinner) findViewById(R.id.adminTxt);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource
                 (this, R.array.user_level, android.R.layout.simple_spinner_item);
-// Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner
         spinner.setAdapter(adapter);
 
+        Bundle extras = getIntent().getExtras();
+        sName = extras == null ? "" : changeNullToEmptyString(extras.getString("name"));
+        sEmail = extras == null ? "" : changeNullToEmptyString(extras.getString("email"));
+        sUserLevel = extras == null ? "" : changeNullToEmptyString(extras.getString("userLevel"));
+        id = extras == null ? "" : changeNullToEmptyString(extras.getString("uuid"));
+        name.setText(sName);
+        email.setText(sEmail);
+        spinner.setOnItemSelectedListener(this);
+
+
+        if (isVerify) {
+            verifyBtn.setEnabled(false);
+        } else {
+            verifyBtn.setEnabled(true);
+        }
+
+        updateBtn.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        Map<String, String> data = new HashMap<>();
+        if(!sName.equals(name.getText().toString())) {
+            data.put("name", name.getText().toString());
+        }
+        if(!sEmail.equals(email.getText().toString())){
+            data.put("email", email.getText().toString());
+        }
+        if(!sUserLevel.equals(selectedUserLevel)) {
+            data.put("userLevel", selectedUserLevel);
+        }
+        if(!password.getText().toString().equals("")) {
+            data.put("password", password.getText().toString());
+        }
+
+        if(data.entrySet().size() != 0 && !id.equals("")) {
+            data.put("id", id);
+            mFunctions
+                    .getHttpsCallable("updateUser")
+                    .call(data)
+                    .addOnSuccessListener(result -> {
+                        startActivity(new Intent(ManageUserActivity.this, MemberListActivity.class));
+                        finish();
+                    }).addOnFailureListener(e -> {
+                        Toast.makeText(this, "Failed to add User", Toast.LENGTH_SHORT).show();
+                    });
+        }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        selectedUserLevel = ((String) spinner.getItemAtPosition(position)).toLowerCase();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    private String changeNullToEmptyString(String value) {
+        return value == null ? "" : value;
     }
 }

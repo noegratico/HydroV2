@@ -13,10 +13,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
@@ -54,6 +56,7 @@ public class MemberListActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        loadingScreen();
         sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
         nightMode = sharedPreferences.getBoolean("night", false);
         if (nightMode) {
@@ -343,6 +346,26 @@ public class MemberListActivity extends AppCompatActivity {
         setAdapter();
     }
 
+    private void loadingScreen() {
+        final Dialog dialog = new Dialog(MemberListActivity.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.splashAnimation;
+        dialog.setContentView(R.layout.activity_splash_screen);
+        dialog.setCancelable(true);
+        dialog.show();
+
+        final Handler handler  = new Handler();
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                {
+                    dialog.dismiss();
+                }
+            }
+        };
+        handler.postDelayed(runnable, 3000);
+    }
+
     private void setAdapter() {
         mFunctions
                 .getHttpsCallable("listUsers")
@@ -391,7 +414,9 @@ public class MemberListActivity extends AppCompatActivity {
             public void onCLick(View v, int position) {
                 Intent intent = new Intent(getApplicationContext(), ManageUserActivity.class);
                 intent.putExtra("name" , userList.get(position).getName());
-                intent.putExtra("id", userList.get(position). getId());
+                intent.putExtra("uuid", userList.get(position).getId());
+                intent.putExtra("email", userList.get(position). getEmail());
+                intent.putExtra("userLevel",userList.get(position).getUserLevel());
                 startActivity(intent);
             }
         };

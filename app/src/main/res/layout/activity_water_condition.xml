@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".GreenHouseActivity">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/hello"
@@ -19,7 +18,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Green House"
+            android:text="Water Condition"
             android:textSize="35dp"
             android:textStyle="bold"
             android:theme="@style/text" />
@@ -332,7 +331,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Temperature"
+        android:text="ph Level"
         android:textSize="20dp"
         android:textStyle="bold"
         android:theme="@style/text"
@@ -347,7 +346,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Humidity"
+        android:text="ECC Level"
         android:textSize="20dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -502,28 +501,28 @@
 
 
     </LinearLayout>
-     <com.google.android.material.button.MaterialButton
-         android:id="@+id/viewAllDataBtn"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_marginTop="52dp"
-         android:text="View all data"
-         android:backgroundTint="#6cbce2"
-         app:layout_constraintEnd_toEndOf="parent"
-         app:layout_constraintHorizontal_bias="0.083"
-         app:layout_constraintStart_toStartOf="parent"
-         app:layout_constraintTop_toBottomOf="@+id/humidityLayout" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/viewAllDataBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:text="View all data"
+        android:backgroundTint="#6cbce2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.083"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/humidityLayout" />
 
-     <ImageButton
-         android:layout_width="70dp"
-         android:layout_height="70dp"
-         android:background="#6cbce2"
-         android:src="@drawable/ic_baseline_file_present_24"
-         app:layout_constraintBottom_toBottomOf="parent"
-         app:layout_constraintEnd_toEndOf="parent"
-         app:layout_constraintHorizontal_bias="0.75"
-         app:layout_constraintStart_toEndOf="@+id/viewAllDataBtn"
-         app:layout_constraintTop_toBottomOf="@+id/humidityLayout"
-         app:layout_constraintVertical_bias="0.288" />-->
+    <ImageButton
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:background="#6cbce2"
+        android:src="@drawable/ic_baseline_file_present_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.75"
+        app:layout_constraintStart_toEndOf="@+id/viewAllDataBtn"
+        app:layout_constraintTop_toBottomOf="@+id/humidityLayout"
+        app:layout_constraintVertical_bias="0.288" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
