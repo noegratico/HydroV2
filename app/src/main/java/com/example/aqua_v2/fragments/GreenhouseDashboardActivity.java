@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,9 +24,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 public class GreenhouseDashboardActivity extends Fragment {
     TextView temp, hum, ec, ph, greenHouseTxt, waterConditionTxt;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
 
     @Nullable
     @Override
@@ -42,6 +50,7 @@ public class GreenhouseDashboardActivity extends Fragment {
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference();
+
         ref.child("sensors_monitoring").child("sensors1").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
@@ -50,7 +59,6 @@ public class GreenhouseDashboardActivity extends Fragment {
                 } else {
                     temp.setText(String.valueOf(task.getResult().child("value_tem").getValue()));
                     hum.setText(String.valueOf(task.getResult().child("value_hum").getValue()) + "%");
-                    ;
                     ec.setText(String.valueOf(task.getResult().child("value_lss").getValue()));
                 }
 

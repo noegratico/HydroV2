@@ -377,6 +377,7 @@ public class MemberListActivity extends AppCompatActivity {
                             User user = new User((String)userRecord.get("id"), (String)userRecord.get("name"));
                             user.setEmail((String)userRecord.get("email"));
                             user.setUserLevel((String)userRecord.get("userLevel"));
+                            user.setActive((boolean) userRecord.get("isActive"));
                             return user;
                         }).collect(Collectors.toList());
                     }
@@ -417,38 +418,12 @@ public class MemberListActivity extends AppCompatActivity {
                 intent.putExtra("uuid", userList.get(position).getId());
                 intent.putExtra("email", userList.get(position). getEmail());
                 intent.putExtra("userLevel",userList.get(position).getUserLevel());
+                intent.putExtra("active", userList.get(position).isActive());
                 startActivity(intent);
             }
         };
     }
 
 
-    private void setUserInfo() {
 
-        userList.add(new User("1", "Lina"));
-        userList.add(new User("2", "Windranger"));
-        userList.add(new User("3", "Sniper"));
-        userList.add(new User("4", "Tinker"));
-        userList.add(new User("1", "Lina"));
-        userList.add(new User("2", "Windranger"));
-        userList.add(new User("3", "Sniper"));
-        userList.add(new User("4", "Tinker"));
-        userList.add(new User("1", "Lina"));
-        userList.add(new User("2", "Windranger"));
-        userList.add(new User("3", "Sniper"));
-        userList.add(new User("4", "Tinker"));
-        userList.add(new User("1", "Lina"));
-        userList.add(new User("2", "Windranger"));
-        userList.add(new User("3", "Sniper"));
-        userList.add(new User("4", "Tinker"));
-        userList.add(new User("1", "Lina"));
-        userList.add(new User("2", "Windranger"));
-        userList.add(new User("3", "Sniper"));
-        userList.add(new User("4", "Tinker"));
-        userList.add(new User("1", "Lina"));
-        userList.add(new User("2", "Windranger"));
-        userList.add(new User("3", "Sniper"));
-        userList.add(new User("4", "Tinker"));
-
-    }
 }

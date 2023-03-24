@@ -29,6 +29,7 @@ public class GreenHouseActivity extends AppCompatActivity {
     SharedPreferences.Editor editor;
 
     ImageButton settingBtn, closeBtn;
+    ImageButton reportBtn;
     MaterialButton cancelBtn, changePassword, editProfile, logout;
     MaterialButton viewAllDataBtn;
 
@@ -50,6 +51,15 @@ public class GreenHouseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_green_house);
         settingBtn = findViewById(R.id.settingBtn);
         viewAllDataBtn = findViewById(R.id.viewAllDataBtn);
+        reportBtn = findViewById(R.id.reportBtn);
+
+        reportBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+              startActivity(new Intent(GreenHouseActivity.this, GreenhouseRerportActivity.class));
+              finish();
+            }
+        });
 
         viewAllDataBtn.setOnClickListener(new View.OnClickListener() {
             @Override
