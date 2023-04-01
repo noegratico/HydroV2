@@ -24,6 +24,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.aqua_v2.model.TempModel;
 import com.example.aqua_v2.model.TemperatureSensor;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
@@ -31,12 +32,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.functions.FirebaseFunctions;
 
 import java.text.SimpleDateFormat;
@@ -70,6 +66,7 @@ public class GreenHouseViewAllDataActivity extends AppCompatActivity {
     private final MutableLiveData<Boolean> verify = new MutableLiveData<>();
 
     private List<TemperatureSensor> tempList = new ArrayList<>();
+    private List<TemperatureSensor> humList = new ArrayList<>();
     private RecyclerView recyclerView;
     private RecyclerView recyclerViewHum;
 
@@ -85,88 +82,37 @@ public class GreenHouseViewAllDataActivity extends AppCompatActivity {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         }
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_green_house_view_all_data);
+        Bundle bundle = getIntent().getExtras();
         settingBtn = findViewById(R.id.settingBtn);
         recyclerView = findViewById(R.id.tempRecycle);
         recyclerViewHum = findViewById(R.id.recyclerViewHum);
 
         settings();
 
-        tempList = new ArrayList<>();
-
-        setTempList();
+        tempList = bundle.<TempModel>getParcelable("data").getTemperatureSensors();
+        humList = bundle.<TempModel>getParcelable("humData").getTemperatureSensors();;
 
         setAdapterTemp();
         setAdapterHum();
     }
 
     private void setAdapterHum() {
-        recycleTemperatureData recycleTemperatureData = new recycleTemperatureData((ArrayList<TemperatureSensor>) tempList);
+        recycleTemperatureData recycleTemperatureData1 = new recycleTemperatureData((ArrayList<TemperatureSensor>) humList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerViewHum.setLayoutManager(layoutManager);
         recyclerViewHum.setItemAnimator(new DefaultItemAnimator());
-        recyclerViewHum.setAdapter(recycleTemperatureData);
+        recyclerViewHum.setAdapter(recycleTemperatureData1);
     }
 
     private void setAdapterTemp() {
-        HashMap<String, String> data = new HashMap<>();
-        data.put("collectionName", "temperature");
-        mFunctions
-                .getHttpsCallable("getAllSensorData")
-                .call(data)
-                .addOnSuccessListener(result -> {
-                    HashMap<String, ArrayList<HashMap<String, Object>>> resultData = (HashMap<String, ArrayList<HashMap<String, Object>>>) result.getData();
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        tempList = resultData.get("data").stream().map(tempRecord -> {
-                            Map<String, Integer> datetime = (HashMap<String, Integer>) tempRecord.get("datetime");
-                            SimpleDateFormat jdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                            TemperatureSensor tempData = new TemperatureSensor(jdf.format(new Date(datetime.get("_seconds") * 1000L)), (String) tempRecord.get("value"));
-                            return tempData;
-                        }).collect(Collectors.toList());
-                    }
-                    recycleTemperatureData recycleTemperatureData = new recycleTemperatureData((ArrayList<TemperatureSensor>) tempList);
-                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-                    recyclerView.setLayoutManager(layoutManager);
-                    recyclerView.setItemAnimator(new DefaultItemAnimator());
-                    recyclerView.setAdapter(recycleTemperatureData);
-//                    result.getData();
-
-                });
-
-
-
-
-
-    /*    recycleTemperatureData recycleTemperatureData = new recycleTemperatureData(tempList);
+        recycleTemperatureData recycleTemperatureData = new recycleTemperatureData((ArrayList<TemperatureSensor>) tempList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(recycleTemperatureData);*/
 
-
-    }
-
-    private void setTempList() {
-      /*  db.collection("temperature").orderBy("datetime", Query.Direction.ASCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null) {
-                    Log.w(TAG, "Listen failed", error);
-                    return;
-                }
-
-                for (QueryDocumentSnapshot doc : value) {
-                    Toast.makeText(GreenHouseViewAllDataActivity.this,doc.getString(), Toast.LENGTH_SHORT).show();
-                    String date = doc.getString("datetime");
-                    String valueT = doc.getString("value");
-                    tempList.add(new TemperatureSensor(date,valueT));
-                }
-            }
-        });*/
-        tempList.add(new TemperatureSensor("asdasd", "asdasd"));
-        tempList.add(new TemperatureSensor("asdasd", "asdasd"));
-        tempList.add(new TemperatureSensor("asdasd", "asdasd"));
-        tempList.add(new TemperatureSensor("asdasd", "asdasd"));
+        recyclerView.setAdapter(recycleTemperatureData);
     }
 
 

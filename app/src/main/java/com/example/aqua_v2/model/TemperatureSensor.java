@@ -1,6 +1,8 @@
 package com.example.aqua_v2.model;
 
-public class TemperatureSensor {
+import java.io.Serializable;
+
+public class TemperatureSensor implements Serializable{
     private String datetime;
     private String value;
 
@@ -24,4 +26,5 @@ public class TemperatureSensor {
     public void setValue(String value) {
         this.value = value;
     }
+
 }

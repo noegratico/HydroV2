@@ -3,11 +3,15 @@ package com.example.aqua_v2;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.MutableLiveData;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +22,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.aqua_v2.model.TempModel;
+import com.example.aqua_v2.model.TemperatureSensor;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -26,8 +32,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.functions.FirebaseFunctions;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class GreenHouseActivity extends AppCompatActivity {
     Switch switcher;
@@ -51,6 +62,12 @@ public class GreenHouseActivity extends AppCompatActivity {
     private final MutableLiveData<Boolean> verify = new MutableLiveData<>();
     ImageButton reportBtn;
     MaterialButton viewAllDataBtn;
+    RecyclerView recyclerView;
+    RecyclerView humRecentView;
+    TextView tempTxt;
+    TextView humTxt;
+    private List<TemperatureSensor> tempList = new ArrayList<>();
+    private List<TemperatureSensor> humList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,25 +83,110 @@ public class GreenHouseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_green_house);
         settingBtn = findViewById(R.id.settingBtn);
+        recyclerView = findViewById(R.id.recentRecycle);
+        humRecentView = findViewById(R.id.humRecent);
         viewAllDataBtn = findViewById(R.id.viewAllDataBtn);
         reportBtn = findViewById(R.id.reportBtn);
+        tempTxt = findViewById(R.id.tempText);
+        humTxt = findViewById(R.id.humTxt);
 
         reportBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              startActivity(new Intent(GreenHouseActivity.this, GreenhouseRerportActivity.class));
-              finish();
+                startActivity(new Intent(GreenHouseActivity.this, GreenhouseRerportActivity.class));
+                finish();
             }
         });
-
+        recentTemp();
+        recentHum();
         viewAllDataBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               startActivity(new Intent(GreenHouseActivity.this, GreenHouseViewAllDataActivity.class));
+                Intent intent = new Intent(GreenHouseActivity.this, GreenHouseViewAllDataActivity.class);
+                Bundle bundle = new Bundle();
+                TempModel tempModel = new TempModel();
+                tempModel.setTemperatureSensors((ArrayList<TemperatureSensor>) tempList);
+                TempModel humModel = new TempModel();
+                humModel.setTemperatureSensors((ArrayList<TemperatureSensor>) humList);
+                bundle.putParcelable("data", tempModel);
+                bundle.putParcelable("humData", humModel);
+                intent.putExtras(bundle);
+                startActivity(intent);
+//                startActivity(new Intent(GreenHouseActivity.this, GreenHouseViewAllDataActivity.class));
 
             }
         });
         settings();
+
+    }
+
+
+    private void recentTemp() {
+        HashMap<String, String> data = new HashMap<>();
+        data.put("collectionName", "temperature");
+        mFunctions
+                .getHttpsCallable("getAllSensorData")
+                .call(data)
+                .addOnSuccessListener(result -> {
+                    HashMap<String, ArrayList<HashMap<String, Object>>> resultData = (HashMap<String, ArrayList<HashMap<String, Object>>>) result.getData();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        tempList = resultData.get("data").stream().map(tempRecord -> {
+                            Map<String, Integer> datetime = (HashMap<String, Integer>) tempRecord.get("datetime");
+                            SimpleDateFormat jdf = new SimpleDateFormat("yyyy-MM-dd");
+//                            if need
+//                            SimpleDateFormat time = new SimpleDateFormat("hh:mm");
+                            TemperatureSensor tempData = new TemperatureSensor(jdf.format(new Date(datetime.get("_seconds") * 1000L)), (String) tempRecord.get("value") + "°c");
+                            return tempData;
+                        }).collect(Collectors.toList());
+                        tempList.stream().findFirst().ifPresent(tempFirst -> {
+                            tempTxt.setText(tempFirst.getValue());
+                        });
+                        recentAdapter recentAdapter = new recentAdapter((ArrayList<TemperatureSensor>)
+                                tempList
+                                        .stream()
+                                        .limit(3)
+                                        .collect(Collectors.toList()));
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                        recyclerView.setLayoutManager(layoutManager);
+                        recyclerView.setItemAnimator(new DefaultItemAnimator());
+                        recyclerView.setAdapter(recentAdapter);
+                    }
+                });
+    }
+
+    private void recentHum() {
+        HashMap<String, String> humData = new HashMap<>();
+        humData.put("collectionName", "humidity");
+        mFunctions
+                .getHttpsCallable("getAllSensorData")
+                .call(humData)
+                .addOnSuccessListener(result -> {
+                    HashMap<String, ArrayList<HashMap<String, Object>>> resultData = (HashMap<String, ArrayList<HashMap<String, Object>>>) result.getData();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        humList = resultData.get("data").stream().map(tempRecord -> {
+                            Map<String, Integer> datetime = (HashMap<String, Integer>) tempRecord.get("datetime");
+                            SimpleDateFormat jdf = new SimpleDateFormat("yyyy-MM-dd");
+//                            if need
+//                            SimpleDateFormat time = new SimpleDateFormat("hh:mm");
+                            TemperatureSensor tempData = new TemperatureSensor(jdf.format(new Date(datetime.get("_seconds") * 1000L)), (String) tempRecord.get("value") + "%");
+                            return tempData;
+                        }).collect(Collectors.toList());
+                        humList.stream().findFirst().ifPresent(humResult -> {
+                            humTxt.setText(humResult.getValue());
+                        });
+                        recentAdapter recentAdapter = new recentAdapter((ArrayList<TemperatureSensor>)
+                                humList
+                                        .stream()
+                                        .limit(3)
+                                        .collect(Collectors.toList()));
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                        humRecentView.setLayoutManager(layoutManager);
+                        humRecentView.setItemAnimator(new DefaultItemAnimator());
+                        humRecentView.setAdapter(recentAdapter);
+                    }
+                }).addOnFailureListener(result -> {
+                    Toast.makeText(this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void settings() {
@@ -182,7 +284,7 @@ public class GreenHouseActivity extends AppCompatActivity {
                                     if (editName.getText().toString() != null) {
                                         data.put("name", editName.getText().toString());
                                     }
-                                    if(editEmail.getText().toString() != null){
+                                    if (editEmail.getText().toString() != null) {
                                         data.put("email", editEmail.getText().toString());
                                     }
                                     mFunctions
