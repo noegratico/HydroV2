@@ -80,7 +80,7 @@ public class WaterConditionActivity extends AppCompatActivity {
                         dialog.setCancelable(false);
                         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                         closeBtn = dialog.findViewById(R.id.closeBtn);
-                        changePassword = dialog.findViewById(R.id.changePassword);
+//                        changePassword = dialog.findViewById(R.id.changePassword);
                         editProfile = dialog.findViewById(R.id.editProfile);
 
 

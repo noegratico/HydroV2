@@ -139,6 +139,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/greenHousePh"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="7"
@@ -147,7 +148,6 @@
                         android:textSize="30dp" />
 
                     <TextView
-                        android:id="@+id/greenHousePh"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="pH Level"

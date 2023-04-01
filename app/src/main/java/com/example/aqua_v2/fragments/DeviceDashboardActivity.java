@@ -13,8 +13,11 @@ import androidx.fragment.app.Fragment;
 
 import com.example.aqua_v2.DevicesActivity;
 import com.example.aqua_v2.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.functions.FirebaseFunctions;
 
 public class DeviceDashboardActivity extends Fragment {
+
 
 
     @Nullable
@@ -30,6 +33,7 @@ public class DeviceDashboardActivity extends Fragment {
                 startActivity(device);
             }
         });
+
 
         return rootView;
     }

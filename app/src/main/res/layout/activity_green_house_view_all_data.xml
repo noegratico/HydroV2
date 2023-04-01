@@ -98,6 +98,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tableHeader">
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tempRecycle"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </LinearLayout>
@@ -160,6 +161,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tableHeader2">
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewHum"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </LinearLayout>
