@@ -1,53 +1,42 @@
 package com.example.aqua_v2;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.lifecycle.MutableLiveData;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.widget.Button;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.aqua_v2.model.User;
-import com.example.aqua_v2.model.UserList;
-import com.google.android.gms.tasks.Continuation;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.lifecycle.MutableLiveData;
+
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.functions.HttpsCallableResult;
 
-import java.util.ArrayList;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
-public class MemberListActivity extends AppCompatActivity {
+public class ManageUserActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, View.OnClickListener {
     Switch switcher;
     boolean nightMode;
     SharedPreferences sharedPreferences;
@@ -68,103 +57,135 @@ public class MemberListActivity extends AppCompatActivity {
     private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
     private final MutableLiveData<Boolean> verify = new MutableLiveData<>();
 
-    FloatingActionButton addUser;
-    RecyclerView recyclerView;
-    private recyclerAdapter.RecycleViewClickListener listener;
-    private List<User> userList = new ArrayList<>();
+    TextInputEditText name, email, password;
+    MaterialButton verifyBtn, updateBtn, activeBtn;
+    private Spinner spinner;
+    boolean isVerify = true;
+
+    private String sName = "";
+    private String sEmail = "";
+    private String sUserLevel = "";
+    private String id = "";
+    private boolean active = false;
+
+
+    private String selectedUserLevel = "member";
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        loadingScreen();
-        sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
-        nightMode = sharedPreferences.getBoolean("night", false);
-        if (nightMode) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else if (!nightMode) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        }
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_member_list);
-
+        setContentView(R.layout.activity_manage_user);
         settingBtn = findViewById(R.id.settingBtn);
-        recyclerView = findViewById(R.id.recycleView);
-        addUser = findViewById(R.id.floatingActionButton);
+        settings();
+        name = findViewById(R.id.name);
+        email = findViewById(R.id.email);
+        password = findViewById(R.id.passwordInput);
+        verifyBtn = findViewById(R.id.verifyBtn);
+        updateBtn = findViewById(R.id.updateBtn);
+        activeBtn = findViewById(R.id.activateUserBtn);
+        spinner = (Spinner) findViewById(R.id.adminTxt);
 
-settings();
-        addUser.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MemberListActivity.this, RegisterActivity.class));
-                finish();
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource
+                (this, R.array.user_level, android.R.layout.simple_spinner_item);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
+
+        Bundle extras = getIntent().getExtras();
+        sName = extras == null ? "" : changeNullToEmptyString(extras.getString("name"));
+        sEmail = extras == null ? "" : changeNullToEmptyString(extras.getString("email"));
+        sUserLevel = extras == null ? "" : changeNullToEmptyString(extras.getString("userLevel"));
+        spinner.setSelection(Math.max(adapter.getPosition(StringUtils.capitalize(sUserLevel)), 0));
+
+        id = extras == null ? "" : changeNullToEmptyString(extras.getString("uuid"));
+        name.setText(sName);
+        email.setText(sEmail);
+        verifyBtn.setEnabled(!isVerify);
+        active = extras.getBoolean("active");
+
+        changeActiveBtn(active);
+
+
+        activeBtn.setOnClickListener(this);
+
+        updateBtn.setOnClickListener(this);
+    }
+
+    private void changeActiveBtn(boolean active) {
+        if (active) {
+            activeBtn.setText("deactivate");
+            activeBtn.setBackgroundColor(Color.parseColor("#ff0000"));
+        } else {
+            activeBtn.setText("activate");
+            activeBtn.setBackgroundColor(Color.parseColor("#00ff00"));
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.activateUserBtn) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("disable", active);
+            data.put("id", id);
+            mFunctions
+                    .getHttpsCallable("activationAndDeactivationOfUser")
+                    .call(data)
+                    .addOnSuccessListener(result -> {
+                        active = !active;
+                        Toast.makeText(this, String.format("User %s!", active ? "Activated" : "Deactivated"), Toast.LENGTH_SHORT).show();
+                        changeActiveBtn(active);
+                    }).addOnFailureListener(e -> {
+                        Toast.makeText(this, String.format("Failed user %s!", !active ? "Activation" : "Deactivation"), Toast.LENGTH_SHORT).show();
+                    });
+        } else if(v.getId() == R.id.updateBtn) {
+            Map<String, String> data = new HashMap<>();
+            if (!sName.equals(name.getText().toString())) {
+                data.put("name", name.getText().toString());
             }
-        });
-        setAdapter();
-    }
-
-    private void loadingScreen() {
-        final Dialog dialog = new Dialog(MemberListActivity.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.getWindow().getAttributes().windowAnimations = R.style.splashAnimation;
-        dialog.setContentView(R.layout.activity_splash_screen);
-        dialog.setCancelable(true);
-        dialog.show();
-
-        final Handler handler  = new Handler();
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                {
-                    dialog.dismiss();
-                }
+            if (!sEmail.equals(email.getText().toString())) {
+                data.put("email", email.getText().toString());
             }
-        };
-        handler.postDelayed(runnable, 3000);
-    }
-
-    private void setAdapter() {
-        mFunctions
-                .getHttpsCallable("listUsers")
-                .call()
-                .addOnSuccessListener(result -> {
-                    HashMap<String, ArrayList<HashMap<String, Object>>> data = (HashMap<String, ArrayList<HashMap<String, Object>>>) result.getData();
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        userList = data.get("users").stream().map(userRecord -> {
-                            User user = new User((String)userRecord.get("id"), (String)userRecord.get("name"));
-                            user.setEmail((String)userRecord.get("email"));
-                            user.setUserLevel((String)userRecord.get("userLevel"));
-                            user.setActive((boolean) userRecord.get("isActive"));
-                            return user;
-                        }).collect(Collectors.toList());
-                    }
-                    recyclerAdapter adapter = new recyclerAdapter((ArrayList<User>) userList, listener);
-                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-                        recyclerView.setLayoutManager(layoutManager);
-                        recyclerView.setItemAnimator(new DefaultItemAnimator());
-                        recyclerView.setAdapter(adapter);
-                });
-
-        setOnClickListener();
-    }
-
-    private void setOnClickListener() {
-        listener = new recyclerAdapter.RecycleViewClickListener() {
-            @Override
-            public void onCLick(View v, int position) {
-                Intent intent = new Intent(getApplicationContext(), ManageUserActivity.class);
-                intent.putExtra("name" , userList.get(position).getName());
-                intent.putExtra("uuid", userList.get(position).getId());
-                intent.putExtra("email", userList.get(position). getEmail());
-                intent.putExtra("userLevel",userList.get(position).getUserLevel());
-                intent.putExtra("active", userList.get(position).isActive());
-                startActivity(intent);
+            if (!sUserLevel.equals(selectedUserLevel)) {
+                data.put("userLevel", selectedUserLevel);
             }
-        };
+            if (!password.getText().toString().equals("")) {
+                data.put("password", password.getText().toString());
+            }
+
+            if (data.entrySet().size() != 0 && !id.equals("")) {
+                data.put("id", id);
+                mFunctions
+                        .getHttpsCallable("updateUser")
+                        .call(data)
+                        .addOnSuccessListener(result -> {
+                            startActivity(new Intent(ManageUserActivity.this, MemberListActivity.class));
+                            finish();
+                        }).addOnFailureListener(e -> {
+                            Toast.makeText(this, "Failed to Update User", Toast.LENGTH_SHORT).show();
+                        });
+            }
+        }
     }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        selectedUserLevel = ((String) spinner.getItemAtPosition(position)).toLowerCase();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    private String changeNullToEmptyString(String value) {
+        return value == null ? "" : value;
+    }
+
 
     private void settings() {
-        Dialog dialog = new Dialog(MemberListActivity.this);
+        Dialog dialog = new Dialog(ManageUserActivity.this);
         PopupMenu popupMenu = new PopupMenu(this, settingBtn);
 
         if (user != null) {
@@ -206,7 +227,7 @@ settings();
                     userName = dialog.findViewById(R.id.userName);
                     userEmail = dialog.findViewById(R.id.userEmail);
                     userLevel = dialog.findViewById(R.id.userLevel);
-                    verify.observe(MemberListActivity.this, verifyState -> {
+                    verify.observe(ManageUserActivity.this, verifyState -> {
                         changePassword.setVisibility(verifyState ? View.GONE : View.VISIBLE);
                     });
                     mFunctions
@@ -233,7 +254,7 @@ settings();
                         @Override
                         public void onClick(View v) {
                             user.sendEmailVerification().addOnSuccessListener(result -> {
-                                Toast.makeText(MemberListActivity.this, "Email Sent", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ManageUserActivity.this, "Email Sent", Toast.LENGTH_SHORT).show();
 
                             });
                         }
@@ -265,7 +286,7 @@ settings();
                                             .getHttpsCallable("updateUserInfo")
                                             .call(data)
                                             .addOnSuccessListener(result -> {
-                                                Toast.makeText(MemberListActivity.this, "Update Successfully", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(ManageUserActivity.this, "Update Successfully", Toast.LENGTH_SHORT).show();
                                                 dialog.dismiss();
                                             });
                                 }
@@ -328,7 +349,7 @@ settings();
 
 //                    Member menu
                 } else if (id == 2) {
-                    Intent intent = new Intent(MemberListActivity.this, MemberListActivity.class);
+                    Intent intent = new Intent(ManageUserActivity.this, MemberListActivity.class);
                     startActivity(intent);
                 }
 //                lag-out menu
@@ -346,7 +367,7 @@ settings();
                         @Override
                         public void onClick(View v) {
                             FirebaseAuth.getInstance().signOut();
-                            Intent logoutIntent = new Intent(MemberListActivity.this, MainActivity.class);
+                            Intent logoutIntent = new Intent(ManageUserActivity.this, MainActivity.class);
                             logoutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(logoutIntent);
                             finish();
@@ -382,5 +403,4 @@ settings();
             }
         });
     }
-
 }

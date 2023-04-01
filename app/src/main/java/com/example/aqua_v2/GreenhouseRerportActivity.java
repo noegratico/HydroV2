@@ -2,6 +2,7 @@ package com.example.aqua_v2;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.lifecycle.MutableLiveData;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -14,20 +15,40 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.functions.FirebaseFunctions;
 
-public class DevicesActivity extends AppCompatActivity {
+import java.util.HashMap;
+import java.util.Map;
+
+public class GreenhouseRerportActivity extends AppCompatActivity {
     Switch switcher;
     boolean nightMode;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-//    settings variables
-    ImageButton settingBtn, closeBtn;
-    MaterialButton cancelBtn, changePassword, editProfile;
-//    variable for buttons
-    MaterialButton growLightBtn, coolingFanStatusBtn, liveCameraBtn, pairedDevices;
 
+    ImageButton settingBtn, closeBtn;
+    MaterialButton cancelBtn, changePassword, editProfile, logout;
+    //    settings text
+    MaterialButton saveProfileBtn;
+    TextView userName;
+    TextView userEmail;
+    TextView userLevel;
+    TextInputEditText editEmail;
+    TextInputEditText editName;
+
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseUser user = mAuth.getCurrentUser();
+    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+    private final MutableLiveData<Boolean> verify = new MutableLiveData<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
@@ -39,22 +60,39 @@ public class DevicesActivity extends AppCompatActivity {
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         }
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_devices_sched);
-
+        setContentView(R.layout.activity_greenhouse_rerport);
         settingBtn = findViewById(R.id.settingBtn);
-        growLightBtn = findViewById(R.id.wpumpschedBtn);
-        coolingFanStatusBtn = findViewById(R.id.coolingFanStatusBtn);
-        liveCameraBtn = findViewById(R.id.liveCameraBtn);
-        pairedDevices = findViewById(R.id.pairedDevicesBtn);
+        settings();
+    }
 
-        Dialog dialog = new Dialog(DevicesActivity.this);
+    private void settings() {
+        Dialog dialog = new Dialog(GreenhouseRerportActivity.this);
         PopupMenu popupMenu = new PopupMenu(this, settingBtn);
 
-        popupMenu.getMenu().add(Menu.NONE, 0, 0, "Profile");
-        popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
-        popupMenu.getMenu().add(Menu.NONE, 2, 2, "Member");
-        popupMenu.getMenu().add(Menu.NONE, 3, 3, "Logout");
+        if (user != null) {
+            user.getIdToken(true).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+                @Override
+                public void onSuccess(GetTokenResult result) {
+                    boolean isAdmin = result.getClaims().containsKey("admin") && (boolean) result.getClaims().get("admin");
+                    if (isAdmin) {
+                        popupMenu.getMenu().add(Menu.NONE, 0, 0, "Profile");
+                        popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
+                        popupMenu.getMenu().add(Menu.NONE, 2, 2, "Member");
+                        popupMenu.getMenu().add(Menu.NONE, 3, 3, "Logout");
+                    } else {
+                        popupMenu.getMenu().add(Menu.NONE, 0, 0, "Profile");
+                        popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
+                        popupMenu.getMenu().add(Menu.NONE, 3, 2, "Logout");
+                    }
+                }
+            });
+
+
+        }
+
+
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
@@ -66,9 +104,25 @@ public class DevicesActivity extends AppCompatActivity {
                     dialog.setCancelable(false);
                     dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                     closeBtn = dialog.findViewById(R.id.closeBtn);
-//                    changePassword = dialog.findViewById(R.id.changePassword);
+                    changePassword = dialog.findViewById(R.id.changePassword);
                     editProfile = dialog.findViewById(R.id.editProfile);
-
+//                    userId = dialog.findViewById(R.id.userId);
+                    userName = dialog.findViewById(R.id.userName);
+                    userEmail = dialog.findViewById(R.id.userEmail);
+                    userLevel = dialog.findViewById(R.id.userLevel);
+                    verify.observe(GreenhouseRerportActivity.this, verifyState -> {
+                        changePassword.setVisibility(verifyState ? View.GONE : View.VISIBLE);
+                    });
+                    mFunctions
+                            .getHttpsCallable("getProfile")
+                            .call()
+                            .addOnSuccessListener(result -> {
+                                HashMap<String, Object> data = (HashMap<String, Object>) result.getData();
+                                userEmail.setText((String) data.get("email"));
+                                userName.setText((String) data.get("name"));
+                                userLevel.setText((String) data.get("userLevel"));
+                                verify.setValue((Boolean) data.get("isEmailVerified"));
+                            });
 
                     dialog.show();
 //                  close button
@@ -82,19 +136,10 @@ public class DevicesActivity extends AppCompatActivity {
                     changePassword.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            dialog.setContentView(R.layout.activity_change_password);
-                            dialog.setCancelable(false);
-                            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                            closeBtn = dialog.findViewById(R.id.closeBtn);
-                            dialog.show();
-                            closeBtn.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    dialog.dismiss();
-                                }
-                            });
+                            user.sendEmailVerification().addOnSuccessListener(result -> {
+                                Toast.makeText(GreenhouseRerportActivity.this, "Email Sent", Toast.LENGTH_SHORT).show();
 
-//                            add change password function here
+                            });
                         }
                     });
 //                    editProfile button
@@ -105,6 +150,32 @@ public class DevicesActivity extends AppCompatActivity {
                             dialog.setCancelable(false);
                             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                             closeBtn = dialog.findViewById(R.id.closeBtn);
+                            saveProfileBtn = dialog.findViewById(R.id.profileSaveBtn);
+                            editName = dialog.findViewById(R.id.editName);
+                            editEmail = dialog.findViewById(R.id.editEmail);
+                            editName.setText(userName.getText());
+                            editEmail.setText(userEmail.getText());
+                            saveProfileBtn.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Map<String, String> data = new HashMap<>();
+                                    if (editName.getText().toString() != null) {
+                                        data.put("name", editName.getText().toString());
+                                    }
+                                    if(editEmail.getText().toString() != null){
+                                        data.put("email", editEmail.getText().toString());
+                                    }
+                                    mFunctions
+                                            .getHttpsCallable("updateUserInfo")
+                                            .call(data)
+                                            .addOnSuccessListener(result -> {
+                                                Toast.makeText(GreenhouseRerportActivity.this, "Update Successfully", Toast.LENGTH_SHORT).show();
+                                                dialog.dismiss();
+                                            });
+                                }
+                            });
+
+
                             dialog.show();
                             closeBtn.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -161,7 +232,7 @@ public class DevicesActivity extends AppCompatActivity {
 
 //                    Member menu
                 } else if (id == 2) {
-                    Intent intent = new Intent(DevicesActivity.this, MemberListActivity.class);
+                    Intent intent = new Intent(GreenhouseRerportActivity.this, MemberListActivity.class);
                     startActivity(intent);
                 }
 //                lag-out menu
@@ -173,6 +244,18 @@ public class DevicesActivity extends AppCompatActivity {
                     cancelBtn = dialog.findViewById(R.id.cancel_button);
 
                     dialog.show();
+                    logout = dialog.findViewById(R.id.logoutBtn);
+
+                    logout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            FirebaseAuth.getInstance().signOut();
+                            Intent logoutIntent = new Intent(GreenhouseRerportActivity.this, MainActivity.class);
+                            logoutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(logoutIntent);
+                            finish();
+                        }
+                    });
                     cancelBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -202,79 +285,5 @@ public class DevicesActivity extends AppCompatActivity {
                 popupMenu.show();
             }
         });
-//grow light status
-        growLightBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.setContentView(R.layout.activity_scheduler_devices);
-                dialog.setCancelable(false);
-                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                closeBtn = dialog.findViewById(R.id.closeBtn);
-                dialog.show();
-//                  close button
-                closeBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-            }
-        });
-
-//    colling fan status
-        coolingFanStatusBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.setContentView(R.layout.activity_cooling_fan_scheduler);
-                dialog.setCancelable(false);
-                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                closeBtn = dialog.findViewById(R.id.closeBtn);
-                dialog.show();
-//                  close button
-                closeBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-            }
-        });
-//        live Camera
-        liveCameraBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.setContentView(R.layout.activity_live_camera);
-                dialog.setCancelable(false);
-                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                closeBtn = dialog.findViewById(R.id.closeBtn);
-                dialog.show();
-//                  close button
-                closeBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-            }
-        });
-//        paired devices
-        pairedDevices.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.setContentView(R.layout.activity_paired_devices);
-                dialog.setCancelable(false);
-                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                closeBtn = dialog.findViewById(R.id.closeBtn);
-                dialog.show();
-//                  close button
-                closeBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-            }
-        });
     }
-
 }

@@ -20,14 +20,15 @@ public class WaterLevelDashboardActivity extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.activity_water_level, container, false);
-TextView waterTxt = (TextView) rootView.findViewById(R.id.waterTxtBtn);
-waterTxt.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-        Intent intent = new Intent(getActivity(), WaterActivity.class);
-        startActivity(intent);
-    }
-});
+        TextView waterTxt = (TextView) rootView.findViewById(R.id.waterTxtBtn);
+        waterTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), WaterActivity.class);
+                startActivity(intent);
+
+            }
+        });
         return rootView;
     }
 }

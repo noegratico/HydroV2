@@ -2,10 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    style="@style/background"
     tools:context=".MemberListActivity">
 
     <LinearLayout
@@ -17,10 +17,10 @@
         android:layout_marginRight="20dp">
 
         <TextView
+            style="@style/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Devices"
-            style="@style/text"
             android:textSize="35dp"
             android:textStyle="bold" />
 
@@ -58,6 +58,7 @@
 
             android:layout_width="match_parent"
             android:layout_height="97dp"
+            android:layout_marginHorizontal="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:orientation="vertical">
@@ -69,10 +70,10 @@
 
                 <TextView
                     android:id="@+id/wpumptextView"
+                    style="@style/text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Grow Light Status"
-                    style="@style/text"
                     android:textSize="30dp"
                     android:textStyle="bold" />
 
@@ -112,6 +113,7 @@
 
             android:layout_width="match_parent"
             android:layout_height="97dp"
+            android:layout_marginHorizontal="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:orientation="vertical">
@@ -123,10 +125,10 @@
 
                 <TextView
                     android:id="@+id/snapatextView"
+                    style="@style/text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Cooling Fan Status"
-                    style="@style/text"
                     android:textSize="30dp"
                     android:textStyle="bold" />
 
@@ -166,6 +168,7 @@
 
             android:layout_width="match_parent"
             android:layout_height="97dp"
+            android:layout_marginHorizontal="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:orientation="vertical">

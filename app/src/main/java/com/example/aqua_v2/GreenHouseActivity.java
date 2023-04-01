@@ -1,6 +1,5 @@
 package com.example.aqua_v2;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.MutableLiveData;
@@ -14,40 +13,34 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.aqua_v2.model.User;
-import com.example.aqua_v2.model.UserList;
-import com.google.android.gms.tasks.Continuation;
+import com.example.aqua_v2.model.TempModel;
+import com.example.aqua_v2.model.TemperatureSensor;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.functions.HttpsCallableResult;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class MemberListActivity extends AppCompatActivity {
+public class GreenHouseActivity extends AppCompatActivity {
     Switch switcher;
     boolean nightMode;
     SharedPreferences sharedPreferences;
@@ -67,15 +60,17 @@ public class MemberListActivity extends AppCompatActivity {
     private FirebaseUser user = mAuth.getCurrentUser();
     private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
     private final MutableLiveData<Boolean> verify = new MutableLiveData<>();
-
-    FloatingActionButton addUser;
+    ImageButton reportBtn;
+    MaterialButton viewAllDataBtn;
     RecyclerView recyclerView;
-    private recyclerAdapter.RecycleViewClickListener listener;
-    private List<User> userList = new ArrayList<>();
+    RecyclerView humRecentView;
+    TextView tempTxt;
+    TextView humTxt;
+    private List<TemperatureSensor> tempList = new ArrayList<>();
+    private List<TemperatureSensor> humList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        loadingScreen();
         sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
         nightMode = sharedPreferences.getBoolean("night", false);
         if (nightMode) {
@@ -86,85 +81,116 @@ public class MemberListActivity extends AppCompatActivity {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         }
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_member_list);
-
+        setContentView(R.layout.activity_green_house);
         settingBtn = findViewById(R.id.settingBtn);
-        recyclerView = findViewById(R.id.recycleView);
-        addUser = findViewById(R.id.floatingActionButton);
+        recyclerView = findViewById(R.id.recentRecycle);
+        humRecentView = findViewById(R.id.humRecent);
+        viewAllDataBtn = findViewById(R.id.viewAllDataBtn);
+        reportBtn = findViewById(R.id.reportBtn);
+        tempTxt = findViewById(R.id.tempText);
+        humTxt = findViewById(R.id.humTxt);
 
-settings();
-        addUser.setOnClickListener(new View.OnClickListener() {
+        reportBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MemberListActivity.this, RegisterActivity.class));
+                startActivity(new Intent(GreenHouseActivity.this, GreenhouseRerportActivity.class));
                 finish();
             }
         });
-        setAdapter();
-    }
-
-    private void loadingScreen() {
-        final Dialog dialog = new Dialog(MemberListActivity.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.getWindow().getAttributes().windowAnimations = R.style.splashAnimation;
-        dialog.setContentView(R.layout.activity_splash_screen);
-        dialog.setCancelable(true);
-        dialog.show();
-
-        final Handler handler  = new Handler();
-        final Runnable runnable = new Runnable() {
+        recentTemp();
+        recentHum();
+        viewAllDataBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
-                {
-                    dialog.dismiss();
-                }
+            public void onClick(View v) {
+                Intent intent = new Intent(GreenHouseActivity.this, GreenHouseViewAllDataActivity.class);
+                Bundle bundle = new Bundle();
+                TempModel tempModel = new TempModel();
+                tempModel.setTemperatureSensors((ArrayList<TemperatureSensor>) tempList);
+                TempModel humModel = new TempModel();
+                humModel.setTemperatureSensors((ArrayList<TemperatureSensor>) humList);
+                bundle.putParcelable("data", tempModel);
+                bundle.putParcelable("humData", humModel);
+                intent.putExtras(bundle);
+                startActivity(intent);
+//                startActivity(new Intent(GreenHouseActivity.this, GreenHouseViewAllDataActivity.class));
+
             }
-        };
-        handler.postDelayed(runnable, 3000);
+        });
+        settings();
+
     }
 
-    private void setAdapter() {
+
+    private void recentTemp() {
+        HashMap<String, String> data = new HashMap<>();
+        data.put("collectionName", "temperature");
         mFunctions
-                .getHttpsCallable("listUsers")
-                .call()
+                .getHttpsCallable("getAllSensorData")
+                .call(data)
                 .addOnSuccessListener(result -> {
-                    HashMap<String, ArrayList<HashMap<String, Object>>> data = (HashMap<String, ArrayList<HashMap<String, Object>>>) result.getData();
+                    HashMap<String, ArrayList<HashMap<String, Object>>> resultData = (HashMap<String, ArrayList<HashMap<String, Object>>>) result.getData();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        userList = data.get("users").stream().map(userRecord -> {
-                            User user = new User((String)userRecord.get("id"), (String)userRecord.get("name"));
-                            user.setEmail((String)userRecord.get("email"));
-                            user.setUserLevel((String)userRecord.get("userLevel"));
-                            user.setActive((boolean) userRecord.get("isActive"));
-                            return user;
+                        tempList = resultData.get("data").stream().map(tempRecord -> {
+                            Map<String, Integer> datetime = (HashMap<String, Integer>) tempRecord.get("datetime");
+                            SimpleDateFormat jdf = new SimpleDateFormat("yyyy-MM-dd");
+//                            if need
+//                            SimpleDateFormat time = new SimpleDateFormat("hh:mm");
+                            TemperatureSensor tempData = new TemperatureSensor(jdf.format(new Date(datetime.get("_seconds") * 1000L)), (String) tempRecord.get("value") + "°c");
+                            return tempData;
                         }).collect(Collectors.toList());
-                    }
-                    recyclerAdapter adapter = new recyclerAdapter((ArrayList<User>) userList, listener);
+                        tempList.stream().findFirst().ifPresent(tempFirst -> {
+                            tempTxt.setText(tempFirst.getValue());
+                        });
+                        recentAdapter recentAdapter = new recentAdapter((ArrayList<TemperatureSensor>)
+                                tempList
+                                        .stream()
+                                        .limit(3)
+                                        .collect(Collectors.toList()));
                         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
                         recyclerView.setLayoutManager(layoutManager);
                         recyclerView.setItemAnimator(new DefaultItemAnimator());
-                        recyclerView.setAdapter(adapter);
+                        recyclerView.setAdapter(recentAdapter);
+                    }
                 });
-
-        setOnClickListener();
     }
 
-    private void setOnClickListener() {
-        listener = new recyclerAdapter.RecycleViewClickListener() {
-            @Override
-            public void onCLick(View v, int position) {
-                Intent intent = new Intent(getApplicationContext(), ManageUserActivity.class);
-                intent.putExtra("name" , userList.get(position).getName());
-                intent.putExtra("uuid", userList.get(position).getId());
-                intent.putExtra("email", userList.get(position). getEmail());
-                intent.putExtra("userLevel",userList.get(position).getUserLevel());
-                intent.putExtra("active", userList.get(position).isActive());
-                startActivity(intent);
-            }
-        };
+    private void recentHum() {
+        HashMap<String, String> humData = new HashMap<>();
+        humData.put("collectionName", "humidity");
+        mFunctions
+                .getHttpsCallable("getAllSensorData")
+                .call(humData)
+                .addOnSuccessListener(result -> {
+                    HashMap<String, ArrayList<HashMap<String, Object>>> resultData = (HashMap<String, ArrayList<HashMap<String, Object>>>) result.getData();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        humList = resultData.get("data").stream().map(tempRecord -> {
+                            Map<String, Integer> datetime = (HashMap<String, Integer>) tempRecord.get("datetime");
+                            SimpleDateFormat jdf = new SimpleDateFormat("yyyy-MM-dd");
+//                            if need
+//                            SimpleDateFormat time = new SimpleDateFormat("hh:mm");
+                            TemperatureSensor tempData = new TemperatureSensor(jdf.format(new Date(datetime.get("_seconds") * 1000L)), (String) tempRecord.get("value") + "%");
+                            return tempData;
+                        }).collect(Collectors.toList());
+                        humList.stream().findFirst().ifPresent(humResult -> {
+                            humTxt.setText(humResult.getValue());
+                        });
+                        recentAdapter recentAdapter = new recentAdapter((ArrayList<TemperatureSensor>)
+                                humList
+                                        .stream()
+                                        .limit(3)
+                                        .collect(Collectors.toList()));
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                        humRecentView.setLayoutManager(layoutManager);
+                        humRecentView.setItemAnimator(new DefaultItemAnimator());
+                        humRecentView.setAdapter(recentAdapter);
+                    }
+                }).addOnFailureListener(result -> {
+                    Toast.makeText(this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void settings() {
-        Dialog dialog = new Dialog(MemberListActivity.this);
+        Dialog dialog = new Dialog(GreenHouseActivity.this);
         PopupMenu popupMenu = new PopupMenu(this, settingBtn);
 
         if (user != null) {
@@ -206,7 +232,7 @@ settings();
                     userName = dialog.findViewById(R.id.userName);
                     userEmail = dialog.findViewById(R.id.userEmail);
                     userLevel = dialog.findViewById(R.id.userLevel);
-                    verify.observe(MemberListActivity.this, verifyState -> {
+                    verify.observe(GreenHouseActivity.this, verifyState -> {
                         changePassword.setVisibility(verifyState ? View.GONE : View.VISIBLE);
                     });
                     mFunctions
@@ -233,7 +259,7 @@ settings();
                         @Override
                         public void onClick(View v) {
                             user.sendEmailVerification().addOnSuccessListener(result -> {
-                                Toast.makeText(MemberListActivity.this, "Email Sent", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(GreenHouseActivity.this, "Email Sent", Toast.LENGTH_SHORT).show();
 
                             });
                         }
@@ -258,14 +284,14 @@ settings();
                                     if (editName.getText().toString() != null) {
                                         data.put("name", editName.getText().toString());
                                     }
-                                    if(editEmail.getText().toString() != null){
+                                    if (editEmail.getText().toString() != null) {
                                         data.put("email", editEmail.getText().toString());
                                     }
                                     mFunctions
                                             .getHttpsCallable("updateUserInfo")
                                             .call(data)
                                             .addOnSuccessListener(result -> {
-                                                Toast.makeText(MemberListActivity.this, "Update Successfully", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(GreenHouseActivity.this, "Update Successfully", Toast.LENGTH_SHORT).show();
                                                 dialog.dismiss();
                                             });
                                 }
@@ -328,7 +354,7 @@ settings();
 
 //                    Member menu
                 } else if (id == 2) {
-                    Intent intent = new Intent(MemberListActivity.this, MemberListActivity.class);
+                    Intent intent = new Intent(GreenHouseActivity.this, MemberListActivity.class);
                     startActivity(intent);
                 }
 //                lag-out menu
@@ -346,7 +372,7 @@ settings();
                         @Override
                         public void onClick(View v) {
                             FirebaseAuth.getInstance().signOut();
-                            Intent logoutIntent = new Intent(MemberListActivity.this, MainActivity.class);
+                            Intent logoutIntent = new Intent(GreenHouseActivity.this, MainActivity.class);
                             logoutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(logoutIntent);
                             finish();
@@ -382,5 +408,4 @@ settings();
             }
         });
     }
-
 }
