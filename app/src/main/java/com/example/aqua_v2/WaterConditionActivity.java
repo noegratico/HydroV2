@@ -2,11 +2,15 @@ package com.example.aqua_v2;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,12 +18,25 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.aqua_v2.model.TempModel;
+import com.example.aqua_v2.model.TemperatureSensor;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.functions.FirebaseFunctions;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class WaterConditionActivity extends AppCompatActivity {
     Switch switcher;
@@ -32,6 +49,17 @@ public class WaterConditionActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser user = mAuth.getCurrentUser();
+    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance("asia-southeast1");
+    private List<TemperatureSensor>  phList = new ArrayList<>();
+    private List<TemperatureSensor> eccList = new ArrayList<>();
+    TextView phDisplay;
+    TextView eccDisplay;
+    RecyclerView phRecycle;
+    RecyclerView ecRecycle;
+    MaterialButton viewAllDataBtn;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
@@ -45,10 +73,105 @@ public class WaterConditionActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_water_condition);
+        viewAllDataBtn = findViewById(R.id.viewAllDataBtn);
+        phDisplay = findViewById(R.id.phDisplay);
+        eccDisplay = findViewById(R.id.eccDisplay);
         settingBtn = findViewById(R.id.settingBtn);
+        phRecycle = findViewById(R.id.phRecycle);
+        ecRecycle = findViewById(R.id.eccRecent);
         showSetting();
+        phRecent();
+        ecRecent();
+        viewAllDataBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(WaterConditionActivity.this, GreenHouseViewAllDataActivity.class);
+                Bundle bundle = new Bundle();
+                TempModel tempModel = new TempModel();
+                tempModel.setTemperatureSensors((ArrayList<TemperatureSensor>) phList);
+                TempModel humModel = new TempModel();
+                humModel.setTemperatureSensors((ArrayList<TemperatureSensor>) eccList);
+                bundle.putParcelable("data", tempModel);
+                bundle.putParcelable("humData", humModel);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });
 
     }
+
+
+    private void phRecent() {
+        HashMap<String, String> humData = new HashMap<>();
+        humData.put("collectionName", "ph_level");
+        mFunctions
+                .getHttpsCallable("getAllSensorData")
+                .call(humData)
+                .addOnSuccessListener(result -> {
+                    HashMap<String, ArrayList<HashMap<String, Object>>> resultData = (HashMap<String, ArrayList<HashMap<String, Object>>>) result.getData();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        phList = resultData.get("data").stream().map(tempRecord -> {
+                            Map<String, Integer> datetime = (HashMap<String, Integer>) tempRecord.get("datetime");
+                            SimpleDateFormat jdf = new SimpleDateFormat("yyyy-MM-dd");
+//                            if need
+//                            SimpleDateFormat time = new SimpleDateFormat("hh:mm");
+                            TemperatureSensor tempData = new TemperatureSensor(jdf.format(new Date(datetime.get("_seconds") * 1000L)), (String) tempRecord.get("value"));
+                            return tempData;
+                        }).collect(Collectors.toList());
+                        phList.stream().findFirst().ifPresent(humResult -> {
+                            phDisplay.setText(humResult.getValue());
+                        });
+                        recentAdapter recentAdapter = new recentAdapter((ArrayList<TemperatureSensor>)
+                                phList
+                                        .stream()
+                                        .limit(3)
+                                        .collect(Collectors.toList()));
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                        phRecycle.setLayoutManager(layoutManager);
+                        phRecycle.setItemAnimator(new DefaultItemAnimator());
+                        phRecycle.setAdapter(recentAdapter);
+                    }
+                }).addOnFailureListener(result -> {
+                    Toast.makeText(this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void ecRecent() {
+        HashMap<String, String> ecData = new HashMap<>();
+        ecData.put("collectionName", "ec_level");
+        mFunctions
+                .getHttpsCallable("getAllSensorData")
+                .call(ecData)
+                .addOnSuccessListener(result -> {
+                    HashMap<String, ArrayList<HashMap<String, Object>>> resultData = (HashMap<String, ArrayList<HashMap<String, Object>>>) result.getData();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        eccList = resultData.get("data").stream().map(tempRecord -> {
+                            Map<String, Integer> datetime = (HashMap<String, Integer>) tempRecord.get("datetime");
+                            SimpleDateFormat jdf = new SimpleDateFormat("yyyy-MM-dd");
+//                            if need
+//                            SimpleDateFormat time = new SimpleDateFormat("hh:mm");
+                            TemperatureSensor tempData = new TemperatureSensor(jdf.format(new Date(datetime.get("_seconds") * 1000L)), (String) tempRecord.get("value"));
+                            return tempData;
+                        }).collect(Collectors.toList());
+                        eccList.stream().findFirst().ifPresent(humResult -> {
+                            eccDisplay.setText(humResult.getValue());
+                        });
+                        recentAdapter recentAdapter = new recentAdapter((ArrayList<TemperatureSensor>)
+                                eccList
+                                        .stream()
+                                        .limit(3)
+                                        .collect(Collectors.toList()));
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                        ecRecycle.setLayoutManager(layoutManager);
+                        ecRecycle.setItemAnimator(new DefaultItemAnimator());
+                        ecRecycle.setAdapter(recentAdapter);
+                    }
+                }).addOnFailureListener(result -> {
+                    Toast.makeText(this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+
+    }
+
     private void showSetting() {
         PopupMenu popupMenu = new PopupMenu(this, settingBtn);
         Dialog dialog = new Dialog(WaterConditionActivity.this);

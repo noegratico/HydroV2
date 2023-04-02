@@ -7,13 +7,14 @@
     android:layout_marginTop="5dp"
     android:layout_marginHorizontal="10dp"
     app:cardCornerRadius="5dp">
-    <LinearLayout
+    <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/tableHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_marginVertical="5dp"
         android:orientation="horizontal"
+app:justifyContent="space_evenly"
        >
 
         <TextView
@@ -22,7 +23,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18dp"
-            android:layout_marginRight="20dp"
             android:text="DATE" />
 
         <TextView
@@ -30,8 +30,7 @@
             style="@style/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
             android:textSize="18dp"
             android:text="Data Value" />
-    </LinearLayout>
+    </com.google.android.flexbox.FlexboxLayout>
 </com.google.android.material.card.MaterialCardView>

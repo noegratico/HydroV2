@@ -58,6 +58,7 @@
             android:backgroundTint="#6cbce2">
 
             <TextView
+                android:id="@+id/phDisplay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="30dp"
@@ -82,245 +83,10 @@
                 android:textSize="20dp"
                 android:textStyle="bold" />
 
-            <com.google.android.material.card.MaterialCardView
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/phRecycle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                app:strokeColor="@color/black"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginVertical="10dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/date1"
-                        style="@style/text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="02/03/2023"
-                        android:textAlignment="center"
-                        android:textSize="17dp" />
-
-                    <TextView
-                        style="@style/text"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="35c"
-                        android:textAlignment="center"
-                        android:textSize="17dp" />
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                app:strokeColor="@color/black"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginVertical="10dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        style="@style/text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="02/03/2023"
-                        android:textAlignment="center"
-                        android:textSize="17dp" />
-
-                    <TextView
-                        style="@style/text"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="35c"
-                        android:textAlignment="center"
-                        android:textSize="17dp" />
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                app:strokeColor="@color/black"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginVertical="10dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        style="@style/text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="02/03/2023"
-                        android:textAlignment="center"
-                        android:textSize="17dp" />
-
-                    <TextView
-                        style="@style/text"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="35c"
-                        android:textAlignment="center"
-                        android:textSize="17dp" />
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>           <!-- <com.google.android.material.card.MaterialCardView
-                android:id="@+id/recent1"
-                android:layout_width="208dp"
-                android:layout_height="39dp"
-                android:layout_marginLeft="10dp"
-                app:strokeColor="@color/black"
-                app:strokeWidth="1dp">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/date1"
-                        style="@style/text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="36dp"
-                        android:layout_toStartOf="@+id/tem1"
-                        android:text="02/03/2023"
-                        android:textSize="15dp" />
-
-                    <TextView
-                        android:id="@+id/tem1"
-                        style="@style/text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="52dp"
-                        android:layout_marginBottom="14dp"
-                        android:text="35C"
-                        android:textSize="15dp" />
-
-                </RelativeLayout>
-
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/recent2"
-                android:layout_width="208dp"
-                android:layout_height="39dp"
-                android:layout_marginLeft="10dp"
-                app:strokeColor="@color/black"
-                app:strokeWidth="1dp">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/date2"
-                        style="@style/text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="39dp"
-                        android:layout_toStartOf="@+id/tem2"
-                        android:text="02/03/2023"
-                        android:textSize="15dp" />
-
-                    <TextView
-                        android:id="@+id/tem2"
-                        style="@style/text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="52dp"
-                        android:layout_marginBottom="14dp"
-                        android:text="35C"
-                        android:textSize="15dp" />
-
-                </RelativeLayout>
-
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/recent3"
-                android:layout_width="208dp"
-                android:layout_height="39dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginBottom="10dp"
-                app:strokeColor="@color/black"
-                app:strokeWidth="1dp">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/date3"
-                        style="@style/text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="39dp"
-                        android:layout_toStartOf="@+id/tem3"
-                        android:text="02/03/2023"
-                        android:textSize="15dp" />
-
-                    <TextView
-                        android:id="@+id/tem3"
-                        style="@style/text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="52dp"
-                        android:layout_marginBottom="14dp"
-                        android:text="35C"
-                        android:textSize="15dp" />
-
-                </RelativeLayout>
-
-
-            </com.google.android.material.card.MaterialCardView>-->
+                android:layout_height="wrap_content"/>
         </LinearLayout>
 
 
@@ -370,6 +136,7 @@
             android:backgroundTint="#6cbce2">
 
             <TextView
+                android:id="@+id/eccDisplay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="30dp"
@@ -394,108 +161,10 @@
                 android:textSize="20dp"
                 android:textStyle="bold" />
 
-            <com.google.android.material.card.MaterialCardView
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/eccRecent"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                app:strokeColor="@color/black"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginVertical="10dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/date2"
-                        style="@style/text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="02/03/2023"
-                        android:textAlignment="center"
-                        android:textSize="17dp" />
-
-                    <TextView
-                        style="@style/text"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="35c"
-                        android:textAlignment="center"
-                        android:textSize="17dp" />
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                app:strokeColor="@color/black"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginVertical="10dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        style="@style/text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="02/03/2023"
-                        android:textAlignment="center"
-                        android:textSize="17dp" />
-
-                    <TextView
-                        style="@style/text"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="35c"
-                        android:textAlignment="center"
-                        android:textSize="17dp" />
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                app:strokeColor="@color/black"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginVertical="10dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        style="@style/text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="02/03/2023"
-                        android:textAlignment="center"
-                        android:textSize="17dp" />
-
-                    <TextView
-                        style="@style/text"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="35c"
-                        android:textAlignment="center"
-                        android:textSize="17dp" />
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 

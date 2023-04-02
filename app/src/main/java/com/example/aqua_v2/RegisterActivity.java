@@ -38,7 +38,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         email = findViewById(R.id.email);
         password = findViewById(R.id.passwordInput);
         spinner = (Spinner) findViewById(R.id.adminTxt);
-        mFunctions = FirebaseFunctions.getInstance();
+        mFunctions = FirebaseFunctions.getInstance("asia-southeast1");
 // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource
                 (this, R.array.user_level, android.R.layout.simple_spinner_item);

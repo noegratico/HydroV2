@@ -97,7 +97,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser user = mAuth.getCurrentUser();
-    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance("asia-southeast1");
     private final MutableLiveData<Boolean> verify = new MutableLiveData<>(true);
 
     @Override

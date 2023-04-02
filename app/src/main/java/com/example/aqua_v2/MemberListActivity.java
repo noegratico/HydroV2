@@ -65,7 +65,7 @@ public class MemberListActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser user = mAuth.getCurrentUser();
-    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance("asia-southeast1");
     private final MutableLiveData<Boolean> verify = new MutableLiveData<>();
 
     FloatingActionButton addUser;
@@ -120,7 +120,7 @@ settings();
                 }
             }
         };
-        handler.postDelayed(runnable, 3000);
+        handler.postDelayed(runnable, 1500);
     }
 
     private void setAdapter() {
@@ -143,6 +143,9 @@ settings();
                         recyclerView.setLayoutManager(layoutManager);
                         recyclerView.setItemAnimator(new DefaultItemAnimator());
                         recyclerView.setAdapter(adapter);
+                })
+                .addOnFailureListener(e->{
+                    Log.e("Noe Bug", e.getMessage(), e);
                 });
 
         setOnClickListener();

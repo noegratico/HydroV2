@@ -54,7 +54,7 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser user = mAuth.getCurrentUser();
-    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance("asia-southeast1");
     private final MutableLiveData<Boolean> verify = new MutableLiveData<>();
 
     TextInputEditText name, email, password;

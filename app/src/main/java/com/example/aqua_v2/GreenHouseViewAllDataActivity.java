@@ -61,7 +61,7 @@ public class GreenHouseViewAllDataActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser user = mAuth.getCurrentUser();
-    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance("asia-southeast1");
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final MutableLiveData<Boolean> verify = new MutableLiveData<>();
 
@@ -111,7 +111,6 @@ public class GreenHouseViewAllDataActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-
         recyclerView.setAdapter(recycleTemperatureData);
     }
 

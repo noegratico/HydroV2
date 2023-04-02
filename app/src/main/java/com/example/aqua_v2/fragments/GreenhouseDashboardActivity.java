@@ -46,7 +46,7 @@ import java.util.HashMap;
 public class GreenhouseDashboardActivity extends Fragment {
     TextView temp, hum, ec, ph, greenHouseTxt, waterConditionTxt;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance("asia-southeast1");
 
 
     @Nullable
