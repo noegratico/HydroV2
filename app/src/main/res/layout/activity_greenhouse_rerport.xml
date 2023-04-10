@@ -44,19 +44,19 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
         android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/hello"
         app:cardCornerRadius="20dp"
         app:cardElevation="3dp"
-        android:layout_marginHorizontal="20dp"
-        >
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hello">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <com.google.android.flexbox.FlexboxLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginVertical="20dp">
+            android:layout_marginVertical="20dp"
+            app:flexDirection="column">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/materialButton3"
@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:backgroundTint="#6cbce2"
-                android:text="Today's Report"
+                android:text="Reports"
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -77,25 +77,16 @@
                 android:layoutDirection="rtl"
                 app:layout_constraintTop_toBottomOf="@+id/materialButton3"
                 tools:layout_editor_absoluteX="20dp" />
-
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
+                android:id="@+id/reportRecycle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="10dp"
-                app:layout_constraintTop_toBottomOf="@+id/searchView"
-                tools:layout_editor_absoluteX="20dp" />
+                app:layout_maxHeight="450dp" />
 
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="10dp"
-                android:text="Download"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.flexbox.FlexboxLayout>
     </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

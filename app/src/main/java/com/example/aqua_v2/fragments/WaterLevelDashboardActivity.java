@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.aqua_v2.R;
 import com.example.aqua_v2.WaterActivity;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -29,6 +30,7 @@ TextView waterBox;
 TextView waterTxt;
 TextView snapA;
 TextView snapB;
+MaterialButton pumpBtn;
 private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Nullable
@@ -39,6 +41,7 @@ private FirebaseFirestore db = FirebaseFirestore.getInstance();
         waterBox = (TextView) rootView.findViewById(R.id.waterBox);
         snapA = (TextView) rootView.findViewById(R.id.snapATxt);
         snapB = (TextView) rootView.findViewById(R.id.snapBTxt);
+        pumpBtn = (MaterialButton) rootView.findViewById(R.id.pumpBtn);
 
         waterTxt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,6 +104,12 @@ private FirebaseFirestore db = FirebaseFirestore.getInstance();
                         }
                     });
                 }
+            }
+        });
+        pumpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(),WaterActivity.class));
             }
         });
         return rootView;

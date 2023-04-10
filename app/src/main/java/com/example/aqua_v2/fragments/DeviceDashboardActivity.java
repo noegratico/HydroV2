@@ -13,11 +13,12 @@ import androidx.fragment.app.Fragment;
 
 import com.example.aqua_v2.DevicesActivity;
 import com.example.aqua_v2.R;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.functions.FirebaseFunctions;
 
 public class DeviceDashboardActivity extends Fragment {
-
+    MaterialButton deviceBtn;
 
 
     @Nullable
@@ -26,6 +27,7 @@ public class DeviceDashboardActivity extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.activity_devices, container, false);
 
         TextView deviceTxt = (TextView) rootView.findViewById(R.id.deviceTxt);
+        deviceBtn = (MaterialButton) rootView.findViewById(R.id.deviceManagementBtn);
         deviceTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -33,7 +35,12 @@ public class DeviceDashboardActivity extends Fragment {
                 startActivity(device);
             }
         });
-
+        deviceBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(),DevicesActivity.class));
+            }
+        });
 
         return rootView;
     }

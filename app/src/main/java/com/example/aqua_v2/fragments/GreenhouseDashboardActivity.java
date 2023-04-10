@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +46,7 @@ import java.util.HashMap;
 
 public class GreenhouseDashboardActivity extends Fragment {
     TextView temp, hum, ec, ph, greenHouseTxt, waterConditionTxt;
+    ImageButton gHbtn, wCBtn;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance("asia-southeast1");
 
@@ -60,7 +62,10 @@ public class GreenhouseDashboardActivity extends Fragment {
         ec = (TextView) rootView.findViewById(R.id.greenHouseEc);
         ph = (TextView) rootView.findViewById(R.id.greenHousePh);
         greenHouseTxt = (TextView) rootView.findViewById(R.id.greenTxt);
+        gHbtn = (ImageButton) rootView.findViewById(R.id.gHBtn);
+        wCBtn = (ImageButton) rootView.findViewById(R.id.wCBtn);
         waterConditionTxt = (TextView) rootView.findViewById(R.id.greenHouseTxt);
+
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference();
@@ -97,7 +102,7 @@ public class GreenhouseDashboardActivity extends Fragment {
                         if (documentChange.getType() == DocumentChange.Type.ADDED) {
                             Log.d(TAG, documentChange.getDocument().get("value", String.class));
 //                            Toast.makeText(getActivity(), documentChange.getDocument().get("value", String.class), Toast.LENGTH_SHORT).show();
-                            hum.setText(documentChange.getDocument().get("value", String.class)+ "%");
+                            hum.setText(documentChange.getDocument().get("value", String.class) + "%");
                         }
                     });
                 }
@@ -189,14 +194,24 @@ public class GreenhouseDashboardActivity extends Fragment {
             public void onClick(View v) {
 
                 startActivity(new Intent(getActivity(), GreenHouseActivity.class));
-                getActivity().finish();
+            }
+        });
+        gHbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), GreenHouseActivity.class));
+            }
+        });
+        wCBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), WaterConditionActivity.class));
             }
         });
         waterConditionTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getActivity(), WaterConditionActivity.class));
-                getActivity().finish();
             }
         });
 

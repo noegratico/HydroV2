@@ -69,6 +69,7 @@
                 android:hint="00:00:00">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/timerInput"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="30dp"
@@ -105,7 +106,7 @@
                     android:gravity="right">
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/materialButton"
+                        android:id="@+id/litterBtn"
                         android:layout_width="211dp"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
@@ -113,13 +114,17 @@
                         android:backgroundTint="#6cbce2"
                         android:paddingHorizontal="76dp"
                         android:text="Liter"
+                        app:strokeColor="#6cbce2"
+                        app:strokeWidth="2dp"
                         android:textColor="@color/black"
                         />
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/materialButton2"
+                        android:id="@+id/mlBtn"
                         android:layout_width="211dp"
                         android:layout_height="wrap_content"
                         android:backgroundTint="#6cbce2"
+                        app:strokeColor="#6cbce2"
+                        app:strokeWidth="2dp"
                         android:text="Milliliter"
                         android:textColor="@color/black" />
                 </LinearLayout>
@@ -165,6 +170,7 @@
                 android:layout_marginHorizontal="20dp">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/valueInput"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="30dp"
@@ -178,6 +184,7 @@
             android:layout_height="wrap_content">
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/saveBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"

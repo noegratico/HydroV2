@@ -4,200 +4,232 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="3dp"
-    android:layout_marginTop="5dp"
-   >
-<androidx.cardview.widget.CardView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginHorizontal="5dp"
-    android:layout_marginTop="5dp"
-    android:elevation="8dp"
-    app:cardCornerRadius="20dp"
-    style="@style/cardBackground">
-    <LinearLayout
+    android:layout_marginTop="5dp">
+
+    <androidx.cardview.widget.CardView
+        style="@style/cardBackground"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginVertical="10dp"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginTop="5dp"
+        android:elevation="8dp"
+        app:cardCornerRadius="20dp">
 
-        <TextView
-            android:id="@+id/greenTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:layout_marginLeft="10dp"
-            android:text="Greenhouse"
-            style="@style/text"
-            android:textSize="30dp" />
-
-        <com.google.android.flexbox.FlexboxLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:justifyContent="space_around"
-            android:orientation="horizontal">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                app:layout_flexBasisPercent="50%"
-                android:layout_marginVertical="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="5dp"
-                android:backgroundTint="#6cbce2"
-                android:elevation="8dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/greenHouseTemp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="35°C"
-                        android:textAlignment="center"
-                        android:textColor="@color/white"
-                        android:textSize="30dp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Temperature"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="20dp" />
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                app:layout_flexBasisPercent="50%"
-                android:layout_marginHorizontal="5dp"
-                android:layout_marginVertical="10dp"
-                android:backgroundTint="#6cbce2"
-                android:elevation="8dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/greenHouseHum"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="60%"
-                        android:textAlignment="center"
-                        android:textColor="@color/white"
-                        android:textSize="30dp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Humidity"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="20dp" />
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-        </com.google.android.flexbox.FlexboxLayout>
-
-        <TextView
-            android:id="@+id/greenHouseTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="10dp"
-            android:layout_marginLeft="10dp"
-            android:text="Water Condition"
-            style="@style/text"
-            android:textSize="30dp" />
+            android:orientation="vertical">
 
-        <com.google.android.flexbox.FlexboxLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:justifyContent="space_evenly"
-            android:orientation="horizontal"
-            android:layout_marginBottom="20dp">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                app:layout_flexBasisPercent="50%"
-                android:layout_marginVertical="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="5dp"
-                android:backgroundTint="#6cbce2"
-                android:elevation="8dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/greenHousePh"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="7"
-                        android:textAlignment="center"
-                        android:textColor="#00ff00"
-                        android:textSize="30dp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="pH Level"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="20dp" />
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
+            <com.google.android.flexbox.FlexboxLayout
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_marginVertical="10dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="10dp"
-                android:backgroundTint="#6cbce2"
-                app:layout_flexBasisPercent="50%"
-                android:elevation="8dp">
+                android:layout_height="wrap_content"
+                app:justifyContent="space_between">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical">
+                <TextView
+                    android:id="@+id/greenTxt"
+                    style="@style/text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:text="Greenhouse"
+                    android:textSize="30dp" />
 
-                    <TextView
-                        android:id="@+id/greenHouseEc"                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="10000"
-                        android:textAlignment="center"
-                        android:textColor="#ff0000"
-                        android:textSize="30dp" />
+                <ImageButton
+                    android:id="@+id/gHBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@android:color/transparent"
+                    android:src="@drawable/view"
+                    app:layout_alignSelf="center" />
+            </com.google.android.flexbox.FlexboxLayout>
 
-                    <TextView
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:justifyContent="space_around">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_marginVertical="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="5dp"
+                    android:backgroundTint="#6cbce2"
+                    android:elevation="8dp"
+                    app:layout_flexBasisPercent="50%">
+
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Electrical Condition Level"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="20dp" />
-                </LinearLayout>
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
-            </androidx.cardview.widget.CardView>
-        </com.google.android.flexbox.FlexboxLayout>
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+                        <TextView
+                            android:id="@+id/greenHouseTemp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="35°C"
+                            android:textAlignment="center"
+                            android:textColor="@color/white"
+                            android:textSize="30dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Temperature"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="20dp" />
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_marginHorizontal="5dp"
+                    android:layout_marginVertical="10dp"
+                    android:backgroundTint="#6cbce2"
+                    android:elevation="8dp"
+                    app:layout_flexBasisPercent="50%">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/greenHouseHum"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="60%"
+                            android:textAlignment="center"
+                            android:textColor="@color/white"
+                            android:textSize="30dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Humidity"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="20dp" />
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:justifyContent="space_between">
+
+                <TextView
+                    android:id="@+id/greenHouseTxt"
+                    style="@style/text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:text="Water Condition"
+                    android:textSize="30dp" />
+
+                <ImageButton
+                    android:id="@+id/wCBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@android:color/transparent"
+                    android:src="@drawable/view"
+                    app:layout_alignSelf="center" />
+            </com.google.android.flexbox.FlexboxLayout>
+
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal"
+                app:justifyContent="space_evenly">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_marginVertical="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="5dp"
+                    android:backgroundTint="#6cbce2"
+                    android:elevation="8dp"
+                    app:layout_flexBasisPercent="50%">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/greenHousePh"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="7"
+                            android:textAlignment="center"
+                            android:textColor="#00ff00"
+                            android:textSize="30dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="pH Level"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="20dp" />
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_marginVertical="10dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="10dp"
+                    android:backgroundTint="#6cbce2"
+                    android:elevation="8dp"
+                    app:layout_flexBasisPercent="50%">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/greenHouseEc"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="10000"
+                            android:textAlignment="center"
+                            android:textColor="#ff0000"
+                            android:textSize="30dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Electrical Condition Level"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="20dp" />
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+            </com.google.android.flexbox.FlexboxLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 </RelativeLayout>

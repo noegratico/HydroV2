@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardBackgroundColor="@color/white"
+    style="@style/modalBackground"
     app:cardCornerRadius="20dp">
 
     <LinearLayout
@@ -16,12 +17,12 @@
             android:layout_height="wrap_content">
 
             <TextView
+                style="@style/text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
                 android:text="Edit Profile"
-                android:textColor="@color/black"
                 android:textSize="25dp"
                 android:textStyle="bold" />
 

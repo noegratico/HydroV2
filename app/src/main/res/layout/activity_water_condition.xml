@@ -42,32 +42,36 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/temperLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:orientation="horizontal"
+        app:justifyContent="space_between"
         app:layout_constraintTop_toBottomOf="@id/textView">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/tempHolder"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="140dp"
             android:layout_marginTop="16dp"
-            android:backgroundTint="#6cbce2">
+            android:backgroundTint="#6cbce2"
+            app:layout_flexBasisPercent="40%">
 
             <TextView
                 android:id="@+id/phDisplay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="30dp"
-                android:text="36%"
+                android:textAlignment="center"
+                android:text="..."
+                android:autoSizeTextType="uniform"
                 android:textColor="@color/white"
                 android:textSize="50dp" />
         </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
+            app:layout_flexBasisPercent="60%"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -90,7 +94,7 @@
         </LinearLayout>
 
 
-    </LinearLayout>
+    </com.google.android.flexbox.FlexboxLayout>
 
     <TextView
         android:id="@+id/textView"
@@ -120,32 +124,37 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/temperLayout" />
 
-    <LinearLayout
+    <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/humidityLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:orientation="horizontal"
+        app:justifyContent="space_between"
         app:layout_constraintTop_toBottomOf="@id/humidityTxt">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/humidityHolder"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="140dp"
             android:layout_marginTop="16dp"
+            app:layout_flexBasisPercent="40%"
             android:backgroundTint="#6cbce2">
 
             <TextView
                 android:id="@+id/eccDisplay"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_margin="30dp"
-                android:text="36%"
+                android:paddingTop="10dp"
+                android:text="..."
+                android:textAlignment="center"
+                android:autoSizeTextType="uniform"
                 android:textColor="@color/white"
                 android:textSize="50dp" />
         </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
+            app:layout_flexBasisPercent="60%"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -169,7 +178,7 @@
         </LinearLayout>
 
 
-    </LinearLayout>
+    </com.google.android.flexbox.FlexboxLayout>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/viewAllDataBtn"
         android:layout_width="wrap_content"
@@ -183,6 +192,7 @@
         app:layout_constraintTop_toBottomOf="@+id/humidityLayout" />
 
     <ImageButton
+        android:id="@+id/reportSpecBtn"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:background="#6cbce2"

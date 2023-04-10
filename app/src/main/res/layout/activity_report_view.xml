@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="10dp"
+    app:cardCornerRadius="10dp"
+    android:layout_marginVertical="5dp"
+    app:cardElevation="3dp">
+    <com.google.android.flexbox.FlexboxLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="10dp">
+
+        <TextView
+            style="@style/text"
+            app:layout_flexBasisPercent="80%"
+            android:id="@+id/reportFileName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="File name"
+            android:textAlignment="center"
+            app:layout_alignSelf="center"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_download_24"
+            app:layout_flexBasisPercent="20%"/>
+    </com.google.android.flexbox.FlexboxLayout>
+</com.google.android.material.card.MaterialCardView>

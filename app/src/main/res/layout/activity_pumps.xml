@@ -74,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:text="Water Pump Status"
                     style="@style/text"
-                    android:textSize="30dp"
+                    android:textSize="25dp"
                     android:textStyle="bold" />
 
                 <Switch
@@ -100,7 +100,7 @@
 
     </androidx.cardview.widget.CardView>
 
-    <androidx.cardview.widget.CardView
+    <!--<androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
@@ -210,7 +210,7 @@
         </LinearLayout>
 
 
-    </androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>-->
 
 
 </LinearLayout>

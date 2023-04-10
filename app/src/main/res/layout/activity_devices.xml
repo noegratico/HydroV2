@@ -122,6 +122,7 @@
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/deviceManagementBtn"
                     android:layout_width="310dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"

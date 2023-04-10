@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +33,8 @@ import com.google.firebase.functions.FirebaseFunctions;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -59,6 +62,7 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
 
     TextInputEditText name, email, password;
     MaterialButton verifyBtn, updateBtn, activeBtn;
+    MaterialButton resetBtn;
     private Spinner spinner;
     boolean isVerify = true;
 
@@ -80,10 +84,11 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
         settings();
         name = findViewById(R.id.name);
         email = findViewById(R.id.email);
-        password = findViewById(R.id.passwordInput);
+//        password = findViewById(R.id.passwordInput);
         verifyBtn = findViewById(R.id.verifyBtn);
         updateBtn = findViewById(R.id.updateBtn);
         activeBtn = findViewById(R.id.activateUserBtn);
+        resetBtn = findViewById(R.id.resetBtn);
         spinner = (Spinner) findViewById(R.id.adminTxt);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource
@@ -111,6 +116,7 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
         activeBtn.setOnClickListener(this);
 
         updateBtn.setOnClickListener(this);
+        resetBtn.setOnClickListener(this);
     }
 
     private void changeActiveBtn(boolean active) {
@@ -125,7 +131,7 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.activateUserBtn) {
+        if (v.getId() == R.id.activateUserBtn) {
             Map<String, Object> data = new HashMap<>();
             data.put("disable", active);
             data.put("id", id);
@@ -136,10 +142,11 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
                         active = !active;
                         Toast.makeText(this, String.format("User %s!", active ? "Activated" : "Deactivated"), Toast.LENGTH_SHORT).show();
                         changeActiveBtn(active);
+                        addUserLog(active ?"User "+ name.getText().toString()+" Activated": "User "+name.getText().toString()+" Deactivated");
                     }).addOnFailureListener(e -> {
                         Toast.makeText(this, String.format("Failed user %s!", !active ? "Activation" : "Deactivation"), Toast.LENGTH_SHORT).show();
                     });
-        } else if(v.getId() == R.id.updateBtn) {
+        } else if (v.getId() == R.id.updateBtn) {
             Map<String, String> data = new HashMap<>();
             if (!sName.equals(name.getText().toString())) {
                 data.put("name", name.getText().toString());
@@ -150,9 +157,6 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
             if (!sUserLevel.equals(selectedUserLevel)) {
                 data.put("userLevel", selectedUserLevel);
             }
-            if (!password.getText().toString().equals("")) {
-                data.put("password", password.getText().toString());
-            }
 
             if (data.entrySet().size() != 0 && !id.equals("")) {
                 data.put("id", id);
@@ -160,13 +164,32 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
                         .getHttpsCallable("updateUser")
                         .call(data)
                         .addOnSuccessListener(result -> {
+                            addUserLog("User Updated an Account");
                             startActivity(new Intent(ManageUserActivity.this, MemberListActivity.class));
                             finish();
                         }).addOnFailureListener(e -> {
                             Toast.makeText(this, "Failed to Update User", Toast.LENGTH_SHORT).show();
                         });
             }
+        } else if (v.getId() == R.id.resetBtn) {
+            mAuth.sendPasswordResetEmail(sEmail).addOnSuccessListener((result) -> {
+                addUserLog("User Send a Reset Password Email");
+                Toast.makeText(this, "Email for Reset Password has been Sent", Toast.LENGTH_SHORT).show();
+            }).addOnFailureListener((e) -> {
+                Log.e("Error", e.getMessage(), e);
+            });
         }
+    }
+
+    private void addUserLog(String userActivity) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String currentDateAndTime = sdf.format(new Date());
+        Map<String, String> data = new HashMap<>();
+        data.put("activity", userActivity);
+        data.put("datetime", currentDateAndTime);
+        mFunctions
+                .getHttpsCallable("logUserActivity")
+                .call(data);
     }
 
     @Override
@@ -214,7 +237,6 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 int id = menuItem.getItemId();
-
 //                profile menu
                 if (id == 0) {
                     dialog.setContentView(R.layout.activity_profile);
@@ -279,7 +301,7 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
                                     if (editName.getText().toString() != null) {
                                         data.put("name", editName.getText().toString());
                                     }
-                                    if(editEmail.getText().toString() != null){
+                                    if (editEmail.getText().toString() != null) {
                                         data.put("email", editEmail.getText().toString());
                                     }
                                     mFunctions
@@ -403,4 +425,7 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
             }
         });
     }
+
+
+
 }

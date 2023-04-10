@@ -199,11 +199,14 @@ public class GreenHouseActivity extends AppCompatActivity {
                 public void onSuccess(GetTokenResult result) {
                     boolean isAdmin = result.getClaims().containsKey("admin") && (boolean) result.getClaims().get("admin");
                     if (isAdmin) {
+
                         popupMenu.getMenu().add(Menu.NONE, 0, 0, "Profile");
                         popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
                         popupMenu.getMenu().add(Menu.NONE, 2, 2, "Member");
-                        popupMenu.getMenu().add(Menu.NONE, 3, 3, "Logout");
+                        popupMenu.getMenu().add(Menu.NONE, 3, 4, "Logout");
+                        popupMenu.getMenu().add(Menu.NONE, 4, 3,"User Log");
                     } else {
+
                         popupMenu.getMenu().add(Menu.NONE, 0, 0, "Profile");
                         popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
                         popupMenu.getMenu().add(Menu.NONE, 3, 2, "Logout");
@@ -259,8 +262,9 @@ public class GreenHouseActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             user.sendEmailVerification().addOnSuccessListener(result -> {
+                                addUserLog("User "+ userName.getText() + " Verified The Account");
                                 Toast.makeText(GreenHouseActivity.this, "Email Sent", Toast.LENGTH_SHORT).show();
-
+                                dialog.dismiss();
                             });
                         }
                     });
@@ -291,6 +295,7 @@ public class GreenHouseActivity extends AppCompatActivity {
                                             .getHttpsCallable("updateUserInfo")
                                             .call(data)
                                             .addOnSuccessListener(result -> {
+                                                addUserLog("User " + editName.getText().toString() + " Profile Updated");
                                                 Toast.makeText(GreenHouseActivity.this, "Update Successfully", Toast.LENGTH_SHORT).show();
                                                 dialog.dismiss();
                                             });
@@ -392,6 +397,8 @@ public class GreenHouseActivity extends AppCompatActivity {
                     });
 
 //                    add logout function here
+                }else if(id == 4){
+                    startActivity(new Intent(GreenHouseActivity.this,UserLogActivity.class));
                 }
 
                 return false;
@@ -407,5 +414,15 @@ public class GreenHouseActivity extends AppCompatActivity {
                 popupMenu.show();
             }
         });
+    }
+    private void addUserLog(String userActivity) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String currentDateAndTime = sdf.format(new Date());
+        Map<String, String> data = new HashMap<>();
+        data.put("activity", userActivity);
+        data.put("datetime", currentDateAndTime);
+        mFunctions
+                .getHttpsCallable("logUserActivity")
+                .call(data);
     }
 }

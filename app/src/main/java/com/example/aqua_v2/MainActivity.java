@@ -19,7 +19,12 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.functions.FirebaseFunctions;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     boolean nightMode;
     TextInputEditText username, password;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance("asia-southeast1");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         loginBtn = findViewById(R.id.login_btn);
         username = findViewById(R.id.usernameInputTxt);
         password = findViewById(R.id.passwordInputTxt);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String currentDateAndTime = sdf.format(new Date());
 
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
@@ -58,8 +66,16 @@ public class MainActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     // Sign in success, update UI with the signed-in user's information
                                     FirebaseUser user = mAuth.getCurrentUser();
+                                    Map<String, String> data = new HashMap<>();
+                                    data.put("activity", "User Sign In");
+                                    data.put("datetime", currentDateAndTime);
+                                    mFunctions
+                                            .getHttpsCallable("logUserActivity")
+                                            .call(data);
                                     startActivity(new Intent(MainActivity.this, DashboardActivity.class));
                                     finish();
+
+
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Toast.makeText(MainActivity.this, "Authentication failed.",
@@ -72,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     @Override
     public void onStart() {
         super.onStart();

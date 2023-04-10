@@ -128,7 +128,8 @@ public class GreenHouseViewAllDataActivity extends AppCompatActivity {
                         popupMenu.getMenu().add(Menu.NONE, 0, 0, "Profile");
                         popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
                         popupMenu.getMenu().add(Menu.NONE, 2, 2, "Member");
-                        popupMenu.getMenu().add(Menu.NONE, 3, 3, "Logout");
+                        popupMenu.getMenu().add(Menu.NONE, 3, 4, "Logout");
+                        popupMenu.getMenu().add(Menu.NONE, 4, 3,"User Log");
                     } else {
                         popupMenu.getMenu().add(Menu.NONE, 0, 0, "Profile");
                         popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
@@ -185,8 +186,9 @@ public class GreenHouseViewAllDataActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             user.sendEmailVerification().addOnSuccessListener(result -> {
+                                addUserLog("User "+ userName.getText() + " Verified The Account");
                                 Toast.makeText(GreenHouseViewAllDataActivity.this, "Email Sent", Toast.LENGTH_SHORT).show();
-
+                                dialog.dismiss();
                             });
                         }
                     });
@@ -217,6 +219,7 @@ public class GreenHouseViewAllDataActivity extends AppCompatActivity {
                                             .getHttpsCallable("updateUserInfo")
                                             .call(data)
                                             .addOnSuccessListener(result -> {
+                                                addUserLog("User " + editName.getText().toString() + " Profile Updated");
                                                 Toast.makeText(GreenHouseViewAllDataActivity.this, "Update Successfully", Toast.LENGTH_SHORT).show();
                                                 dialog.dismiss();
                                             });
@@ -318,6 +321,8 @@ public class GreenHouseViewAllDataActivity extends AppCompatActivity {
                     });
 
 //                    add logout function here
+                }else if(id == 4){
+                    startActivity(new Intent(GreenHouseViewAllDataActivity.this,UserLogActivity.class));
                 }
 
                 return false;
@@ -333,5 +338,15 @@ public class GreenHouseViewAllDataActivity extends AppCompatActivity {
                 popupMenu.show();
             }
         });
+    }
+    private void addUserLog(String userActivity) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String currentDateAndTime = sdf.format(new Date());
+        Map<String, String> data = new HashMap<>();
+        data.put("activity", userActivity);
+        data.put("datetime", currentDateAndTime);
+        mFunctions
+                .getHttpsCallable("logUserActivity")
+                .call(data);
     }
 }

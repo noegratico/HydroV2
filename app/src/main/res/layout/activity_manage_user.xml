@@ -92,7 +92,7 @@
             android:text="email@gmail.com" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
+   <!-- <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/password"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
@@ -116,7 +116,7 @@
             android:layout_height="wrap_content"
             android:password="true"
             android:text="12345" />
-    </com.google.android.material.textfield.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>-->
 
 
     <com.google.android.material.button.MaterialButton
@@ -186,7 +186,7 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="10dp"
         app:cardCornerRadius="10dp"
-        app:layout_constraintTop_toBottomOf="@+id/password"
+        app:layout_constraintTop_toBottomOf="@+id/emailAddress"
         app:strokeColor="#757575"
         app:strokeWidth="1dp">
 

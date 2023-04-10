@@ -2,12 +2,17 @@ package com.example.aqua_v2;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.MutableLiveData;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,9 +30,18 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class GreenhouseRerportActivity extends AppCompatActivity {
     Switch switcher;
@@ -44,13 +58,22 @@ public class GreenhouseRerportActivity extends AppCompatActivity {
     TextView userLevel;
     TextInputEditText editEmail;
     TextInputEditText editName;
+    RecyclerView reportRecycle;
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser user = mAuth.getCurrentUser();
     private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance("asia-southeast1");
+    private FirebaseStorage storage = FirebaseStorage.getInstance();
+    private StorageReference storageReference;
     private final MutableLiveData<Boolean> verify = new MutableLiveData<>();
+    private ReportAdapter adapter;
+    private List<StorageReference> orginList = new ArrayList<>();
+
+    SearchView search;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
         nightMode = sharedPreferences.getBoolean("night", false);
         if (nightMode) {
@@ -64,8 +87,66 @@ public class GreenhouseRerportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_greenhouse_rerport);
         settingBtn = findViewById(R.id.settingBtn);
+        reportRecycle = findViewById(R.id.reportRecycle);
+        search = findViewById(R.id.searchView);
         settings();
+        storageReference = storage
+                .getReference()
+                .child("daily-reports")
+                .child(getIntent().getStringExtra("sensor"));
+
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Toast.makeText(GreenhouseRerportActivity.this, query,Toast.LENGTH_SHORT).show();
+
+                storageReference.listAll()
+                        .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                            @Override
+                            public void onSuccess(ListResult listResult) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                    adapter = new ReportAdapter(listResult.getItems().stream().filter(ref -> ref.getName().contains(query)).collect(Collectors.toList()), GreenhouseRerportActivity.this, GreenhouseRerportActivity.this, mFunctions);
+                                }
+                                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                                reportRecycle.setLayoutManager(layoutManager);
+                                reportRecycle.setItemAnimator(new DefaultItemAnimator());
+                                reportRecycle.setAdapter(adapter);
+                            }
+                        });
+                return true;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                storageReference.listAll()
+                        .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                            @Override
+                            public void onSuccess(ListResult listResult) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                    adapter = new ReportAdapter(listResult.getItems().stream().filter(ref -> ref.getName().contains(newText)).collect(Collectors.toList()), GreenhouseRerportActivity.this, GreenhouseRerportActivity.this, mFunctions);
+                                }
+                                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                                reportRecycle.setLayoutManager(layoutManager);
+                                reportRecycle.setItemAnimator(new DefaultItemAnimator());
+                                reportRecycle.setAdapter(adapter);
+                            }
+                        });
+                return true;
+            }
+        });
+        storageReference.listAll()
+                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                    @Override
+                    public void onSuccess(ListResult listResult) {
+                        adapter = new ReportAdapter(listResult.getItems(), GreenhouseRerportActivity.this, GreenhouseRerportActivity.this, mFunctions);
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                        reportRecycle.setLayoutManager(layoutManager);
+                        reportRecycle.setItemAnimator(new DefaultItemAnimator());
+                        reportRecycle.setAdapter(adapter);
+                    }
+                });
+
     }
+
 
     private void settings() {
         Dialog dialog = new Dialog(GreenhouseRerportActivity.this);
@@ -80,7 +161,8 @@ public class GreenhouseRerportActivity extends AppCompatActivity {
                         popupMenu.getMenu().add(Menu.NONE, 0, 0, "Profile");
                         popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
                         popupMenu.getMenu().add(Menu.NONE, 2, 2, "Member");
-                        popupMenu.getMenu().add(Menu.NONE, 3, 3, "Logout");
+                        popupMenu.getMenu().add(Menu.NONE, 3, 4, "Logout");
+                        popupMenu.getMenu().add(Menu.NONE, 4, 3, "User Log");
                     } else {
                         popupMenu.getMenu().add(Menu.NONE, 0, 0, "Profile");
                         popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
@@ -137,8 +219,9 @@ public class GreenhouseRerportActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             user.sendEmailVerification().addOnSuccessListener(result -> {
+                                addUserLog("User " + userName.getText() + " Verified The Account");
                                 Toast.makeText(GreenhouseRerportActivity.this, "Email Sent", Toast.LENGTH_SHORT).show();
-
+                                dialog.dismiss();
                             });
                         }
                     });
@@ -162,13 +245,14 @@ public class GreenhouseRerportActivity extends AppCompatActivity {
                                     if (editName.getText().toString() != null) {
                                         data.put("name", editName.getText().toString());
                                     }
-                                    if(editEmail.getText().toString() != null){
+                                    if (editEmail.getText().toString() != null) {
                                         data.put("email", editEmail.getText().toString());
                                     }
                                     mFunctions
                                             .getHttpsCallable("updateUserInfo")
                                             .call(data)
                                             .addOnSuccessListener(result -> {
+                                                addUserLog("User " + editName.getText().toString() + " Profile Updated");
                                                 Toast.makeText(GreenhouseRerportActivity.this, "Update Successfully", Toast.LENGTH_SHORT).show();
                                                 dialog.dismiss();
                                             });
@@ -270,6 +354,8 @@ public class GreenhouseRerportActivity extends AppCompatActivity {
                     });
 
 //                    add logout function here
+                } else if (id == 4) {
+                    startActivity(new Intent(GreenhouseRerportActivity.this, UserLogActivity.class));
                 }
 
                 return false;
@@ -285,5 +371,16 @@ public class GreenhouseRerportActivity extends AppCompatActivity {
                 popupMenu.show();
             }
         });
+    }
+
+    private void addUserLog(String userActivity) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String currentDateAndTime = sdf.format(new Date());
+        Map<String, String> data = new HashMap<>();
+        data.put("activity", userActivity);
+        data.put("datetime", currentDateAndTime);
+        mFunctions
+                .getHttpsCallable("logUserActivity")
+                .call(data);
     }
 }
