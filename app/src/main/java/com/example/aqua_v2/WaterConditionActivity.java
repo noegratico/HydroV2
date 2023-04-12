@@ -26,6 +26,7 @@ import com.example.aqua_v2.model.TempModel;
 import com.example.aqua_v2.model.TemperatureSensor;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -61,7 +62,7 @@ public class WaterConditionActivity extends AppCompatActivity {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser user = mAuth.getCurrentUser();
     private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance("asia-southeast1");
-    private List<TemperatureSensor>  phList = new ArrayList<>();
+    private List<TemperatureSensor> phList = new ArrayList<>();
     private List<TemperatureSensor> eccList = new ArrayList<>();
     TextView phDisplay;
     TextView eccDisplay;
@@ -69,7 +70,8 @@ public class WaterConditionActivity extends AppCompatActivity {
     RecyclerView ecRecycle;
     MaterialButton viewAllDataBtn;
     ImageButton reportSpecBtn;
-
+    MaterialCardView cardBtn;
+    MaterialCardView ecCardBtn;
 
 
     @Override
@@ -91,10 +93,43 @@ public class WaterConditionActivity extends AppCompatActivity {
         settingBtn = findViewById(R.id.settingBtn);
         phRecycle = findViewById(R.id.phRecycle);
         ecRecycle = findViewById(R.id.eccRecent);
-        reportSpecBtn= findViewById(R.id.reportSpecBtn);
+        reportSpecBtn = findViewById(R.id.reportSpecBtn);
+        cardBtn = findViewById(R.id.tempHolder);
+        ecCardBtn = findViewById(R.id.humidityHolder);
+
+
         settings();
         phRecent();
         ecRecent();
+        cardBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(WaterConditionActivity.this, DetailedActivityReport.class);
+                Bundle bundle = new Bundle();
+                TempModel tempModel = new TempModel();
+                tempModel.setTemperatureSensors((ArrayList<TemperatureSensor>) phList);
+//                TempModel humModel = new TempModel();
+//                humModel.setTemperatureSensors((ArrayList<TemperatureSensor>) eccList);
+                bundle.putParcelable("data", tempModel);
+//                bundle.putParcelable("humData", humModel);
+                bundle.putString("sensorName", "pH Level");
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });
+        ecCardBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(WaterConditionActivity.this, DetailedActivityReport.class);
+                Bundle bundle = new Bundle();
+                TempModel humModel = new TempModel();
+                humModel.setTemperatureSensors((ArrayList<TemperatureSensor>) eccList);
+                bundle.putParcelable("data", humModel);
+                bundle.putString("sensorName", "ECC Level");
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });
         viewAllDataBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,6 +139,8 @@ public class WaterConditionActivity extends AppCompatActivity {
                 tempModel.setTemperatureSensors((ArrayList<TemperatureSensor>) phList);
                 TempModel humModel = new TempModel();
                 humModel.setTemperatureSensors((ArrayList<TemperatureSensor>) eccList);
+                bundle.putString("phText","ph Level");
+                bundle.putString("eccText", "ECC Level");
                 bundle.putParcelable("data", tempModel);
                 bundle.putParcelable("humData", humModel);
                 intent.putExtras(bundle);
@@ -114,7 +151,7 @@ public class WaterConditionActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(WaterConditionActivity.this, GreenhouseRerportActivity.class);
-                intent.putExtra("sensor","ph_level");
+                intent.putExtra("sensor", "ph_level");
                 startActivity(intent);
             }
         });
@@ -207,7 +244,7 @@ public class WaterConditionActivity extends AppCompatActivity {
                         popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
                         popupMenu.getMenu().add(Menu.NONE, 2, 2, "Member");
                         popupMenu.getMenu().add(Menu.NONE, 3, 4, "Logout");
-                        popupMenu.getMenu().add(Menu.NONE, 4, 3,"User Log");
+                        popupMenu.getMenu().add(Menu.NONE, 4, 3, "User Log");
                     } else {
                         popupMenu.getMenu().add(Menu.NONE, 0, 0, "Profile");
                         popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
@@ -264,7 +301,7 @@ public class WaterConditionActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             user.sendEmailVerification().addOnSuccessListener(result -> {
-                                addUserLog("User "+ userName.getText() + " Verified The Account");
+                                addUserLog("User " + userName.getText() + " Verified The Account");
                                 Toast.makeText(WaterConditionActivity.this, "Email Sent", Toast.LENGTH_SHORT).show();
                                 dialog.dismiss();
                             });
@@ -399,8 +436,8 @@ public class WaterConditionActivity extends AppCompatActivity {
                     });
 
 //                    add logout function here
-                }else if(id == 4){
-                    startActivity(new Intent(WaterConditionActivity.this,UserLogActivity.class));
+                } else if (id == 4) {
+                    startActivity(new Intent(WaterConditionActivity.this, UserLogActivity.class));
                 }
 
                 return false;
@@ -417,6 +454,7 @@ public class WaterConditionActivity extends AppCompatActivity {
             }
         });
     }
+
     private void addUserLog(String userActivity) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String currentDateAndTime = sdf.format(new Date());

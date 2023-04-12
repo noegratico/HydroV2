@@ -202,6 +202,6 @@
          app:layout_constraintHorizontal_bias="0.75"
          app:layout_constraintStart_toEndOf="@+id/viewAllDataBtn"
          app:layout_constraintTop_toBottomOf="@+id/humidityLayout"
-         app:layout_constraintVertical_bias="0.288" />-->
+         app:layout_constraintVertical_bias="0.288" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,9 +15,10 @@ import java.util.List;
 public class UserLogAdapter extends RecyclerView.Adapter<UserLogAdapter.MyViewHolder> {
     private List<UserLog> userLogs;
 
-    public UserLogAdapter(List<UserLog> userLogs){
+    public UserLogAdapter(List<UserLog> userLogs) {
         this.userLogs = userLogs;
     }
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView userLogEmail;
         TextView userLogDateTime;
@@ -35,19 +36,19 @@ public class UserLogAdapter extends RecyclerView.Adapter<UserLogAdapter.MyViewHo
     @NonNull
     @Override
     public UserLogAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_log_view,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_log_view, parent, false);
         return new MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-String email = userLogs.get(position).getLogEmail();
-String dateTime = userLogs.get(position).getLogDateTime();
-String activity = userLogs.get(position).getLogActivity();
+        String email = userLogs.get(position).getLogEmail();
+        String dateTime = userLogs.get(position).getLogDateTime();
+        String activity = userLogs.get(position).getLogActivity();
 
-holder.userLogEmail.setText(email);
-holder.userLogDateTime.setText(dateTime);
-holder.uerLogActivity.setText(activity);
+        holder.userLogEmail.setText(email);
+        holder.userLogDateTime.setText(dateTime);
+        holder.uerLogActivity.setText(activity);
     }
 
     @Override

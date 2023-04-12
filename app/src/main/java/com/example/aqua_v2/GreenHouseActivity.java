@@ -26,6 +26,7 @@ import com.example.aqua_v2.model.TempModel;
 import com.example.aqua_v2.model.TemperatureSensor;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -66,6 +67,8 @@ public class GreenHouseActivity extends AppCompatActivity {
     RecyclerView humRecentView;
     TextView tempTxt;
     TextView humTxt;
+
+
     private List<TemperatureSensor> tempList = new ArrayList<>();
     private List<TemperatureSensor> humList = new ArrayList<>();
 
@@ -108,6 +111,8 @@ public class GreenHouseActivity extends AppCompatActivity {
                 tempModel.setTemperatureSensors((ArrayList<TemperatureSensor>) tempList);
                 TempModel humModel = new TempModel();
                 humModel.setTemperatureSensors((ArrayList<TemperatureSensor>) humList);
+                bundle.putString("phText","");
+                bundle.putString("eccText", "");
                 bundle.putParcelable("data", tempModel);
                 bundle.putParcelable("humData", humModel);
                 intent.putExtras(bundle);

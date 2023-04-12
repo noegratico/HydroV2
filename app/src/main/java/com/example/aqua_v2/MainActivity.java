@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
         nightMode = sharedPreferences.getBoolean("night", false);
         if (nightMode) {
@@ -47,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         }
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         loginBtn = findViewById(R.id.login_btn);

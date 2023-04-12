@@ -88,7 +88,6 @@ public class ImageProcessingActivity extends AppCompatActivity {
             }
             String[] classes = {"To Early to Harvest", "Ready to Harvest"};
             result.setText(classes[maxPos]);
-
             // Releases model resources if no longer used.
             model.close();
         } catch (IOException e) {
@@ -102,7 +101,6 @@ public class ImageProcessingActivity extends AppCompatActivity {
             int dimension = Math.min(image.getWidth(), image.getHeight());
             image = ThumbnailUtils.extractThumbnail(image, dimension, dimension);
             imageView.setImageBitmap(image);
-
             image = Bitmap.createScaledBitmap(image, imageSize, imageSize, false);
             classifyImage(image);
         }

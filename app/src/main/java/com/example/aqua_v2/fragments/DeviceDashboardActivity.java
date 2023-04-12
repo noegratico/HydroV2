@@ -9,9 +9,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import com.example.aqua_v2.DevicesActivity;
+import com.example.aqua_v2.ImageProcessingActivity;
 import com.example.aqua_v2.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -19,6 +21,7 @@ import com.google.firebase.functions.FirebaseFunctions;
 
 public class DeviceDashboardActivity extends Fragment {
     MaterialButton deviceBtn;
+    CardView mlBtn;
 
 
     @Nullable
@@ -27,6 +30,7 @@ public class DeviceDashboardActivity extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.activity_devices, container, false);
 
         TextView deviceTxt = (TextView) rootView.findViewById(R.id.deviceTxt);
+        mlBtn = rootView.findViewById(R.id.mlBtn);
         deviceBtn = (MaterialButton) rootView.findViewById(R.id.deviceManagementBtn);
         deviceTxt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -39,6 +43,12 @@ public class DeviceDashboardActivity extends Fragment {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getActivity(),DevicesActivity.class));
+            }
+        });
+        mlBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), ImageProcessingActivity.class));
             }
         });
 

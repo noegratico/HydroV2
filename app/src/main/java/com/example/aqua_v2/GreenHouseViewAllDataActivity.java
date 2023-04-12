@@ -69,6 +69,8 @@ public class GreenHouseViewAllDataActivity extends AppCompatActivity {
     private List<TemperatureSensor> humList = new ArrayList<>();
     private RecyclerView recyclerView;
     private RecyclerView recyclerViewHum;
+    TextView phText;
+    TextView eccText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,9 +90,14 @@ public class GreenHouseViewAllDataActivity extends AppCompatActivity {
         settingBtn = findViewById(R.id.settingBtn);
         recyclerView = findViewById(R.id.tempRecycle);
         recyclerViewHum = findViewById(R.id.recyclerViewHum);
+        phText = findViewById(R.id.textView2);
+        eccText = findViewById(R.id.humid);
 
         settings();
-
+        if(!bundle.getString("phText").isEmpty() && !bundle.getString("eccText").isEmpty()){
+            phText.setText(bundle.getString("phText"));
+            eccText.setText(bundle.getString("eccText"));
+        }
         tempList = bundle.<TempModel>getParcelable("data").getTemperatureSensors();
         humList = bundle.<TempModel>getParcelable("humData").getTemperatureSensors();;
 

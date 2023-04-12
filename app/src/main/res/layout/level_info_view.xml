@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="10dp"
+    android:layout_marginBottom="1dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.flexbox.FlexboxLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:justifyContent="space_between">
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:flexDirection="column"
+                app:layout_flexBasisPercent="20%"
+                android:textAlignment="center"
+                app:layout_alignSelf="center"
+                >
+                <TextView
+                    style="@style/text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="pH Level"
+                    android:textAlignment="center"/>
+                <TextView
+                    style="@style/text"
+                    android:id="@+id/infoTxtLvl"
+                    android:layout_width="match_parent"
+                    android:textAlignment="center"
+                    android:layout_height="wrap_content"
+
+                    android:textSize="18sp"
+                    android:text="1"/>
+            </com.google.android.flexbox.FlexboxLayout>
+
+
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_flexBasisPercent="80%"
+                app:flexDirection="column">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:text="Status"
+                    style="@style/text"/>
+                <TextView
+                    android:id="@+id/infoStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:text="To Low"
+                    android:textSize="18sp"
+                    style="@style/text"/>
+            </com.google.android.flexbox.FlexboxLayout>
+    </com.google.android.flexbox.FlexboxLayout>
+
+</com.google.android.material.card.MaterialCardView>
