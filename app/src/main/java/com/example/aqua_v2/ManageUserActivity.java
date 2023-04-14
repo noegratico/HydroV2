@@ -1,6 +1,7 @@
 package com.example.aqua_v2;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -78,6 +79,15 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
+        nightMode = sharedPreferences.getBoolean("night", false);
+        if (nightMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else if (!nightMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_user);
         settingBtn = findViewById(R.id.settingBtn);
@@ -181,16 +191,7 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
         }
     }
 
-    private void addUserLog(String userActivity) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        String currentDateAndTime = sdf.format(new Date());
-        Map<String, String> data = new HashMap<>();
-        data.put("activity", userActivity);
-        data.put("datetime", currentDateAndTime);
-        mFunctions
-                .getHttpsCallable("logUserActivity")
-                .call(data);
-    }
+
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -206,7 +207,6 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
         return value == null ? "" : value;
     }
 
-
     private void settings() {
         Dialog dialog = new Dialog(ManageUserActivity.this);
         PopupMenu popupMenu = new PopupMenu(this, settingBtn);
@@ -220,7 +220,8 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
                         popupMenu.getMenu().add(Menu.NONE, 0, 0, "Profile");
                         popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
                         popupMenu.getMenu().add(Menu.NONE, 2, 2, "Member");
-                        popupMenu.getMenu().add(Menu.NONE, 3, 3, "Logout");
+                        popupMenu.getMenu().add(Menu.NONE, 3, 4, "Logout");
+                        popupMenu.getMenu().add(Menu.NONE, 4, 3, "User Log");
                     } else {
                         popupMenu.getMenu().add(Menu.NONE, 0, 0, "Profile");
                         popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
@@ -237,6 +238,7 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 int id = menuItem.getItemId();
+
 //                profile menu
                 if (id == 0) {
                     dialog.setContentView(R.layout.activity_profile);
@@ -276,8 +278,9 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
                         @Override
                         public void onClick(View v) {
                             user.sendEmailVerification().addOnSuccessListener(result -> {
+                                addUserLog("User " + userName.getText() + " Verified The Account");
                                 Toast.makeText(ManageUserActivity.this, "Email Sent", Toast.LENGTH_SHORT).show();
-
+                                dialog.dismiss();
                             });
                         }
                     });
@@ -308,6 +311,7 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
                                             .getHttpsCallable("updateUserInfo")
                                             .call(data)
                                             .addOnSuccessListener(result -> {
+                                                addUserLog("User " + editName.getText().toString() + " Profile Updated");
                                                 Toast.makeText(ManageUserActivity.this, "Update Successfully", Toast.LENGTH_SHORT).show();
                                                 dialog.dismiss();
                                             });
@@ -409,6 +413,8 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
                     });
 
 //                    add logout function here
+                } else if (id == 4) {
+                    startActivity(new Intent(ManageUserActivity.this, UserLogActivity.class));
                 }
 
                 return false;
@@ -424,6 +430,17 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
                 popupMenu.show();
             }
         });
+    }
+
+    private void addUserLog(String userActivity) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String currentDateAndTime = sdf.format(new Date());
+        Map<String, String> data = new HashMap<>();
+        data.put("activity", userActivity);
+        data.put("datetime", currentDateAndTime);
+        mFunctions
+                .getHttpsCallable("logUserActivity")
+                .call(data);
     }
 
 

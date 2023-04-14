@@ -138,7 +138,7 @@
                     android:textStyle="bold" />
 
                 <Switch
-                    android:id="@+id/snapaSwitch"
+                    android:id="@+id/coolingFan"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"

@@ -1,5 +1,6 @@
 package com.example.aqua_v2;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.MutableLiveData;
@@ -27,6 +28,10 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.functions.FirebaseFunctions;
 
 import org.json.JSONException;
@@ -63,9 +68,14 @@ public class WaterActivity extends AppCompatActivity {
     TextInputEditText valueInput;
     private String unit = "liter";
 
+
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser user = mAuth.getCurrentUser();
     private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance("asia-southeast1");
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    Switch waterPumpSwitch;
+    private boolean checkPump;
 
 
     @Override
@@ -84,10 +94,58 @@ public class WaterActivity extends AppCompatActivity {
 
         settingBtn = findViewById(R.id.settingBtn);
         wPumpBtn = findViewById(R.id.wpumpschedBtn);
+        waterPumpSwitch = findViewById(R.id.wpumpSwitch);
 //        snapABtn = findViewById(R.id.snapaschedBtn);
 //        snapBBtn = findViewById(R.id.snapbschedBtn);
 
         settings();
+        db.collection("scheduler").document("water_pump").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                waterPumpSwitch.setChecked((Boolean) value.get("switch"));
+                checkPump = (boolean) value.get("switch");
+            }
+        });
+
+        waterPumpSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                JSONObject object = new JSONObject();
+                JSONObject data = new JSONObject();
+                if (checkPump) {
+                    try {
+                        object.put("docName", "water_pump");
+                        data.put("switch", false);
+                        object.put("data", data);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    mFunctions
+                            .getHttpsCallable("scheduler")
+                            .call(object)
+                            .addOnSuccessListener((result -> {
+                                addUserLog("User Turn OFF Water Pump Switch");
+                                Toast.makeText(WaterActivity.this, "Water Pump Switch is OFF", Toast.LENGTH_SHORT).show();
+                            }));
+                } else {
+                    try {
+                        object.put("docName", "water_pump");
+                        data.put("switch", true);
+                        object.put("data", data);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    mFunctions
+                            .getHttpsCallable("scheduler")
+                            .call(object)
+                            .addOnSuccessListener((result -> {
+                                addUserLog("User Turn ON Water Pump Switch");
+                                Toast.makeText(WaterActivity.this, "Water Pump Switch is ON", Toast.LENGTH_SHORT).show();
+                            }));
+                }
+            }
+        });
 //        water pump schedualer
         wPumpBtn.setOnClickListener(new View.OnClickListener() {
             @Override

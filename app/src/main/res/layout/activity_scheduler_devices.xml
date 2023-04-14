@@ -84,12 +84,13 @@
                 android:orientation="vertical" android:layout_marginLeft="20dp">
 
                 <Switch
-                    android:id="@+id/wpumpSwitch2"
+                    android:id="@+id/nihtTimeSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="false" />
 
                 <Switch
+                    android:id="@+id/blockedSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
@@ -102,9 +103,10 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content" android:layout_marginBottom="20dp">
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/okBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
