@@ -3,16 +3,52 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+
     android:layout_height="match_parent"
     tools:context=".RegisterActivity">
+    <LinearLayout
+        android:id="@+id/hello"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+
+        android:layout_marginRight="20dp">
+
+        <TextView
+            style="@style/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add User"
+            android:textSize="35dp"
+            android:textStyle="bold" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageButton
+                android:id="@+id/settingBtn"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="13dp"
+                android:background="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_baseline_settings_24" />
+        </RelativeLayout>
+
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/logo"
         android:layout_width="169dp"
         android:layout_height="145dp"
+        android:layout_below="@+id/hello"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="70dp"
-
+        android:layout_marginTop="50dp"
         app:srcCompat="@drawable/aqua" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -24,13 +60,11 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginVertical="5dp"
         android:hint="Username"
-        android:textColorHint="@color/black"
         app:boxCornerRadiusBottomEnd="10dp"
         app:boxCornerRadiusBottomStart="10dp"
         app:boxCornerRadiusTopEnd="10dp"
         app:boxCornerRadiusTopStart="10dp"
-        app:startIconDrawable="@drawable/ic_person"
-        app:startIconTint="@color/black">
+        app:startIconDrawable="@drawable/ic_person">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/name"
@@ -48,13 +82,11 @@
 
         android:layout_marginVertical="5dp"
         android:hint="Email Address"
-        android:textColorHint="@color/black"
         app:boxCornerRadiusBottomEnd="10dp"
         app:boxCornerRadiusBottomStart="10dp"
         app:boxCornerRadiusTopEnd="10dp"
         app:boxCornerRadiusTopStart="10dp"
-        app:startIconDrawable="@drawable/ic_person"
-        app:startIconTint="@color/black">
+        app:startIconDrawable="@drawable/ic_person">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/email"
@@ -72,15 +104,14 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:hint="Password"
-        android:textColorHint="@color/black"
         app:boxCornerRadiusBottomEnd="10dp"
         app:boxCornerRadiusBottomStart="10dp"
         app:boxCornerRadiusTopEnd="10dp"
         app:boxCornerRadiusTopStart="10dp"
-        app:startIconDrawable="@drawable/ic_baseline_lock_24"
-        app:startIconTint="@color/black">
+        app:startIconDrawable="@drawable/ic_baseline_lock_24">
 
         <com.google.android.material.textfield.TextInputEditText
+            style="@style/text"
             android:id="@+id/passwordInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -92,6 +123,7 @@
     android:layout_height="wrap_content"
     android:layout_below="@id/password"
     android:layout_marginHorizontal="20dp"
+    android:layout_marginTop="10dp"
     app:cardCornerRadius="10dp"
     app:strokeColor="#757575"
     app:strokeWidth="1dp"
@@ -113,7 +145,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
-        android:backgroundTint="#6cbce2"
+        android:backgroundTint="#1C7A6A"
         android:padding="15dp"
         android:text="Add Member" />
 

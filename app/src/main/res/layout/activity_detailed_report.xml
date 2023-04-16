@@ -119,7 +119,7 @@
             android:id="@+id/infoBtn"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:background="#6cbce2"
+            android:background="#1C7A6A"
             android:visibility="invisible"
             android:src="@drawable/ic_info_" />
 
@@ -127,7 +127,7 @@
             android:id="@+id/reportBtn"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:background="#6cbce2"
+            android:background="#1C7A6A"
             android:src="@drawable/ic_baseline_file_present_24" />
     </com.google.android.flexbox.FlexboxLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

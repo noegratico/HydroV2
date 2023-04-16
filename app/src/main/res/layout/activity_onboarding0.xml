@@ -27,9 +27,10 @@
             android:layout_marginTop="20dp"
             android:textSize="15dp"
             android:textAlignment="center"
-            android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,"
+            android:text="Aqua your mobile application to aid your hydroponic plants in their growth development"
             />
 <com.google.android.flexbox.FlexboxLayout
+    android:layout_marginTop="25dp"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     app:layout_alignSelf="flex_end"

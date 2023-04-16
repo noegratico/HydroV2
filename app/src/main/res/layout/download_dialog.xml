@@ -55,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="OK"
-                android:backgroundTint="#6cbce2"
+                android:backgroundTint="#1C7A6A"
                 android:layout_marginRight="25dp"
                 />
             <com.google.android.material.button.MaterialButton

@@ -178,7 +178,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:backgroundTint="#6cbce2"
+                android:backgroundTint="#1C7A6A"
                 android:text="Edit Profile"
                 android:textAllCaps="false"
                 android:textColor="@color/black"

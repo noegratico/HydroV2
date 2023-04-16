@@ -450,7 +450,7 @@ public class DashboardActivity extends AppCompatActivity {
                         }
                     } else {
                         weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.partly_cloudy));
-                        weatherTxt.setText("Something went Wrong");
+                        weatherTxt.setText("Partly Cloudy");
                     }
 
 

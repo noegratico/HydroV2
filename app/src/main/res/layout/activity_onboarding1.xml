@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="20dp"
-                android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,"
+                android:text="Show live updates of crucial metric suach pH level, Temperature, allowing you to monitor your hydroponic plants in real-time"
                 android:textAlignment="center"
                 android:textSize="15dp" />
 

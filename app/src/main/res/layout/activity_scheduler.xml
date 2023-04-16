@@ -111,10 +111,10 @@
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
                         android:layout_marginLeft="80dp"
-                        android:backgroundTint="#6cbce2"
+                        android:backgroundTint="#1C7A6A"
                         android:paddingHorizontal="76dp"
                         android:text="Liter"
-                        app:strokeColor="#6cbce2"
+                        app:strokeColor="#1C7A6A"
                         app:strokeWidth="2dp"
                         android:textColor="@color/black"
                         />
@@ -122,8 +122,8 @@
                         android:id="@+id/mlBtn"
                         android:layout_width="211dp"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="#6cbce2"
-                        app:strokeColor="#6cbce2"
+                        android:backgroundTint="#1C7A6A"
+                        app:strokeColor="#1C7A6A"
                         app:strokeWidth="2dp"
                         android:text="Milliliter"
                         android:textColor="@color/black" />
@@ -188,9 +188,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:backgroundTint="#6cbce2"
+                android:backgroundTint="#1C7A6A"
                 android:text="Save"
-                android:textColor="@color/black" />
+                android:textColor="@color/white" />
         </RelativeLayout>
 
     </LinearLayout>

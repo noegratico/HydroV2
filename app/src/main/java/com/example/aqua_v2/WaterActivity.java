@@ -166,17 +166,17 @@ public class WaterActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         unit = "liter";
-                        literBtn.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#ff0000")));
+                        literBtn.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#6cbce2")));
 
-                        mlBtn.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#6cbce2")));
+                        mlBtn.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#1C7A6A")));
                     }
                 });
                 mlBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         unit = "milliliter";
-                        literBtn.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#6cbce2")));
-                        mlBtn.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#ff0000")));
+                        literBtn.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#1C7A6A")));
+                        mlBtn.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#6cbce2")));
                     }
                 });
                 saveBtn.setOnClickListener(new View.OnClickListener() {

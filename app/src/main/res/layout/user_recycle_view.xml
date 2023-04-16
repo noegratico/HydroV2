@@ -47,7 +47,7 @@
                 android:id="@+id/manageBtn"
                 android:layout_width="80dp"
                 android:layout_height="41dp"
-                android:backgroundTint="#6cbce2">
+                android:backgroundTint="#1C7A6A">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -55,6 +55,7 @@
                     android:paddingVertical="10dp"
                     android:text="Manage"
                     android:textAlignment="center"
+                    android:textColor="@color/white"
                     android:theme="@style/text" />
             </com.google.android.material.card.MaterialCardView>
         </com.google.android.flexbox.FlexboxLayout>

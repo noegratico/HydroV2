@@ -91,9 +91,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="150dp"
-                android:backgroundTint="#6cbce2"
+                android:backgroundTint="#1C7A6A"
                 android:text="Scheduler"
-                android:textColor="@color/black" />
+                android:textColor="@color/white" />
 
         </LinearLayout>
 

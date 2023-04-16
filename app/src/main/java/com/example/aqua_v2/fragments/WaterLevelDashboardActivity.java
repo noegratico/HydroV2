@@ -39,8 +39,8 @@ private FirebaseFirestore db = FirebaseFirestore.getInstance();
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.activity_water_level, container, false);
          waterTxt = (TextView) rootView.findViewById(R.id.waterTxtBtn);
         waterBox = (TextView) rootView.findViewById(R.id.waterBox);
-        snapA = (TextView) rootView.findViewById(R.id.snapATxt);
-        snapB = (TextView) rootView.findViewById(R.id.snapBTxt);
+//        snapA = (TextView) rootView.findViewById(R.id.snapATxt);
+//        snapB = (TextView) rootView.findViewById(R.id.snapBTxt);
         pumpBtn = (MaterialButton) rootView.findViewById(R.id.pumpBtn);
 
         waterTxt.setOnClickListener(new View.OnClickListener() {
@@ -70,7 +70,7 @@ private FirebaseFirestore db = FirebaseFirestore.getInstance();
                 }
             }
         });
-        db.collection("snap_a").orderBy("datetime", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
+     /*   db.collection("snap_a").orderBy("datetime", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
@@ -105,7 +105,7 @@ private FirebaseFirestore db = FirebaseFirestore.getInstance();
                     });
                 }
             }
-        });
+        });*/
         pumpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

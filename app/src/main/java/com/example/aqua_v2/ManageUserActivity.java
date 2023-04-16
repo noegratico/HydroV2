@@ -95,7 +95,7 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
         name = findViewById(R.id.name);
         email = findViewById(R.id.email);
 //        password = findViewById(R.id.passwordInput);
-        verifyBtn = findViewById(R.id.verifyBtn);
+//        verifyBtn = findViewById(R.id.verifyBtn);
         updateBtn = findViewById(R.id.updateBtn);
         activeBtn = findViewById(R.id.activateUserBtn);
         resetBtn = findViewById(R.id.resetBtn);
@@ -117,7 +117,7 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
         id = extras == null ? "" : changeNullToEmptyString(extras.getString("uuid"));
         name.setText(sName);
         email.setText(sEmail);
-        verifyBtn.setEnabled(!isVerify);
+//        verifyBtn.setEnabled(!isVerify);
         active = extras.getBoolean("active");
 
         changeActiveBtn(active);

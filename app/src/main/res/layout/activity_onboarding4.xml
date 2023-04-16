@@ -9,7 +9,7 @@
         android:orientation="vertical"
         >
         <com.google.android.flexbox.FlexboxLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:flexDirection="column">
             <ImageView
@@ -26,20 +26,20 @@
                 android:layout_height="wrap_content"
                 android:text="Dark Mode"/>
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="20dp"
                 android:textSize="15dp"
                 android:textAlignment="center"
-                android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,"
+                android:text="Select Any Theme you Prefer"
                 />
         </com.google.android.flexbox.FlexboxLayout>
         <com.google.android.flexbox.FlexboxLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="45dp"
             app:justifyContent="space_between">
 
             <com.google.android.flexbox.FlexboxLayout

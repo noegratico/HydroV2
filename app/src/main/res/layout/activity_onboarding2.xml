@@ -31,7 +31,7 @@
                 android:layout_marginTop="20dp"
                 android:textSize="15dp"
                 android:textAlignment="center"
-                android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,"
+                android:text="Access your hydroponic plants anytime and anywhere through remote connectivity."
                 />
         </com.google.android.flexbox.FlexboxLayout>
         <com.google.android.flexbox.FlexboxLayout
@@ -42,6 +42,7 @@
             app:justifyContent="space_between">
 
             <com.google.android.flexbox.FlexboxLayout
+                android:layout_marginTop="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
@@ -61,6 +62,7 @@
 
             <com.google.android.flexbox.FlexboxLayout
                 android:layout_width="wrap_content"
+                android:layout_marginTop="20dp"
                 android:layout_height="wrap_content">
 
                 <TextView

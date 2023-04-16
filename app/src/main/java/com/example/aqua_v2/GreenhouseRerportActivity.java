@@ -91,7 +91,11 @@ public class GreenhouseRerportActivity extends AppCompatActivity {
         reportRecycle = findViewById(R.id.reportRecycle);
         search = findViewById(R.id.searchView);
         settings();
-        storageReference = storage
+
+        String sensor = getIntent().getStringExtra("sensor");
+        storageReference = sensor == null ? storage
+                .getReference()
+                .child("daily-reports") : storage
                 .getReference()
                 .child("daily-reports")
                 .child(getIntent().getStringExtra("sensor"));
@@ -99,7 +103,7 @@ public class GreenhouseRerportActivity extends AppCompatActivity {
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(GreenhouseRerportActivity.this, query,Toast.LENGTH_SHORT).show();
+                Toast.makeText(GreenhouseRerportActivity.this, query, Toast.LENGTH_SHORT).show();
 
                 storageReference.listAll()
                         .addOnSuccessListener(new OnSuccessListener<ListResult>() {
@@ -116,6 +120,7 @@ public class GreenhouseRerportActivity extends AppCompatActivity {
                         });
                 return true;
             }
+
             @Override
             public boolean onQueryTextChange(String newText) {
                 storageReference.listAll()

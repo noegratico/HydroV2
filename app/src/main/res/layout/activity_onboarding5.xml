@@ -19,7 +19,7 @@
             android:textColor="@color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Monitor"/>
+            android:text="Identify"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -27,12 +27,13 @@
             android:layout_marginTop="20dp"
             android:textSize="15dp"
             android:textAlignment="center"
-            android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,"
+            android:text="Determine the stage of growth of your hydroponic plant, whether it is mature for harvesting or still in an early stage of development."
             />
         <com.google.android.flexbox.FlexboxLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_alignSelf="flex_start"
+            android:layout_marginTop="10dp"
             android:layout_marginLeft="20dp"
             >
             <ImageView
