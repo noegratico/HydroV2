@@ -15,21 +15,34 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.aqua_v2.model.UserLog;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.functions.FirebaseFunctions;
+import com.google.longrunning.WaitOperationRequest;
+
+import org.apache.commons.lang3.text.WordUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,7 +72,11 @@ public class UserLogActivity extends AppCompatActivity {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser user = mAuth.getCurrentUser();
     private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance("asia-southeast1");
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final MutableLiveData<Boolean> verify = new MutableLiveData<>(true);
+
+    TextView titleText;
+    SearchView searchView;
 
     RecyclerView recyclerView;
 
@@ -78,8 +95,160 @@ public class UserLogActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user_log);
         settingBtn = findViewById(R.id.settingBtn);
         recyclerView = findViewById(R.id.userLogView);
+        titleText = findViewById(R.id.titleText);
+        searchView = findViewById(R.id.searchView);
         settings();
-        viewUserLog();
+        if (getIntent().getStringExtra("Log") == null) {
+            viewUserLog();
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    JSONObject object = new JSONObject();
+                    try {
+                        object.put("keyword", WordUtils.capitalizeFully(query));
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    mFunctions
+                            .getHttpsCallable("getAllUserLogs")
+                            .call(object)
+                            .addOnSuccessListener((result) -> {
+                                ArrayList<HashMap<String, String>> data = (ArrayList<HashMap<String, String>>) result.getData();
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                    List<UserLog> userLogsData = data.stream().map((logData) -> new UserLog(logData.get("email"), logData.get("datetime"), logData.get("activity"))
+                                    ).collect(Collectors.toList());
+                                    UserLogAdapter adapter = new UserLogAdapter(userLogsData);
+                                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                                    recyclerView.setLayoutManager(layoutManager);
+                                    recyclerView.setItemAnimator(new DefaultItemAnimator());
+                                    recyclerView.setAdapter(adapter);
+                                }
+                            });
+                    return true;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    JSONObject object = new JSONObject();
+                    try {
+                        object.put("keyword", WordUtils.capitalizeFully(newText));
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    mFunctions
+                            .getHttpsCallable("getAllUserLogs")
+                            .call(object)
+                            .addOnSuccessListener((result) -> {
+                                ArrayList<HashMap<String, String>> data = (ArrayList<HashMap<String, String>>) result.getData();
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                    List<UserLog> userLogsData = data.stream().map((logData) -> new UserLog(logData.get("email"), logData.get("datetime"), logData.get("activity"))
+                                    ).collect(Collectors.toList());
+                                    UserLogAdapter adapter = new UserLogAdapter(userLogsData);
+                                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                                    recyclerView.setLayoutManager(layoutManager);
+                                    recyclerView.setItemAnimator(new DefaultItemAnimator());
+                                    recyclerView.setAdapter(adapter);
+                                }
+                            });
+                    return true;
+                }
+            });
+        } else if (getIntent().getStringExtra("Log").equals("Water")) {
+            titleText.setText(getIntent().getStringExtra("Title"));
+            showSensorLog(getIntent().getStringExtra("Log"));
+        } else if (getIntent().getStringExtra("Log").equals("Air")) {
+            titleText.setText(getIntent().getStringExtra("Title"));
+            showSensorLog(getIntent().getStringExtra("Log"));
+        } else if (getIntent().getStringExtra("Log").equals("Grow")) {
+            titleText.setText(getIntent().getStringExtra("Title"));
+            showSensorLog(getIntent().getStringExtra("Log"));
+        } else if (getIntent().getStringExtra("Log").equals("Cool")) {
+            titleText.setText(getIntent().getStringExtra("Title"));
+            showSensorLog(getIntent().getStringExtra("Log"));
+        }
+
+    }
+
+    private void showSensorLog(String log) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("keyword", log);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mFunctions
+                .getHttpsCallable("getAllUserLogs")
+                .call(object)
+                .addOnSuccessListener((result) -> {
+                    ArrayList<HashMap<String, String>> data = (ArrayList<HashMap<String, String>>) result.getData();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        List<UserLog> userLogsData = data.stream().map((logData) -> new UserLog(logData.get("email"), logData.get("datetime"), logData.get("activity"))
+                        ).collect(Collectors.toList());
+                        UserLogAdapter adapter = new UserLogAdapter(userLogsData);
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                        recyclerView.setLayoutManager(layoutManager);
+                        recyclerView.setItemAnimator(new DefaultItemAnimator());
+                        recyclerView.setAdapter(adapter);
+                    }
+                });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                JSONObject dataSearch = new JSONObject();
+                try {
+                    dataSearch.put("keyword", log);
+                    dataSearch.put("date", query);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                mFunctions
+                        .getHttpsCallable("getAllUserLogs")
+                        .call(dataSearch)
+                        .addOnSuccessListener((result) -> {
+                            ArrayList<HashMap<String, String>> data = (ArrayList<HashMap<String, String>>) result.getData();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                List<UserLog> userLogsData = data.stream().map((logData) -> new UserLog(logData.get("email"), logData.get("datetime"), logData.get("activity"))
+                                ).collect(Collectors.toList());
+                                UserLogAdapter adapter = new UserLogAdapter(userLogsData);
+                                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                                recyclerView.setLayoutManager(layoutManager);
+                                recyclerView.setItemAnimator(new DefaultItemAnimator());
+                                recyclerView.setAdapter(adapter);
+                            }
+                        });
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                JSONObject dataSearch = new JSONObject();
+                try {
+                    dataSearch.put("keyword", log);
+                    dataSearch.put("date", newText);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                mFunctions
+                        .getHttpsCallable("getAllUserLogs")
+                        .call(dataSearch)
+                        .addOnSuccessListener((result) -> {
+                            ArrayList<HashMap<String, String>> data = (ArrayList<HashMap<String, String>>) result.getData();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                List<UserLog> userLogsData = data.stream().map((logData) -> new UserLog(logData.get("email"), logData.get("datetime"), logData.get("activity"))
+                                ).collect(Collectors.toList());
+                                UserLogAdapter adapter = new UserLogAdapter(userLogsData);
+                                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                                recyclerView.setLayoutManager(layoutManager);
+                                recyclerView.setItemAnimator(new DefaultItemAnimator());
+                                recyclerView.setAdapter(adapter);
+                            }
+                        });
+                return true;
+            }
+        });
+
     }
 
     private void viewUserLog() {
@@ -97,7 +266,6 @@ public class UserLogActivity extends AppCompatActivity {
                         recyclerView.setItemAnimator(new DefaultItemAnimator());
                         recyclerView.setAdapter(adapter);
                     }
-
                 });
     }
 

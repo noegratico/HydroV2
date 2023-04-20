@@ -60,12 +60,12 @@ public class WaterActivity extends AppCompatActivity {
     private final MutableLiveData<Boolean> verify = new MutableLiveData<>();
 
     //    pump button variable
-    MaterialButton wPumpBtn;
+  /*  MaterialButton wPumpBtn;
     MaterialButton saveBtn;
     MaterialButton literBtn;
     MaterialButton mlBtn;
     TextInputEditText timerInput;
-    TextInputEditText valueInput;
+    TextInputEditText valueInput;*/
     private String unit = "liter";
 
 
@@ -75,6 +75,10 @@ public class WaterActivity extends AppCompatActivity {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     Switch waterPumpSwitch;
+    Switch airPumpSwitch;
+    MaterialButton viewLogsBtn;
+    MaterialButton airPumpLogs;
+    private boolean checkAirSwitch;
     private boolean checkPump;
 
 
@@ -93,21 +97,86 @@ public class WaterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pumps);
 
         settingBtn = findViewById(R.id.settingBtn);
-        wPumpBtn = findViewById(R.id.wpumpschedBtn);
+//        wPumpBtn = findViewById(R.id.wpumpschedBtn);
         waterPumpSwitch = findViewById(R.id.wpumpSwitch);
+        airPumpSwitch = findViewById(R.id.airPumpSwitch);
+        viewLogsBtn = findViewById(R.id.viewLogs);
+        airPumpLogs = findViewById(R.id.airPumpLog);
 //        snapABtn = findViewById(R.id.snapaschedBtn);
 //        snapBBtn = findViewById(R.id.snapbschedBtn);
 
         settings();
+airPumpLogs.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(WaterActivity.this, UserLogActivity.class);
+        intent.putExtra("Title", "Air Pump Logs");
+        intent.putExtra("Log", "Air");
+        startActivity(intent);
+    }
+});
+        viewLogsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(WaterActivity.this, UserLogActivity.class);
+                intent.putExtra("Title","Water Pump Logs");
+                intent.putExtra("Log", "Water");
+                startActivity(intent);
+            }
+        });
         db.collection("scheduler").document("water_pump").addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-
                 waterPumpSwitch.setChecked((Boolean) value.get("switch"));
                 checkPump = (boolean) value.get("switch");
             }
         });
+        db.collection("scheduler").document("air_pump").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                airPumpSwitch.setChecked((Boolean) value.get("switch"));
+                checkAirSwitch = (boolean) value.get("switch");
+            }
+        });
+        airPumpSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                JSONObject object = new JSONObject();
+                JSONObject data = new JSONObject();
+                if (checkAirSwitch) {
+                    try {
+                        object.put("docName", "air_pump");
+                        data.put("switch", false);
+                        object.put("data", data);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    mFunctions
+                            .getHttpsCallable("scheduler")
+                            .call(object)
+                            .addOnSuccessListener((result -> {
+                                addUserLog("User Turn OFF Air Pump");
+                                Toast.makeText(WaterActivity.this, "Air Pump is OFF", Toast.LENGTH_SHORT).show();
+                            }));
+                } else {
+                    try {
+                        object.put("docName", "air_pump");
+                        data.put("switch", true);
+                        object.put("data", data);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    mFunctions
+                            .getHttpsCallable("scheduler")
+                            .call(object)
+                            .addOnSuccessListener((result -> {
+                                addUserLog("User Turn ON Air Pump");
+                                Toast.makeText(WaterActivity.this, "Air Pump is ON", Toast.LENGTH_SHORT).show();
+                            }));
+                }
+            }
 
+        });
         waterPumpSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,7 +216,7 @@ public class WaterActivity extends AppCompatActivity {
             }
         });
 //        water pump schedualer
-        wPumpBtn.setOnClickListener(new View.OnClickListener() {
+        /*wPumpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Dialog dialog = new Dialog(WaterActivity.this);
@@ -216,7 +285,7 @@ public class WaterActivity extends AppCompatActivity {
                     }
                 });
             }
-        });
+        });*/
 
     }
 

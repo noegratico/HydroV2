@@ -82,6 +82,8 @@ public class DevicesActivity extends AppCompatActivity {
     private boolean checkCoolingSwitch;
     private boolean checkNightSwitch;
     private boolean checkBlockedSwitch;
+    MaterialButton growLogs;
+    MaterialButton coolLogs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,15 +101,35 @@ public class DevicesActivity extends AppCompatActivity {
 
         settingBtn = findViewById(R.id.settingBtn);
         growLightBtn = findViewById(R.id.wpumpschedBtn);
-        coolingFanStatusBtn = findViewById(R.id.coolingFanStatusBtn);
+//        coolingFanStatusBtn = findViewById(R.id.coolingFanStatusBtn);
         lightSwitch = findViewById(R.id.wpumpSwitch);
-        airPumpSwitch = findViewById(R.id.airPumpSwitch);
+//        airPumpSwitch = findViewById(R.id.airPumpSwitch);
         coolingFanSwitch = findViewById(R.id.coolingFan);
+        growLogs = findViewById(R.id.growLightLog);
+        coolLogs = findViewById(R.id.coolingFanLog);
 //        liveCameraBtn = findViewById(R.id.liveCameraBtn);
 //        pairedDevices = findViewById(R.id.pairedDevicesBtn);
         settings();
         Dialog dialog = new Dialog(DevicesActivity.this);
 //grow light status
+        growLogs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DevicesActivity.this, UserLogActivity.class);
+                intent.putExtra("Log", "Grow");
+                intent.putExtra("Title", "Grow Light Logs");
+                startActivity(intent);
+            }
+        });
+        coolLogs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DevicesActivity.this, UserLogActivity.class);
+                intent.putExtra("Log", "Cool");
+                intent.putExtra("Title", "Cooling Fan Logs");
+                startActivity(intent);
+            }
+        });
         growLightBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,6 +140,7 @@ public class DevicesActivity extends AppCompatActivity {
                 nightTimeSwitch = dialog.findViewById(R.id.nihtTimeSwitch);
                 blokedSwitch = dialog.findViewById(R.id.blockedSwitch);
                 okBtn = dialog.findViewById(R.id.okBtn);
+
                 okBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -226,7 +249,7 @@ public class DevicesActivity extends AppCompatActivity {
         });
 
 //    colling fan status
-        coolingFanStatusBtn.setOnClickListener(new View.OnClickListener() {
+        /*coolingFanStatusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.setContentView(R.layout.activity_cooling_fan_scheduler);
@@ -269,7 +292,7 @@ public class DevicesActivity extends AppCompatActivity {
                     }
                 });
             }
-        });
+        });*/
         db.collection("scheduler").document("cooling_fan").addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -277,13 +300,7 @@ public class DevicesActivity extends AppCompatActivity {
                 checkCoolingSwitch = (boolean) value.get("switch");
             }
         });
-        db.collection("scheduler").document("air_pump").addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                airPumpSwitch.setChecked((Boolean) value.get("switch"));
-                checkAirSwitch = (boolean) value.get("switch");
-            }
-        });
+
         db.collection("scheduler").document("grow_light").addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -326,45 +343,6 @@ public class DevicesActivity extends AppCompatActivity {
                             .addOnSuccessListener((result -> {
                                 addUserLog("User Turn ON Cooling Fan");
                                 Toast.makeText(DevicesActivity.this, "Cooling Fan is ON", Toast.LENGTH_SHORT).show();
-                            }));
-                }
-            }
-
-        });
-        airPumpSwitch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                JSONObject object = new JSONObject();
-                JSONObject data = new JSONObject();
-                if (checkAirSwitch) {
-                    try {
-                        object.put("docName", "air_pump");
-                        data.put("switch", false);
-                        object.put("data", data);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    mFunctions
-                            .getHttpsCallable("scheduler")
-                            .call(object)
-                            .addOnSuccessListener((result -> {
-                                addUserLog("User Turn OFF Air Pump");
-                                Toast.makeText(DevicesActivity.this, "Air Pump is OFF", Toast.LENGTH_SHORT).show();
-                            }));
-                } else {
-                    try {
-                        object.put("docName", "air_pump");
-                        data.put("switch", true);
-                        object.put("data", data);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    mFunctions
-                            .getHttpsCallable("scheduler")
-                            .call(object)
-                            .addOnSuccessListener((result -> {
-                                addUserLog("User Turn ON Air Pump");
-                                Toast.makeText(DevicesActivity.this, "Air Pump is ON", Toast.LENGTH_SHORT).show();
                             }));
                 }
             }

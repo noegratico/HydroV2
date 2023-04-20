@@ -28,7 +28,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 public class WaterLevelDashboardActivity extends Fragment {
 TextView waterBox;
 TextView waterTxt;
-TextView snapA;
+TextView lightResistance;
 TextView snapB;
 MaterialButton pumpBtn;
 private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -41,6 +41,7 @@ private FirebaseFirestore db = FirebaseFirestore.getInstance();
         waterBox = (TextView) rootView.findViewById(R.id.waterBox);
 //        snapA = (TextView) rootView.findViewById(R.id.snapATxt);
 //        snapB = (TextView) rootView.findViewById(R.id.snapBTxt);
+        lightResistance = rootView.findViewById(R.id.lightResistance);
         pumpBtn = (MaterialButton) rootView.findViewById(R.id.pumpBtn);
 
         waterTxt.setOnClickListener(new View.OnClickListener() {
@@ -49,6 +50,24 @@ private FirebaseFirestore db = FirebaseFirestore.getInstance();
                 Intent intent = new Intent(getActivity(), WaterActivity.class);
                 startActivity(intent);
 
+            }
+        });
+        db.collection("light_resistance").orderBy("datetime", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.w(TAG, "Listen failed.", error);
+                    return;
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    snapshot.getDocumentChanges().stream().findFirst().ifPresent(documentChange -> {
+                        if (documentChange.getType() == DocumentChange.Type.ADDED) {
+                            Log.d(TAG, documentChange.getDocument().get("value", String.class));
+//                            Toast.makeText(getActivity(), documentChange.getDocument().get("value", String.class), Toast.LENGTH_SHORT).show();
+                            lightResistance.setText(documentChange.getDocument().get("value", String.class) +"%");
+                        }
+                    });
+                }
             }
         });
 

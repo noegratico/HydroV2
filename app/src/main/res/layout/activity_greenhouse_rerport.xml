@@ -75,6 +75,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layoutDirection="rtl"
+                android:hint="Search"
+                android:contextClickable="true"
                 app:layout_constraintTop_toBottomOf="@+id/materialButton3"
                 tools:layout_editor_absoluteX="20dp" />
             <androidx.recyclerview.widget.RecyclerView
