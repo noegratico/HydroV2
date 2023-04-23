@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.aqua_v2.R;
 import com.example.aqua_v2.WaterActivity;
+import com.example.aqua_v2.WaterLightActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
@@ -26,23 +28,25 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 public class WaterLevelDashboardActivity extends Fragment {
-TextView waterBox;
-TextView waterTxt;
-TextView lightResistance;
-TextView snapB;
-MaterialButton pumpBtn;
-private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    TextView waterBox;
+    TextView waterTxt;
+    TextView lightResistance;
+    TextView snapB;
+    MaterialButton pumpBtn;
+    ImageButton gHBtn;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.activity_water_level, container, false);
-         waterTxt = (TextView) rootView.findViewById(R.id.waterTxtBtn);
+        waterTxt = (TextView) rootView.findViewById(R.id.waterTxtBtn);
         waterBox = (TextView) rootView.findViewById(R.id.waterBox);
 //        snapA = (TextView) rootView.findViewById(R.id.snapATxt);
 //        snapB = (TextView) rootView.findViewById(R.id.snapBTxt);
         lightResistance = rootView.findViewById(R.id.lightResistance);
         pumpBtn = (MaterialButton) rootView.findViewById(R.id.pumpBtn);
+        gHBtn = rootView.findViewById(R.id.gHBtn);
 
         waterTxt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,7 +68,7 @@ private FirebaseFirestore db = FirebaseFirestore.getInstance();
                         if (documentChange.getType() == DocumentChange.Type.ADDED) {
                             Log.d(TAG, documentChange.getDocument().get("value", String.class));
 //                            Toast.makeText(getActivity(), documentChange.getDocument().get("value", String.class), Toast.LENGTH_SHORT).show();
-                            lightResistance.setText(documentChange.getDocument().get("value", String.class) +"%");
+                            lightResistance.setText(documentChange.getDocument().get("value", String.class));
                         }
                     });
                 }
@@ -83,7 +87,7 @@ private FirebaseFirestore db = FirebaseFirestore.getInstance();
                         if (documentChange.getType() == DocumentChange.Type.ADDED) {
                             Log.d(TAG, documentChange.getDocument().get("value", String.class));
 //                            Toast.makeText(getActivity(), documentChange.getDocument().get("value", String.class), Toast.LENGTH_SHORT).show();
-                            waterBox.setText(documentChange.getDocument().get("value", String.class) +"%");
+                            waterBox.setText(documentChange.getDocument().get("value", String.class) + "%");
                         }
                     });
                 }
@@ -128,7 +132,13 @@ private FirebaseFirestore db = FirebaseFirestore.getInstance();
         pumpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(),WaterActivity.class));
+                startActivity(new Intent(getActivity(), WaterActivity.class));
+            }
+        });
+        gHBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), WaterLightActivity.class));
             }
         });
         return rootView;

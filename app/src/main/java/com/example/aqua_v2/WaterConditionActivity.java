@@ -72,7 +72,8 @@ public class WaterConditionActivity extends AppCompatActivity {
     ImageButton reportSpecBtn;
     MaterialCardView cardBtn;
     MaterialCardView ecCardBtn;
-
+    private int count;
+    private int count1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +112,8 @@ public class WaterConditionActivity extends AppCompatActivity {
 //                TempModel humModel = new TempModel();
 //                humModel.setTemperatureSensors((ArrayList<TemperatureSensor>) eccList);
                 bundle.putParcelable("data", tempModel);
+                bundle.putString("sensor", "ph_level");
+                bundle.putInt("count", count);
 //                bundle.putParcelable("humData", humModel);
                 bundle.putString("sensorName", "pH Level");
                 intent.putExtras(bundle);
@@ -125,6 +128,7 @@ public class WaterConditionActivity extends AppCompatActivity {
                 TempModel humModel = new TempModel();
                 humModel.setTemperatureSensors((ArrayList<TemperatureSensor>) eccList);
                 bundle.putParcelable("data", humModel);
+                bundle.putString("sensor", "ec_level");
                 bundle.putString("sensorName", "ECC Level");
                 intent.putExtras(bundle);
                 startActivity(intent);
@@ -139,7 +143,11 @@ public class WaterConditionActivity extends AppCompatActivity {
                 tempModel.setTemperatureSensors((ArrayList<TemperatureSensor>) phList);
                 TempModel humModel = new TempModel();
                 humModel.setTemperatureSensors((ArrayList<TemperatureSensor>) eccList);
-                bundle.putString("phText","ph Level");
+                bundle.putString("phText", "ph Level");
+                bundle.putString("sensor1", "ph_level");
+                bundle.putString("sensor2", "ec_level");
+                bundle.putInt("count", count);
+                bundle.putInt("count1", count1);
                 bundle.putString("eccText", "ECC Level");
                 bundle.putParcelable("data", tempModel);
                 bundle.putParcelable("humData", humModel);
@@ -160,13 +168,15 @@ public class WaterConditionActivity extends AppCompatActivity {
 
 
     private void phRecent() {
-        HashMap<String, String> humData = new HashMap<>();
+        HashMap<String, Object> humData = new HashMap<>();
         humData.put("collectionName", "ph_level");
+        humData.put("limit", 25);
         mFunctions
                 .getHttpsCallable("getAllSensorData")
                 .call(humData)
                 .addOnSuccessListener(result -> {
                     HashMap<String, ArrayList<HashMap<String, Object>>> resultData = (HashMap<String, ArrayList<HashMap<String, Object>>>) result.getData();
+                    count = ((HashMap<String, Integer>) result.getData()).get("count");
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         phList = resultData.get("data").stream().map(tempRecord -> {
                             Map<String, Integer> datetime = (HashMap<String, Integer>) tempRecord.get("datetime");
@@ -195,13 +205,15 @@ public class WaterConditionActivity extends AppCompatActivity {
     }
 
     private void ecRecent() {
-        HashMap<String, String> ecData = new HashMap<>();
+        HashMap<String, Object> ecData = new HashMap<>();
         ecData.put("collectionName", "ec_level");
+        ecData.put("limit", 25);
         mFunctions
                 .getHttpsCallable("getAllSensorData")
                 .call(ecData)
                 .addOnSuccessListener(result -> {
                     HashMap<String, ArrayList<HashMap<String, Object>>> resultData = (HashMap<String, ArrayList<HashMap<String, Object>>>) result.getData();
+                    count1 = ((HashMap<String, Integer>) result.getData()).get("count");
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         eccList = resultData.get("data").stream().map(tempRecord -> {
                             Map<String, Integer> datetime = (HashMap<String, Integer>) tempRecord.get("datetime");

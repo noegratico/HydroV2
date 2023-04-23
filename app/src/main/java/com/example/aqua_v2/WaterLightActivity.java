@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class GreenHouseActivity extends AppCompatActivity {
+public class WaterLightActivity extends AppCompatActivity {
     Switch switcher;
     boolean nightMode;
     SharedPreferences sharedPreferences;
@@ -88,7 +88,7 @@ public class GreenHouseActivity extends AppCompatActivity {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         }
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_green_house);
+        setContentView(R.layout.activity_water_light);
         settingBtn = findViewById(R.id.settingBtn);
         recyclerView = findViewById(R.id.recentRecycle);
         humRecentView = findViewById(R.id.humRecent);
@@ -98,12 +98,10 @@ public class GreenHouseActivity extends AppCompatActivity {
         humTxt = findViewById(R.id.humTxt);
         tempBtn = findViewById(R.id.tempHolder);
         humBtn = findViewById(R.id.humidityHolder);
-
-
         reportBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(GreenHouseActivity.this, GreenhouseRerportActivity.class));
+                startActivity(new Intent(WaterLightActivity.this, GreenhouseRerportActivity.class));
                 finish();
             }
         });
@@ -112,14 +110,14 @@ public class GreenHouseActivity extends AppCompatActivity {
         tempBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(GreenHouseActivity.this, DetailedActivityReport.class);
+                Intent intent = new Intent(WaterLightActivity.this, DetailedActivityReport.class);
                 Bundle bundle = new Bundle();
                 TempModel tempModel = new TempModel();
                 tempModel.setTemperatureSensors((ArrayList<TemperatureSensor>) tempList);
                 bundle.putParcelable("data", tempModel);
-                bundle.putString("sensor", "temperature");
+                bundle.putString("sensor", "water_level");
                 bundle.putInt("count", count);
-                bundle.putString("sensorName", "Temperature");
+                bundle.putString("sensorName", "Water Level");
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -127,14 +125,14 @@ public class GreenHouseActivity extends AppCompatActivity {
         humBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(GreenHouseActivity.this, DetailedActivityReport.class);
+                Intent intent = new Intent(WaterLightActivity.this, DetailedActivityReport.class);
                 Bundle bundle = new Bundle();
                 TempModel tempModel = new TempModel();
                 tempModel.setTemperatureSensors((ArrayList<TemperatureSensor>) humList);
                 bundle.putParcelable("data", tempModel);
-                bundle.putString("sensor", "humidity");
+                bundle.putString("sensor", "light_resistance");
                 bundle.putInt("count", count1);
-                bundle.putString("sensorName", "Humidity");
+                bundle.putString("sensorName", "Light Resistance");
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -142,16 +140,16 @@ public class GreenHouseActivity extends AppCompatActivity {
         viewAllDataBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(GreenHouseActivity.this, GreenHouseViewAllDataActivity.class);
+                Intent intent = new Intent(WaterLightActivity.this, GreenHouseViewAllDataActivity.class);
                 Bundle bundle = new Bundle();
                 TempModel tempModel = new TempModel();
                 tempModel.setTemperatureSensors((ArrayList<TemperatureSensor>) tempList);
                 TempModel humModel = new TempModel();
                 humModel.setTemperatureSensors((ArrayList<TemperatureSensor>) humList);
-                bundle.putString("phText", "Temperature");
-                bundle.putString("eccText", "Humidity");
-                bundle.putString("sensor1","temperature");
-                bundle.putString("sensor2","humidity");
+                bundle.putString("phText", "Water Level");
+                bundle.putString("eccText", "Light Resistance");
+                bundle.putString("sensor1", "water_level");
+                bundle.putString("sensor2", "light_resistance");
                 bundle.putInt("count", count);
                 bundle.putInt("count1", count1);
                 bundle.putParcelable("data", tempModel);
@@ -169,7 +167,7 @@ public class GreenHouseActivity extends AppCompatActivity {
 
     private void recentTemp() {
         HashMap<String, Object> data = new HashMap<>();
-        data.put("collectionName", "temperature");
+        data.put("collectionName", "water_level");
         data.put("limit", 25);
         mFunctions
                 .getHttpsCallable("getAllSensorData")
@@ -183,7 +181,7 @@ public class GreenHouseActivity extends AppCompatActivity {
                             SimpleDateFormat jdf = new SimpleDateFormat("yyyy-MM-dd");
 //                            if need
 //                            SimpleDateFormat time = new SimpleDateFormat("hh:mm");
-                            TemperatureSensor tempData = new TemperatureSensor(jdf.format(new Date(datetime.get("_seconds") * 1000L)), (String) tempRecord.get("value") + "");
+                            TemperatureSensor tempData = new TemperatureSensor(jdf.format(new Date(datetime.get("_seconds") * 1000L)), (String) tempRecord.get("value") + " %");
                             return tempData;
                         }).collect(Collectors.toList());
                         tempList.stream().findFirst().ifPresent(tempFirst -> {
@@ -204,7 +202,7 @@ public class GreenHouseActivity extends AppCompatActivity {
 
     private void recentHum() {
         HashMap<String, Object> humData = new HashMap<>();
-        humData.put("collectionName", "humidity");
+        humData.put("collectionName", "light_resistance");
         humData.put("limit", 25);
         mFunctions
                 .getHttpsCallable("getAllSensorData")
@@ -218,7 +216,7 @@ public class GreenHouseActivity extends AppCompatActivity {
                             SimpleDateFormat jdf = new SimpleDateFormat("yyyy-MM-dd");
 //                            if need
 //                            SimpleDateFormat time = new SimpleDateFormat("hh:mm");
-                            TemperatureSensor tempData = new TemperatureSensor(jdf.format(new Date(datetime.get("_seconds") * 1000L)), (String) tempRecord.get("value") + "%");
+                            TemperatureSensor tempData = new TemperatureSensor(jdf.format(new Date(datetime.get("_seconds") * 1000L)), (String) tempRecord.get("value"));
                             return tempData;
                         }).collect(Collectors.toList());
                         humList.stream().findFirst().ifPresent(humResult -> {
@@ -240,7 +238,7 @@ public class GreenHouseActivity extends AppCompatActivity {
     }
 
     private void settings() {
-        Dialog dialog = new Dialog(GreenHouseActivity.this);
+        Dialog dialog = new Dialog(WaterLightActivity.this);
         PopupMenu popupMenu = new PopupMenu(this, settingBtn);
 
         if (user != null) {
@@ -285,7 +283,7 @@ public class GreenHouseActivity extends AppCompatActivity {
                     userName = dialog.findViewById(R.id.userName);
                     userEmail = dialog.findViewById(R.id.userEmail);
                     userLevel = dialog.findViewById(R.id.userLevel);
-                    verify.observe(GreenHouseActivity.this, verifyState -> {
+                    verify.observe(WaterLightActivity.this, verifyState -> {
                         changePassword.setVisibility(verifyState ? View.GONE : View.VISIBLE);
                     });
                     mFunctions
@@ -313,7 +311,7 @@ public class GreenHouseActivity extends AppCompatActivity {
                         public void onClick(View v) {
                             user.sendEmailVerification().addOnSuccessListener(result -> {
                                 addUserLog("User " + userName.getText() + " Verified The Account");
-                                Toast.makeText(GreenHouseActivity.this, "Email Sent", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(WaterLightActivity.this, "Email Sent", Toast.LENGTH_SHORT).show();
                                 dialog.dismiss();
                             });
                         }
@@ -346,7 +344,7 @@ public class GreenHouseActivity extends AppCompatActivity {
                                             .call(data)
                                             .addOnSuccessListener(result -> {
                                                 addUserLog("User " + editName.getText().toString() + " Profile Updated");
-                                                Toast.makeText(GreenHouseActivity.this, "Update Successfully", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(WaterLightActivity.this, "Update Successfully", Toast.LENGTH_SHORT).show();
                                                 dialog.dismiss();
                                             });
                                 }
@@ -409,7 +407,7 @@ public class GreenHouseActivity extends AppCompatActivity {
 
 //                    Member menu
                 } else if (id == 2) {
-                    Intent intent = new Intent(GreenHouseActivity.this, MemberListActivity.class);
+                    Intent intent = new Intent(WaterLightActivity.this, MemberListActivity.class);
                     startActivity(intent);
                 }
 //                lag-out menu
@@ -427,7 +425,7 @@ public class GreenHouseActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             FirebaseAuth.getInstance().signOut();
-                            Intent logoutIntent = new Intent(GreenHouseActivity.this, MainActivity.class);
+                            Intent logoutIntent = new Intent(WaterLightActivity.this, MainActivity.class);
                             logoutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(logoutIntent);
                             finish();
@@ -448,7 +446,7 @@ public class GreenHouseActivity extends AppCompatActivity {
 
 //                    add logout function here
                 } else if (id == 4) {
-                    startActivity(new Intent(GreenHouseActivity.this, UserLogActivity.class));
+                    startActivity(new Intent(WaterLightActivity.this, UserLogActivity.class));
                 }
 
                 return false;

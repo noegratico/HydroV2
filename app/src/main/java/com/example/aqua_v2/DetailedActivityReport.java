@@ -1,5 +1,9 @@
 package com.example.aqua_v2;
 
+import static android.content.ContentValues.TAG;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.MutableLiveData;
@@ -11,7 +15,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,6 +36,12 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.functions.FirebaseFunctions;
 
 import java.text.SimpleDateFormat;
@@ -38,6 +50,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DetailedActivityReport extends AppCompatActivity {
     Switch switcher;
@@ -59,6 +72,7 @@ public class DetailedActivityReport extends AppCompatActivity {
     private FirebaseUser user = mAuth.getCurrentUser();
     private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance("asia-southeast1");
     private final MutableLiveData<Boolean> verify = new MutableLiveData<>();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     TextView sensorName;
     private RecyclerView recyclerView;
@@ -69,6 +83,12 @@ public class DetailedActivityReport extends AppCompatActivity {
     ImageButton infoBtn;
     ImageButton reportBtn;
     private String report;
+    private boolean isLoading = false;
+    private int limit = 25;
+    private int count;
+    private recycleTemperatureData recycleData;
+    TextView displaySensorText;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,8 +108,10 @@ public class DetailedActivityReport extends AppCompatActivity {
         sensorName = findViewById(R.id.sensorName);
         infoBtn = findViewById(R.id.infoBtn);
         reportBtn = findViewById(R.id.reportBtn);
+        displaySensorText = findViewById(R.id.realTimeView);
         Bundle bundle = getIntent().getExtras();
         dataList = bundle.<TempModel>getParcelable("data").getTemperatureSensors();
+        count = bundle.getInt("count");
         sensor = bundle.getString("sensorName");
         sensorName.setText(sensor);
         getSensorData();
@@ -124,6 +146,14 @@ public class DetailedActivityReport extends AppCompatActivity {
                     report = "ph_level";
                 }else if(sensor.equals("ECC Level")){
                     report = "ec_level";
+                }else if(sensor.equals("Water Level")){
+                    report = "water_level";
+                }else if(sensor.equals("Light Resistance")){
+                    report = "light_resistance";
+                }else if(sensor.equals("Temperature")){
+                    report = "temperature";
+                }else if(sensor.equals("Humidity")){
+                    report = "humidity";
                 }
                 Intent intent = new Intent(DetailedActivityReport.this, GreenhouseRerportActivity.class);
                 intent.putExtra("sensor", report );
@@ -131,6 +161,26 @@ public class DetailedActivityReport extends AppCompatActivity {
             }
         });
         settings();
+        setupOnScrollListener();
+
+        db.collection(getIntent().getStringExtra("sensor")).orderBy("datetime", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    snapshot.getDocumentChanges().stream().findFirst().ifPresent(documentChange -> {
+                        if (documentChange.getType() == DocumentChange.Type.ADDED) {
+                            Log.d(TAG, documentChange.getDocument().get("value", String.class));
+//                            Toast.makeText(getActivity(), documentChange.getDocument().get("value", String.class), Toast.LENGTH_SHORT).show();
+                            displaySensorText.setText(documentChange.getDocument().get("value", String.class));
+                        }
+                    });
+                }
+            }
+        });
 
     }
 
@@ -154,8 +204,59 @@ public class DetailedActivityReport extends AppCompatActivity {
 
     }
 
+    private void setupOnScrollListener() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+                if (!isLoading) {
+                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == dataList.size() - 1) {
+                        //bottom of list!
+                        loadMore();
+                        isLoading = true;
+                    }
+                }
+
+            }
+        });
+    }
+
+    private void loadMore() {
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("collectionName", getIntent().getStringExtra("sensor"));
+        data.put("limit", limit);
+        data.put("pageIndex", (dataList.size() / limit) - 1);
+        mFunctions
+                .getHttpsCallable("getAllSensorData")
+                .call(data)
+                .addOnSuccessListener((result) -> {
+                    HashMap<String, ArrayList<HashMap<String, Object>>> resultData = (HashMap<String, ArrayList<HashMap<String, Object>>>) result.getData();
+                    count = ((HashMap<String, Integer>) result.getData()).get("count");
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        dataList.addAll(resultData.get("data").stream().map(tempRecord -> {
+                            Map<String, Integer> datetime = (HashMap<String, Integer>) tempRecord.get("datetime");
+                            SimpleDateFormat jdf = new SimpleDateFormat("yyyy-MM-dd");
+                            //                            if need
+                            //                            SimpleDateFormat time = new SimpleDateFormat("hh:mm");
+                            TemperatureSensor tempData = new TemperatureSensor(jdf.format(new Date(datetime.get("_seconds") * 1000L)), (String) tempRecord.get("value") + "°c");
+                            return tempData;
+                        }).collect(Collectors.toList()));
+                    }
+                    recycleData.notifyItemInserted(dataList.size() - 1);
+                    isLoading = false;
+                });
+    }
+
+
     private void getSensorData() {
-        recycleTemperatureData recycleData = new recycleTemperatureData((ArrayList<TemperatureSensor>) dataList);
+        recycleData = new recycleTemperatureData((ArrayList<TemperatureSensor>) dataList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());

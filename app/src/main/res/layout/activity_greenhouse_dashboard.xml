@@ -179,7 +179,6 @@
                             android:layout_height="wrap_content"
                             android:text="7"
                             android:textAlignment="center"
-                            android:textColor="#00ff00"
                             android:textSize="30dp" />
 
                         <TextView
@@ -213,9 +212,8 @@
                             android:id="@+id/greenHouseEc"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="10000"
+                            android:text=""
                             android:textAlignment="center"
-                            android:textColor="#ff0000"
                             android:textSize="30dp" />
 
                         <TextView

@@ -86,7 +86,7 @@
                     style="@style/text"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="Swipe Back"
+                    android:text="Back"
                     android:textStyle="bold"
                     app:layout_alignSelf="center" />
             </com.google.android.flexbox.FlexboxLayout>
@@ -99,7 +99,7 @@
                     style="@style/text"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="Swipe Next"
+                    android:text="Next"
                     android:textStyle="bold"
                     app:layout_alignSelf="center" />
 

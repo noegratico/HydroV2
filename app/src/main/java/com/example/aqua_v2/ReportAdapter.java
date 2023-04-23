@@ -94,10 +94,24 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.MyViewHold
                         return;
                     }
                     storageReference.getDownloadUrl().addOnSuccessListener((result) -> {
-                        downloading = Ion.with(context).load(result.toString())
-                                .write(new File(Environment.getExternalStoragePublicDirectory
+                        File newFile = new File(Environment.getExternalStoragePublicDirectory
+                                (Environment.DIRECTORY_DOWNLOADS),
+                                storageReference.getName());
+                        if (newFile.exists()) {
+                            int num = 1;
+                            String filename = storageReference.getName().split("\\.")[0];
+                            newFile = new File(Environment.getExternalStoragePublicDirectory
+                                    (Environment.DIRECTORY_DOWNLOADS),
+                                    String.format("%s (%d).pdf", filename, num));
+                            while (newFile.exists()) {
+                                newFile = new File(Environment.getExternalStoragePublicDirectory
                                         (Environment.DIRECTORY_DOWNLOADS),
-                                        storageReference.getName()));
+                                        String.format("%s (%d).pdf", filename, num++));
+                            }
+
+                        }
+                        downloading = Ion.with(context).load(result.toString())
+                                .write(newFile);
 
                         ((ResponseFuture<File>) downloading).setCallback((e, resultFile) -> {
                             resetDownload();
@@ -121,6 +135,7 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.MyViewHold
                                 notificationChannel.enableVibration(true);
                                 notificationManager.createNotificationChannel(notificationChannel);
                             }
+
                             notification = new NotificationCompat.Builder(activity, CHANNEL_ID)
                                     .setDefaults(Notification.DEFAULT_ALL)
                                     .setWhen(System.currentTimeMillis())
