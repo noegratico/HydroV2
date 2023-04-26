@@ -61,6 +61,8 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
     private String selectedUserLevel = "member";
     private Spinner spinner;
 
+    private String checkname;
+    private  String checkemail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +138,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
                 .getHttpsCallable("signUp")
                 .call(data)
                 .addOnSuccessListener(result -> {
+                    Toast.makeText(this, "Account has been Added", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(RegisterActivity.this, MemberListActivity.class));
                     finish();
                 }).addOnFailureListener(e -> {
@@ -221,6 +224,9 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
                                 userName.setText((String) data.get("name"));
                                 userLevel.setText((String) data.get("userLevel"));
                                 verify.setValue((Boolean) data.get("isEmailVerified"));
+
+                                checkname = (String) data.get("name");
+                                checkemail = (String) data.get("email");
                             });
 
                     dialog.show();
@@ -259,10 +265,10 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
                                 @Override
                                 public void onClick(View v) {
                                     Map<String, String> data = new HashMap<>();
-                                    if (editName.getText().toString() != null) {
+                                    if (editName.getText().toString() != null && editName.getText().toString() != checkname) {
                                         data.put("name", editName.getText().toString());
                                     }
-                                    if (editEmail.getText().toString() != null) {
+                                    if (editEmail.getText().toString() != null && editEmail.getText().toString() != checkemail) {
                                         data.put("email", editEmail.getText().toString());
                                     }
                                     mFunctions

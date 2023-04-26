@@ -34,7 +34,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="10dp"
                     android:layout_marginLeft="10dp"
-                    android:text="Greenhouse"
+                    android:text="Hydro Farm  "
                     android:textSize="30dp" />
 
                 <ImageButton

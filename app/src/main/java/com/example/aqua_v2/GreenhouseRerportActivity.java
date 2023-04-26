@@ -72,6 +72,9 @@ public class GreenhouseRerportActivity extends AppCompatActivity {
 
     SearchView search;
 
+    private String name;
+    private  String email;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -210,6 +213,9 @@ public class GreenhouseRerportActivity extends AppCompatActivity {
                                 userName.setText((String) data.get("name"));
                                 userLevel.setText((String) data.get("userLevel"));
                                 verify.setValue((Boolean) data.get("isEmailVerified"));
+
+                                name = (String) data.get("name");
+                                email = (String) data.get("email");
                             });
 
                     dialog.show();
@@ -248,10 +254,10 @@ public class GreenhouseRerportActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(View v) {
                                     Map<String, String> data = new HashMap<>();
-                                    if (editName.getText().toString() != null) {
+                                    if (editName.getText().toString() != null && editName.getText().toString() != name) {
                                         data.put("name", editName.getText().toString());
                                     }
-                                    if (editEmail.getText().toString() != null) {
+                                    if (editEmail.getText().toString() != null && editEmail.getText().toString() != email) {
                                         data.put("email", editEmail.getText().toString());
                                     }
                                     mFunctions

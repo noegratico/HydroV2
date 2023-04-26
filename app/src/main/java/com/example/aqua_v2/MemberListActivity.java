@@ -75,6 +75,9 @@ public class MemberListActivity extends AppCompatActivity {
     private recyclerAdapter.RecycleViewClickListener listener;
     private List<User> userList = new ArrayList<>();
 
+    private String name;
+    private String email;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         loadingScreen();
@@ -224,6 +227,9 @@ settings();
                                 userName.setText((String) data.get("name"));
                                 userLevel.setText((String) data.get("userLevel"));
                                 verify.setValue((Boolean) data.get("isEmailVerified"));
+
+                                name = (String) data.get("name");
+                                email = (String) data.get("email");
                             });
 
                     dialog.show();
@@ -262,10 +268,10 @@ settings();
                                 @Override
                                 public void onClick(View v) {
                                     Map<String, String> data = new HashMap<>();
-                                    if (editName.getText().toString() != null) {
+                                    if (editName.getText().toString() != null && editName.getText().toString() != name) {
                                         data.put("name", editName.getText().toString());
                                     }
-                                    if (editEmail.getText().toString() != null) {
+                                    if (editEmail.getText().toString() != null && editEmail.getText().toString() != email) {
                                         data.put("email", editEmail.getText().toString());
                                     }
                                     mFunctions
