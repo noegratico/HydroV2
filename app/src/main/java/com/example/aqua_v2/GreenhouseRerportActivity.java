@@ -30,6 +30,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
@@ -345,11 +346,18 @@ public class GreenhouseRerportActivity extends AppCompatActivity {
                     logout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            FirebaseAuth.getInstance().signOut();
-                            Intent logoutIntent = new Intent(GreenhouseRerportActivity.this, MainActivity.class);
-                            logoutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(logoutIntent);
-                            finish();
+                            FirebaseFirestore.getInstance().collection("users").document(mAuth.getUid())
+                                    .update("isLogin", false)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            FirebaseAuth.getInstance().signOut();
+                                            Intent logoutIntent = new Intent(GreenhouseRerportActivity.this, MainActivity.class);
+                                            logoutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            startActivity(logoutIntent);
+                                            finish();
+                                        }
+                                    });
                         }
                     });
                     cancelBtn.setOnClickListener(new View.OnClickListener() {

@@ -31,6 +31,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
 
 import java.text.SimpleDateFormat;
@@ -432,11 +433,18 @@ public class GreenHouseActivity extends AppCompatActivity {
                     logout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            FirebaseAuth.getInstance().signOut();
-                            Intent logoutIntent = new Intent(GreenHouseActivity.this, MainActivity.class);
-                            logoutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(logoutIntent);
-                            finish();
+                            FirebaseFirestore.getInstance().collection("users").document(mAuth.getUid())
+                                    .update("isLogin", false)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            FirebaseAuth.getInstance().signOut();
+                                            Intent logoutIntent = new Intent(GreenHouseActivity.this, MainActivity.class);
+                                            logoutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            startActivity(logoutIntent);
+                                            finish();
+                                        }
+                                    });
                         }
                     });
                     cancelBtn.setOnClickListener(new View.OnClickListener() {

@@ -131,8 +131,6 @@ public class DevicesActivity extends AppCompatActivity {
         allowCoolFan = findViewById(R.id.allowCoolFan);
 
 
-//        liveCameraBtn = findViewById(R.id.liveCameraBtn);
-//        pairedDevices = findViewById(R.id.pairedDevicesBtn);
         settings();
         Dialog dialog = new Dialog(DevicesActivity.this);
 //grow light status
@@ -275,9 +273,9 @@ public class DevicesActivity extends AppCompatActivity {
                         case MODIFIED:
                             String sensor = (String) dc.getDocument().getData().get("name");
                             boolean sensorSwitch = (boolean) dc.getDocument().getData().get("switch");
-                            if (sensor.equals("Cooling Fan")) {
-                                showNotification(sensor, sensorSwitch);
-                                AlertDialog.Builder builder = new AlertDialog.Builder(DevicesActivity.this);
+                            if (sensor.equals("Cooling Fan")){
+//                                showNotification(sensor, sensorSwitch);
+                               /* AlertDialog.Builder builder = new AlertDialog.Builder(DevicesActivity.this);
                                 builder.setMessage("Cooling Fan Switch is Modified Please Wait a Few Seconds");
                                 builder.setTitle("Notice");
                                 builder.setCancelable(false);
@@ -289,10 +287,10 @@ public class DevicesActivity extends AppCompatActivity {
                                     public void run() {
                                         alertDialog.dismiss();
                                     }
-                                }, 10000);
+                                }, 10000);*/
                             } else if (sensor.equals("Grow Light")) {
                                 showNotification(sensor, sensorSwitch);
-                                AlertDialog.Builder builder = new AlertDialog.Builder(DevicesActivity.this);
+                              /*  AlertDialog.Builder builder = new AlertDialog.Builder(DevicesActivity.this);
                                 builder.setMessage("Grow Light Switch is Modified Please Wait a Few Seconds");
                                 builder.setTitle("Notice");
                                 builder.setCancelable(false);
@@ -304,7 +302,7 @@ public class DevicesActivity extends AppCompatActivity {
                                     public void run() {
                                         alertDialog.dismiss();
                                     }
-                                }, 10000);
+                                }, 10000);*/
                             }
                             Log.d(TAG, "Modified city: " + dc.getDocument().getData());
                             break;
@@ -326,12 +324,15 @@ public class DevicesActivity extends AppCompatActivity {
                 }
             }
         });
+
         db.collection("scheduler").document("cooling_fan").addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                 sensorUserLevel = (String) value.get("userLevel");
+//                value.getDocumentReference("switch").equals("swict");
                 coolingFanSwitch.setChecked((Boolean) value.get("switch"));
                 checkCoolingSwitch = (boolean) value.get("switch");
+                showNotification((String) value.get("name"), (Boolean) value.get("switch"));
 //                allowCoolFanSwitch.setChecked((Boolean) value.get("isAllow"));
                 if (userCurrentLevel.equals("member") && sensorUserLevel.equals("admin")) {
                     coolingFanSwitch.setEnabled(false);
@@ -362,6 +363,7 @@ public class DevicesActivity extends AppCompatActivity {
                 }
             }
         });
+
 
         allowCoolFan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -732,11 +734,18 @@ public class DevicesActivity extends AppCompatActivity {
                     logout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            FirebaseAuth.getInstance().signOut();
-                            Intent logoutIntent = new Intent(DevicesActivity.this, MainActivity.class);
-                            logoutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(logoutIntent);
-                            finish();
+                            FirebaseFirestore.getInstance().collection("users").document(mAuth.getUid())
+                                    .update("isLogin", false)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            FirebaseAuth.getInstance().signOut();
+                                            Intent logoutIntent = new Intent(DevicesActivity.this, MainActivity.class);
+                                            logoutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            startActivity(logoutIntent);
+                                            finish();
+                                        }
+                                    });
                         }
                     });
                     cancelBtn.setOnClickListener(new View.OnClickListener() {

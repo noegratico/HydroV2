@@ -460,11 +460,18 @@ public class UserLogActivity extends AppCompatActivity {
                     logout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            FirebaseAuth.getInstance().signOut();
-                            Intent logoutIntent = new Intent(UserLogActivity.this, MainActivity.class);
-                            logoutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(logoutIntent);
-                            finish();
+                            FirebaseFirestore.getInstance().collection("users").document(mAuth.getUid())
+                                    .update("isLogin", false)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            FirebaseAuth.getInstance().signOut();
+                                            Intent logoutIntent = new Intent(UserLogActivity.this, MainActivity.class);
+                                            logoutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            startActivity(logoutIntent);
+                                            finish();
+                                        }
+                                    });
                         }
                     });
                     cancelBtn.setOnClickListener(new View.OnClickListener() {
