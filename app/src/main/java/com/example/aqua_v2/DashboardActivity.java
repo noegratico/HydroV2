@@ -13,6 +13,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -50,6 +52,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
 
 import org.json.JSONException;
@@ -104,7 +107,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     private String name;
     private String email;
-
+    NotificationChannel channel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         checkUser();
@@ -170,7 +173,7 @@ public class DashboardActivity extends AppCompatActivity {
                         popupMenu.getMenu().add(Menu.NONE, 1, 1, "Theme");
                         popupMenu.getMenu().add(Menu.NONE, 2, 2, "Member");
                         popupMenu.getMenu().add(Menu.NONE, 3, 4, "Logout");
-                        popupMenu.getMenu().add(Menu.NONE, 4, 3,"User Log");
+                        popupMenu.getMenu().add(Menu.NONE, 4, 3, "User Log");
                     } else {
                         userLvlTxt.setText("User");
                         popupMenu.getMenu().add(Menu.NONE, 0, 0, "Profile");
@@ -231,7 +234,7 @@ public class DashboardActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             user.sendEmailVerification().addOnSuccessListener(result -> {
-                                addUserLog("User "+ userName.getText() + " Verified The Account");
+                                addUserLog("User " + userName.getText() + " Verified The Account");
                                 Toast.makeText(DashboardActivity.this, "Email Sent", Toast.LENGTH_SHORT).show();
                                 dialog.dismiss();
                             });
@@ -345,11 +348,19 @@ public class DashboardActivity extends AppCompatActivity {
                     logout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            FirebaseAuth.getInstance().signOut();
-                            Intent logoutIntent = new Intent(DashboardActivity.this, MainActivity.class);
-                            logoutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(logoutIntent);
-                            finish();
+                            FirebaseFirestore.getInstance().collection("users").document(mAuth.getUid())
+                                    .update("isLogin", false)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            FirebaseAuth.getInstance().signOut();
+                                            Intent logoutIntent = new Intent(DashboardActivity.this, MainActivity.class);
+                                            logoutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            startActivity(logoutIntent);
+                                            finish();
+                                        }
+                                    });
+
                         }
                     });
                     cancelBtn.setOnClickListener(new View.OnClickListener() {
@@ -366,8 +377,8 @@ public class DashboardActivity extends AppCompatActivity {
                     });
 
 //                    add logout function here
-                }else if(id == 4){
-                    startActivity(new Intent(DashboardActivity.this,UserLogActivity.class));
+                } else if (id == 4) {
+                    startActivity(new Intent(DashboardActivity.this, UserLogActivity.class));
                 }
 
                 return false;
@@ -384,6 +395,7 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
     }
+
     private void addUserLog(String userActivity) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String currentDateAndTime = sdf.format(new Date());

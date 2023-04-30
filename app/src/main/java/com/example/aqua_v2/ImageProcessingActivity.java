@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
@@ -154,7 +155,13 @@ public class ImageProcessingActivity extends AppCompatActivity {
                 }
             }
             String[] classes = {"To Early to Harvest", "Ready to Harvest", "Not a Plant"};
-
+            if (classes[maxPos] == "Not a Plant") {
+                result.setTextColor(Color.parseColor("#ed7014"));
+            } else if (classes[maxPos] == "Ready to Harvest") {
+                result.setTextColor(Color.parseColor("green"));
+            }else {
+                result.setTextColor(Color.parseColor("red"));
+            }
             result.setText(classes[maxPos]);
 
 
@@ -175,23 +182,24 @@ public class ImageProcessingActivity extends AppCompatActivity {
             image = Bitmap.createScaledBitmap(image, imageSize, imageSize, false);
             classifyImage(image);
         } else if (requestCode == 2 && resultCode == RESULT_OK) {
-           if(data != null){
-               Uri uri = data.getData();
-               try {
-                   Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-                   int dimension = Math.min(bitmap.getWidth(), bitmap.getHeight());
-                   bitmap = ThumbnailUtils.extractThumbnail(bitmap, dimension, dimension);
-                   imageView.setImageBitmap(bitmap);
-                   bitmap = Bitmap.createScaledBitmap(bitmap, imageSize, imageSize, false);
-                   classifyImage(bitmap);
-               } catch (IOException e) {
-                   e.printStackTrace();
-               }
-           }
+            if (data != null) {
+                Uri uri = data.getData();
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                    int dimension = Math.min(bitmap.getWidth(), bitmap.getHeight());
+                    bitmap = ThumbnailUtils.extractThumbnail(bitmap, dimension, dimension);
+                    imageView.setImageBitmap(bitmap);
+                    bitmap = Bitmap.createScaledBitmap(bitmap, imageSize, imageSize, false);
+                    classifyImage(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
 
     }
+
     private void settings() {
         Dialog dialog = new Dialog(ImageProcessingActivity.this);
         PopupMenu popupMenu = new PopupMenu(this, settingBtn);

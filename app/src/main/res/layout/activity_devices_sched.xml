@@ -46,19 +46,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginRight="20dp">
+
         <com.google.android.flexbox.FlexboxLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:justifyContent="flex_end">
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/growLightLog"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
                 android:backgroundTint="#1C7A6A"
-                android:text="View Logs"/>
+                android:text="View Logs"
+                android:textColor="@color/white" />
         </com.google.android.flexbox.FlexboxLayout>
     </LinearLayout>
+
     <androidx.cardview.widget.CardView
         style="@style/cardBackground"
         android:layout_width="match_parent"
@@ -118,23 +121,27 @@
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginRight="20dp">
+
         <com.google.android.flexbox.FlexboxLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:justifyContent="flex_end">
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/coolingFanLog"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
                 android:backgroundTint="#1C7A6A"
-                android:text="View Logs"/>
+                android:text="View Logs"
+                android:textColor="@color/white" />
         </com.google.android.flexbox.FlexboxLayout>
     </LinearLayout>
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -176,6 +183,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_weight="1"
                     android:checked="false"
+                    android:enabled="true"
                     app:layout_alignSelf="center" />
             </com.google.android.flexbox.FlexboxLayout>
         </LinearLayout>
@@ -223,47 +231,126 @@
 
 
      </androidx.cardview.widget.CardView>-->
-  <!--  <androidx.cardview.widget.CardView
+    <!--  <androidx.cardview.widget.CardView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginHorizontal="20dp"
+          android:layout_marginVertical="10dp"
+          app:cardCornerRadius="14dp"
+          app:cardElevation="4dp"
+
+          >
+
+          <com.google.android.flexbox.FlexboxLayout
+
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginHorizontal="10dp"
+              android:layout_marginTop="10dp"
+              android:layout_marginBottom="10dp"
+              app:justifyContent="space_between">
+
+
+              <TextView
+                  style="@style/text"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="Air Pump"
+                  android:textSize="25dp"
+                  android:textStyle="bold"
+                  app:layout_alignSelf="center" />
+
+              <Switch
+                  android:id="@+id/airPumpSwitch"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginLeft="20dp"
+                  android:layout_weight="1"
+                  android:checked="false"
+                  app:layout_alignSelf="center" />
+
+          </com.google.android.flexbox.FlexboxLayout>
+
+
+      </androidx.cardview.widget.CardView>-->
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/allowSwitch"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginVertical="10dp"
-        app:cardCornerRadius="14dp"
-        app:cardElevation="4dp"
+        android:layout_height="match_parent"
+        android:visibility="invisible">
 
-        >
-
-        <com.google.android.flexbox.FlexboxLayout
-
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            app:justifyContent="space_between">
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="10dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="4dp"
+            app:layout_alignSelf="flex_end">
 
-
-            <TextView
-                style="@style/text"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Air Pump"
-                android:textSize="25dp"
-                android:textStyle="bold"
-                app:layout_alignSelf="center" />
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical">
+                <com.google.android.flexbox.FlexboxLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:layout_marginVertical="10dp"
+                    app:justifyContent="space_between">
 
-            <Switch
-                android:id="@+id/airPumpSwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="1"
-                android:checked="false"
-                app:layout_alignSelf="center" />
+                    <TextView
 
-        </com.google.android.flexbox.FlexboxLayout>
+                        style="@style/text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Allow Grow light"
+                        android:textSize="25dp"
+                        android:textStyle="bold" />
+
+                    <Switch
+                        android:id="@+id/allowGrowLight"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_weight="1"
+                        android:checked="false"
+                        android:enabled="true"
+                        app:layout_alignSelf="center" />
+                </com.google.android.flexbox.FlexboxLayout>
+                <com.google.android.flexbox.FlexboxLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:layout_marginVertical="10dp"
+                    app:justifyContent="space_between">
+
+                    <TextView
+                        style="@style/text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Allow Cooling Fan"
+                        android:textSize="25dp"
+                        android:textStyle="bold" />
+
+                    <Switch
+                        android:id="@+id/allowCoolFan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_weight="1"
+                        android:checked="false"
+                        android:enabled="true"
+                        app:layout_alignSelf="center" />
+                </com.google.android.flexbox.FlexboxLayout>
+            </LinearLayout>
 
 
-    </androidx.cardview.widget.CardView>-->
+        </androidx.cardview.widget.CardView>
+    </com.google.android.flexbox.FlexboxLayout>
 
 </LinearLayout>
