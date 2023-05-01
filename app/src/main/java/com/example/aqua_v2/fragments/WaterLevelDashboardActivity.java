@@ -2,7 +2,11 @@ package com.example.aqua_v2.fragments;
 
 import static android.content.ContentValues.TAG;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +18,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.aqua_v2.R;
@@ -27,6 +33,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.UUID;
+
 public class WaterLevelDashboardActivity extends Fragment {
     TextView waterBox;
     TextView waterTxt;
@@ -35,6 +43,7 @@ public class WaterLevelDashboardActivity extends Fragment {
     MaterialButton pumpBtn;
     ImageButton gHBtn;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private Notification notification;
 
     @Nullable
     @Override
@@ -68,12 +77,23 @@ public class WaterLevelDashboardActivity extends Fragment {
                         if (documentChange.getType() == DocumentChange.Type.ADDED) {
                             Log.d(TAG, documentChange.getDocument().get("value", String.class));
 //                            Toast.makeText(getActivity(), documentChange.getDocument().get("value", String.class), Toast.LENGTH_SHORT).show();
+//                            int lightLevel = Integer.parseInt(documentChange.getDocument().get("value", String.class));
+//
+//                            if (lightLevel <= 960) {
+//                                showNotification("Light Resistance Level", "Low");
+//                            } else if (lightLevel >= 1080) {
+//                                showNotification("Light Resistance Level", "High");
+//                            }
                             lightResistance.setText(documentChange.getDocument().get("value", String.class));
                         }
                     });
+
                 }
+
             }
         });
+
+
 
         db.collection("water_level").orderBy("datetime", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -87,6 +107,12 @@ public class WaterLevelDashboardActivity extends Fragment {
                         if (documentChange.getType() == DocumentChange.Type.ADDED) {
                             Log.d(TAG, documentChange.getDocument().get("value", String.class));
 //                            Toast.makeText(getActivity(), documentChange.getDocument().get("value", String.class), Toast.LENGTH_SHORT).show();
+//                            int waterlevel = Integer.parseInt(documentChange.getDocument().get("value", String.class));
+//                            if (waterlevel <= 20) {
+//                                showNotification("Water Level", "Low");
+//                            } else if (waterlevel >= 90) {
+//                                showNotification("Water Level", "High");
+//                            }
                             waterBox.setText(documentChange.getDocument().get("value", String.class) + "%");
                         }
                     });
@@ -142,5 +168,33 @@ public class WaterLevelDashboardActivity extends Fragment {
             }
         });
         return rootView;
+    }
+
+    private void showNotification(String name, String status) {
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getActivity());
+
+        String CHANNEL_ID = UUID.randomUUID().toString();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, "My Notifications", NotificationManager.IMPORTANCE_HIGH);
+            // Configure the notification channel.
+
+            notificationChannel.setDescription("Sample Channel description");
+
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+            notificationChannel.enableVibration(true);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+//        String switchStatus = (sensorSwitch) ? "ON" : "OFF";
+        notification = new NotificationCompat.Builder(getActivity(), CHANNEL_ID)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setWhen(System.currentTimeMillis())
+                .setContentTitle("Switch Notice")
+                .setContentText(name + " is now " + status)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .build();
+        notificationManager.notify(1, notification);
     }
 }

@@ -1,16 +1,24 @@
 package com.example.aqua_v2;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.MutableLiveData;
 
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -22,16 +30,19 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.functions.FirebaseFunctions;
 
 import org.json.JSONException;
@@ -41,6 +52,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class WaterActivity extends AppCompatActivity {
     Switch switcher;
@@ -84,6 +96,15 @@ public class WaterActivity extends AppCompatActivity {
     private String name;
     private String email;
 
+    private Notification notification;
+    private String userCurrentLevel;
+    private String currentUserId = mAuth.getUid();
+    FlexboxLayout allowUser;
+    private boolean air;
+    private boolean water;
+    Switch allowWater;
+    Switch allowAir;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
@@ -104,26 +125,94 @@ public class WaterActivity extends AppCompatActivity {
         airPumpSwitch = findViewById(R.id.airPumpSwitch);
         viewLogsBtn = findViewById(R.id.viewLogs);
         airPumpLogs = findViewById(R.id.airPumpLog);
+        allowUser = findViewById(R.id.allowSwitch);
+        allowWater = findViewById(R.id.allowGrowLight);
+        allowAir = findViewById(R.id.allowCoolFan);
+
 //        snapABtn = findViewById(R.id.snapaschedBtn);
 //        snapBBtn = findViewById(R.id.snapbschedBtn);
 
         settings();
-airPumpLogs.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-        Intent intent = new Intent(WaterActivity.this, UserLogActivity.class);
-        intent.putExtra("Title", "Air Pump Logs");
-        intent.putExtra("Log", "Air");
-        startActivity(intent);
-    }
-});
+        airPumpLogs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(WaterActivity.this, UserLogActivity.class);
+                intent.putExtra("Title", "Air Pump Logs");
+                intent.putExtra("Log", "Air");
+                startActivity(intent);
+            }
+        });
         viewLogsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(WaterActivity.this, UserLogActivity.class);
-                intent.putExtra("Title","Water Pump Logs");
+                intent.putExtra("Title", "Water Pump Logs");
                 intent.putExtra("Log", "Water");
                 startActivity(intent);
+            }
+        });
+        db.collection("scheduler").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "listen:error", e);
+                    return;
+                }
+                for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                    switch (dc.getType()) {
+                        case ADDED:
+
+                            Log.d(TAG, "New city: " + dc.getDocument().getData());
+                            break;
+                        case MODIFIED:
+
+                            String sensor = (String) dc.getDocument().getData().get("name");
+                            boolean sensorSwitch = (boolean) dc.getDocument().getData().get("switch");
+                            if (sensor.equals("Air Pump")) {
+                                showNotification(sensor, sensorSwitch);
+
+                            } else if (sensor.equals("Water Pump")) {
+                                showNotification(sensor, sensorSwitch);
+                            }
+                            Log.d(TAG, "Modified city: " + dc.getDocument().getData());
+                            break;
+                        case REMOVED:
+                            Log.d(TAG, "Removed city: " + dc.getDocument().getData());
+                            break;
+                    }
+                }
+            }
+        });
+        db.collection("users").document(currentUserId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                userCurrentLevel = documentSnapshot.getString("userLevel");
+
+                if (userCurrentLevel.equals("member") && !air) {
+                    airPumpSwitch.setEnabled(false);
+                } else {
+                    airPumpSwitch.setEnabled(true);
+                }
+                if (userCurrentLevel.equals("member") && !water) {
+                    waterPumpSwitch.setEnabled(false);
+                } else {
+                    waterPumpSwitch.setEnabled(true);
+                }
+
+                if (userCurrentLevel.equals("admin")) {
+                    allowUser.setVisibility(View.VISIBLE);
+                } else {
+                    allowUser.setVisibility(View.GONE);
+                }
+            }
+        });
+        db.collection("scheduler").document("userLevel").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                water = (boolean) value.get("water_pump");
+                air = (boolean) value.get("air_pump");
+                allowWater.setChecked((Boolean) value.get("water_pump"));
+                allowAir.setChecked((Boolean) value.get("air_pump"));
             }
         });
         db.collection("scheduler").document("water_pump").addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -288,6 +377,29 @@ airPumpLogs.setOnClickListener(new View.OnClickListener() {
                 });
             }
         });*/
+
+        allowWater.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(water){
+                    db.collection("scheduler").document("userLevel").update("water_pump",false);
+                }else{
+                    db.collection("scheduler").document("userLevel").update("water_pump", true);
+                }
+            }
+        });
+
+        allowAir.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(air){
+                    db.collection("scheduler").document("userLevel").update("air_pump",false);
+
+                }else{
+                    db.collection("scheduler").document("userLevel").update("air_pump",true);
+                }
+            }
+        });
 
     }
 
@@ -535,5 +647,27 @@ airPumpLogs.setOnClickListener(new View.OnClickListener() {
         mFunctions
                 .getHttpsCallable("logUserActivity")
                 .call(data);
+    }
+
+    private void showNotification(String sensor, boolean sensorSwitch) {
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+
+        String CHANNEL_ID = UUID.randomUUID().toString();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, "My Notifications", NotificationManager.IMPORTANCE_HIGH);
+            // Configure the notification channel.
+
+            notificationChannel.setDescription("Sample Channel description");
+
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+            notificationChannel.enableVibration(true);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+        String switchStatus = (sensorSwitch) ? "ON" : "OFF";
+        notification = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID).setDefaults(Notification.DEFAULT_ALL).setWhen(System.currentTimeMillis()).setContentTitle("Switch Notice").setContentText(sensor + " switch is now " + switchStatus).setSmallIcon(R.mipmap.ic_launcher).build();
+        notificationManager.notify(1, notification);
     }
 }

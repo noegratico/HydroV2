@@ -99,11 +99,16 @@ public class DevicesActivity extends AppCompatActivity {
     private String name;
     private Notification notification;
 
-    private String userCurrentLevel = "member";
+    private String userCurrentLevel;
     private String sensorUserLevel = "member";
     private String growUserLevel = "member";
     FlexboxLayout allowUser;
+    private boolean cooling;
+    private boolean grow;
+
+    private String currentUserId = mAuth.getUid();
     Switch allowCoolFan;
+    Switch allowGrowbtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +134,7 @@ public class DevicesActivity extends AppCompatActivity {
         coolLogs = findViewById(R.id.coolingFanLog);
         allowUser = findViewById(R.id.allowSwitch);
         allowCoolFan = findViewById(R.id.allowCoolFan);
+        allowGrowbtn = findViewById(R.id.allowGrowLight);
 
 
         settings();
@@ -273,36 +279,11 @@ public class DevicesActivity extends AppCompatActivity {
                         case MODIFIED:
                             String sensor = (String) dc.getDocument().getData().get("name");
                             boolean sensorSwitch = (boolean) dc.getDocument().getData().get("switch");
-                            if (sensor.equals("Cooling Fan")){
-//                                showNotification(sensor, sensorSwitch);
-                               /* AlertDialog.Builder builder = new AlertDialog.Builder(DevicesActivity.this);
-                                builder.setMessage("Cooling Fan Switch is Modified Please Wait a Few Seconds");
-                                builder.setTitle("Notice");
-                                builder.setCancelable(false);
-                                AlertDialog alertDialog = builder.create();
-                                alertDialog.show();
-                                Handler handler = new Handler();
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        alertDialog.dismiss();
-                                    }
-                                }, 10000);*/
+                            if (sensor.equals("Cooling Fan")) {
+                                showNotification(sensor, sensorSwitch);
+
                             } else if (sensor.equals("Grow Light")) {
                                 showNotification(sensor, sensorSwitch);
-                              /*  AlertDialog.Builder builder = new AlertDialog.Builder(DevicesActivity.this);
-                                builder.setMessage("Grow Light Switch is Modified Please Wait a Few Seconds");
-                                builder.setTitle("Notice");
-                                builder.setCancelable(false);
-                                AlertDialog alertDialog = builder.create();
-                                alertDialog.show();
-                                Handler handler = new Handler();
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        alertDialog.dismiss();
-                                    }
-                                }, 10000);*/
                             }
                             Log.d(TAG, "Modified city: " + dc.getDocument().getData());
                             break;
@@ -313,15 +294,38 @@ public class DevicesActivity extends AppCompatActivity {
                 }
             }
         });
-        db.collection("users").document(mAuth.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        db.collection("users").document(currentUserId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 userCurrentLevel = documentSnapshot.getString("userLevel");
+
+                if (userCurrentLevel.equals("member") && !cooling) {
+                    coolingFanSwitch.setEnabled(false);
+                } else {
+                    coolingFanSwitch.setEnabled(true);
+                }
+                if (userCurrentLevel.equals("member") && !grow) {
+                    lightSwitch.setEnabled(false);
+                } else {
+                    lightSwitch.setEnabled(true);
+                }
+
                 if (userCurrentLevel.equals("admin")) {
                     allowUser.setVisibility(View.VISIBLE);
                 } else {
                     allowUser.setVisibility(View.GONE);
                 }
+            }
+        });
+
+        db.collection("scheduler").document("userLevel").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                cooling = (boolean) value.get("cooling_fan");
+                grow = (boolean) value.get("grow_light");
+                allowCoolFan.setChecked((Boolean) value.get("cooling_fan"));
+                allowGrowbtn.setChecked((Boolean) value.get("grow_light"));
+
             }
         });
 
@@ -332,19 +336,19 @@ public class DevicesActivity extends AppCompatActivity {
 //                value.getDocumentReference("switch").equals("swict");
                 coolingFanSwitch.setChecked((Boolean) value.get("switch"));
                 checkCoolingSwitch = (boolean) value.get("switch");
-                showNotification((String) value.get("name"), (Boolean) value.get("switch"));
+//                showNotification((String) value.get("name"), (Boolean) value.get("switch"));
 //                allowCoolFanSwitch.setChecked((Boolean) value.get("isAllow"));
-                if (userCurrentLevel.equals("member") && sensorUserLevel.equals("admin")) {
-                    coolingFanSwitch.setEnabled(false);
-                } else {
-                    coolingFanSwitch.setEnabled(true);
-                }
+//                if (userCurrentLevel.equals("member") && sensorUserLevel.equals("admin")) {
+//                    coolingFanSwitch.setEnabled(false);
+//                } else {
+//                    coolingFanSwitch.setEnabled(true);
+//                }
 
-                if (sensorUserLevel.equals("admin")) {
-                    allowCoolFan.setChecked(false);
-                } else if (sensorUserLevel.equals("member")) {
-                    allowCoolFan.setChecked(true);
-                }
+//                if (sensorUserLevel.equals("admin")) {
+//                    allowCoolFan.setChecked(false);
+//                } else if (sensorUserLevel.equals("member")) {
+//                    allowCoolFan.setChecked(true);
+//                }
 
             }
         });
@@ -355,12 +359,6 @@ public class DevicesActivity extends AppCompatActivity {
                 growUserLevel = (String) value.get("userLevel");
                 lightSwitch.setChecked((Boolean) value.get("switch"));
                 checkSwitch = (boolean) value.get("switch");
-
-                if (growUserLevel.equals("member") && sensorUserLevel.equals("admin")) {
-                    lightSwitch.setEnabled(false);
-                } else {
-                    lightSwitch.setEnabled(true);
-                }
             }
         });
 
@@ -368,10 +366,10 @@ public class DevicesActivity extends AppCompatActivity {
         allowCoolFan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (sensorUserLevel.equals("member")) {
+                if (cooling) {
                     db.collection("scheduler")
-                            .document("cooling_fan")
-                            .update("userLevel", "admin").addOnSuccessListener(new OnSuccessListener<Void>() {
+                            .document("userLevel")
+                            .update("cooling_fan", false).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
 
@@ -379,8 +377,33 @@ public class DevicesActivity extends AppCompatActivity {
                             });
                 } else {
                     db.collection("scheduler")
-                            .document("cooling_fan")
-                            .update("userLevel", "member").addOnSuccessListener(new OnSuccessListener<Void>() {
+                            .document("userLevel")
+                            .update("cooling_fan", true).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+
+                                }
+                            });
+                }
+            }
+        });
+
+        allowGrowbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cooling) {
+                    db.collection("scheduler")
+                            .document("userLevel")
+                            .update("grow_light", false).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+
+                                }
+                            });
+                } else {
+                    db.collection("scheduler")
+                            .document("userLevel")
+                            .update("grow_light", true).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
 
@@ -400,11 +423,11 @@ public class DevicesActivity extends AppCompatActivity {
                         try {
                             object.put("docName", "cooling_fan");
                             data.put("switch", false);
-                            data.put("userLevel", "admin");
                             object.put("data", data);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        db.collection("scheduler").document("userLevel").update("cooling_fan", false);
                         mFunctions.getHttpsCallable("scheduler").call(object).addOnSuccessListener((result -> {
                             addUserLog("User Turn OFF Cooling Fan");
                             Toast.makeText(DevicesActivity.this, "Cooling Fan is OFF", Toast.LENGTH_SHORT).show();
@@ -413,27 +436,27 @@ public class DevicesActivity extends AppCompatActivity {
                         try {
                             object.put("docName", "cooling_fan");
                             data.put("switch", true);
-                            data.put("userLevel", "admin");
                             object.put("data", data);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        db.collection("scheduler").document("userLevel").update("cooling_fan", false);
                         mFunctions.getHttpsCallable("scheduler").call(object).addOnSuccessListener((result -> {
                             addUserLog("User Turn ON Cooling Fan");
                             Toast.makeText(DevicesActivity.this, "Cooling Fan is ON", Toast.LENGTH_SHORT).show();
                         }));
                     }
                 } else if (userCurrentLevel.equals("member")) {
-                    if (sensorUserLevel.equals("member")) {
+                    if (cooling) {
                         if (checkCoolingSwitch) {
                             try {
                                 object.put("docName", "cooling_fan");
                                 data.put("switch", false);
-                                data.put("userLevel", "member");
                                 object.put("data", data);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            db.collection("scheduler").document("userLevel").update("cooling_fan", true);
                             mFunctions.getHttpsCallable("scheduler").call(object).addOnSuccessListener((result -> {
                                 addUserLog("User Turn OFF Cooling Fan");
                                 Toast.makeText(DevicesActivity.this, "Cooling Fan is OFF", Toast.LENGTH_SHORT).show();
@@ -442,11 +465,11 @@ public class DevicesActivity extends AppCompatActivity {
                             try {
                                 object.put("docName", "cooling_fan");
                                 data.put("switch", true);
-                                data.put("userLevel", "member");
                                 object.put("data", data);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            db.collection("scheduler").document("userLevel").update("cooling_fan", true);
                             mFunctions.getHttpsCallable("scheduler").call(object).addOnSuccessListener((result -> {
                                 addUserLog("User Turn ON Cooling Fan");
                                 Toast.makeText(DevicesActivity.this, "Cooling Fan is ON", Toast.LENGTH_SHORT).show();
@@ -469,11 +492,12 @@ public class DevicesActivity extends AppCompatActivity {
                         try {
                             object.put("docName", "grow_light");
                             data.put("switch", false);
-                            data.put("userLevel", "admin");
+
                             object.put("data", data);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        db.collection("scheduler").document("userLevel").update("grow_light",false);
                         mFunctions.getHttpsCallable("scheduler").call(object).addOnSuccessListener((result -> {
                             addUserLog("User Turn OFF Grow Light");
                             Toast.makeText(DevicesActivity.this, "Grow Light is OFF", Toast.LENGTH_SHORT).show();
@@ -482,27 +506,27 @@ public class DevicesActivity extends AppCompatActivity {
                         try {
                             object.put("docName", "grow_light");
                             data.put("switch", true);
-                            data.put("userLevel", "admin");
                             object.put("data", data);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        db.collection("scheduler").document("userLevel").update("grow_light",false);
                         mFunctions.getHttpsCallable("scheduler").call(object).addOnSuccessListener((result -> {
                             addUserLog("User Turn ON Grow Light");
                             Toast.makeText(DevicesActivity.this, "Grow Light is ON", Toast.LENGTH_SHORT).show();
                         }));
                     }
                 } else if (userCurrentLevel.equals("member")) {
-                    if (sensorUserLevel.equals("member")) {
+                    if (grow) {
                         if (checkSwitch) {
                             try {
                                 object.put("docName", "grow_light");
                                 data.put("switch", false);
-                                data.put("userLevel", "member");
                                 object.put("data", data);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            db.collection("scheduler").document("userLevel").update("grow_light",true);
                             mFunctions.getHttpsCallable("scheduler").call(object).addOnSuccessListener((result -> {
                                 addUserLog("User Turn OFF Grow Light");
                                 Toast.makeText(DevicesActivity.this, "Grow Light is OFF", Toast.LENGTH_SHORT).show();
@@ -511,11 +535,11 @@ public class DevicesActivity extends AppCompatActivity {
                             try {
                                 object.put("docName", "grow_light");
                                 data.put("switch", true);
-                                data.put("userLevel", "member");
                                 object.put("data", data);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            db.collection("scheduler").document("userLevel").update("grow_light",true);
                             mFunctions.getHttpsCallable("scheduler").call(object).addOnSuccessListener((result -> {
                                 addUserLog("User Turn ON Grow Light");
                                 Toast.makeText(DevicesActivity.this, "Grow Light is ON", Toast.LENGTH_SHORT).show();

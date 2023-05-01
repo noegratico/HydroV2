@@ -159,7 +159,7 @@ public class GreenhouseDashboardActivity extends Fragment {
                             Log.d(TAG, documentChange.getDocument().get("value", String.class));
 //                            Toast.makeText(getActivity(), documentChange.getDocument().get("value", String.class), Toast.LENGTH_SHORT).show();
                             int eclvl = Integer.parseInt(documentChange.getDocument().get("value", String.class));
-                            if (eclvl >= 500 && eclvl <= 2000) {
+                            if (eclvl >= 600 && eclvl <= 900) {
                                 ec.setTextColor(Color.parseColor("#00FF00"));
                                 ec.setText(documentChange.getDocument().get("value", String.class));
                             } else {

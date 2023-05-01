@@ -35,7 +35,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="10dp"
                     android:layout_marginLeft="10dp"
-                    android:text="Water Level"
+                    android:text="Water &amp; Light Level"
                     android:textSize="30dp" />
 
                 <ImageButton
