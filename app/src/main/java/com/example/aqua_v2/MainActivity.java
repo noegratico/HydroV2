@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         loginBtn = findViewById(R.id.login_btn);
         username = findViewById(R.id.usernameInputTxt);
         password = findViewById(R.id.passwordInputTxt);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String currentDateAndTime = sdf.format(new Date());
 
 

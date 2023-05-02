@@ -481,7 +481,7 @@ public class WaterConditionActivity extends AppCompatActivity {
     }
 
     private void addUserLog(String userActivity) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String currentDateAndTime = sdf.format(new Date());
         Map<String, String> data = new HashMap<>();
         data.put("activity", userActivity);
