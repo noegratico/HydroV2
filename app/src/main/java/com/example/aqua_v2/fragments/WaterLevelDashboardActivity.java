@@ -18,10 +18,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.aqua_v2.ComboBoxActivity;
 import com.example.aqua_v2.R;
 import com.example.aqua_v2.WaterActivity;
 import com.example.aqua_v2.WaterLightActivity;
@@ -42,6 +44,7 @@ public class WaterLevelDashboardActivity extends Fragment {
     TextView snapB;
     MaterialButton pumpBtn;
     ImageButton gHBtn;
+    CardView plantBtn;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private Notification notification;
 
@@ -56,6 +59,7 @@ public class WaterLevelDashboardActivity extends Fragment {
         lightResistance = rootView.findViewById(R.id.lightResistance);
         pumpBtn = (MaterialButton) rootView.findViewById(R.id.pumpBtn);
         gHBtn = rootView.findViewById(R.id.gHBtn);
+        plantBtn = rootView.findViewById(R.id.plantBtn);
 
         waterTxt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,6 +169,13 @@ public class WaterLevelDashboardActivity extends Fragment {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getActivity(), WaterLightActivity.class));
+            }
+        });
+
+        plantBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), ComboBoxActivity.class));
             }
         });
         return rootView;
