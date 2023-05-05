@@ -199,13 +199,14 @@ public class WaterActivity extends AppCompatActivity {
                     waterPumpSwitch.setEnabled(true);
                 }
 
-                if (userCurrentLevel.equals("admin")) {
-                    allowUser.setVisibility(View.VISIBLE);
-                } else {
-                    allowUser.setVisibility(View.GONE);
-                }
+
             }
         });
+        if (getIntent().getStringExtra("currentUserLevel").equals("admin")) {
+            allowUser.setVisibility(View.VISIBLE);
+        } else {
+            allowUser.setVisibility(View.GONE);
+        }
         db.collection("scheduler").document("userLevel").addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -381,9 +382,9 @@ public class WaterActivity extends AppCompatActivity {
         allowWater.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(water){
-                    db.collection("scheduler").document("userLevel").update("water_pump",false);
-                }else{
+                if (water) {
+                    db.collection("scheduler").document("userLevel").update("water_pump", false);
+                } else {
                     db.collection("scheduler").document("userLevel").update("water_pump", true);
                 }
             }
@@ -392,11 +393,11 @@ public class WaterActivity extends AppCompatActivity {
         allowAir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(air){
-                    db.collection("scheduler").document("userLevel").update("air_pump",false);
+                if (air) {
+                    db.collection("scheduler").document("userLevel").update("air_pump", false);
 
-                }else{
-                    db.collection("scheduler").document("userLevel").update("air_pump",true);
+                } else {
+                    db.collection("scheduler").document("userLevel").update("air_pump", true);
                 }
             }
         });

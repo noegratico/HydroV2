@@ -298,7 +298,6 @@ public class DevicesActivity extends AppCompatActivity {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 userCurrentLevel = documentSnapshot.getString("userLevel");
-
                 if (userCurrentLevel.equals("member") && !cooling) {
                     coolingFanSwitch.setEnabled(false);
                 } else {
@@ -309,14 +308,14 @@ public class DevicesActivity extends AppCompatActivity {
                 } else {
                     lightSwitch.setEnabled(true);
                 }
-
-                if (userCurrentLevel.equals("admin")) {
-                    allowUser.setVisibility(View.VISIBLE);
-                } else {
-                    allowUser.setVisibility(View.GONE);
-                }
             }
         });
+
+        if (getIntent().getStringExtra("currentUserLevel").equals("admin")) {
+            allowUser.setVisibility(View.VISIBLE);
+        } else {
+            allowUser.setVisibility(View.GONE);
+        }
 
         db.collection("scheduler").document("userLevel").addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override

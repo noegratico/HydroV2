@@ -27,8 +27,11 @@ import com.example.aqua_v2.ComboBoxActivity;
 import com.example.aqua_v2.R;
 import com.example.aqua_v2.WaterActivity;
 import com.example.aqua_v2.WaterLightActivity;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -46,6 +49,7 @@ public class WaterLevelDashboardActivity extends Fragment {
     ImageButton gHBtn;
     CardView plantBtn;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private Notification notification;
 
     @Nullable
@@ -162,7 +166,15 @@ public class WaterLevelDashboardActivity extends Fragment {
         pumpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), WaterActivity.class));
+               Intent intent = new Intent(getActivity(), WaterActivity.class);
+               db.collection("users").document(mAuth.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                   @Override
+                   public void onSuccess(DocumentSnapshot documentSnapshot) {
+                       intent.putExtra("currentUserLevel", (String) documentSnapshot.get("userLevel"));
+                       startActivity(intent);
+                   }
+               });
+
             }
         });
         gHBtn.setOnClickListener(new View.OnClickListener() {

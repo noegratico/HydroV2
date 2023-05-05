@@ -15,13 +15,18 @@ import androidx.fragment.app.Fragment;
 import com.example.aqua_v2.DevicesActivity;
 import com.example.aqua_v2.ImageProcessingActivity;
 import com.example.aqua_v2.R;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
 
 public class DeviceDashboardActivity extends Fragment {
     MaterialButton deviceBtn;
     CardView mlBtn;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
     @Nullable
@@ -42,7 +47,15 @@ public class DeviceDashboardActivity extends Fragment {
         deviceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(),DevicesActivity.class));
+                Intent intent = new Intent(getActivity(), DevicesActivity.class);
+
+                db.collection("users").document(mAuth.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        intent.putExtra("currentUserLevel",(String) documentSnapshot.get("userLevel"));
+                        startActivity(intent);
+                    }
+                });
             }
         });
         mlBtn.setOnClickListener(new View.OnClickListener() {
