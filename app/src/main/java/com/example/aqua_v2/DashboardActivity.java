@@ -416,7 +416,7 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void getTempWeatherCode(double latitude, double longitude) {
-        String url = "https://api.open-meteo.com/v1/forecast?latitude=" + latitude + "&longitude=" + longitude + "&current_weather=true";
+        String url = "https://api.open-meteo.com/v1/forecast?latitude=14.700872&longitude=121.030439&current_weather=true";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
             @Override
@@ -498,7 +498,8 @@ public class DashboardActivity extends AppCompatActivity {
                                 Geocoder geocoder = new Geocoder(DashboardActivity.this, Locale.getDefault());
                                 List<Address> addresses = null;
                                 try {
-                                    addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+//                                    addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                                    addresses = geocoder.getFromLocation(14.700872, 121.030439, 1);
                                     latitude = addresses.get(0).getLatitude();
                                     longitude = addresses.get(0).getLongitude();
                                     DecimalFormat decimalFormat = new DecimalFormat("#.0000");

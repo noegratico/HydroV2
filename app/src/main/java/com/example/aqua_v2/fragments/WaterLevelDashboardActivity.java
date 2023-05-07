@@ -121,7 +121,7 @@ public class WaterLevelDashboardActivity extends Fragment {
 //                            } else if (waterlevel >= 90) {
 //                                showNotification("Water Level", "High");
 //                            }
-                            waterBox.setText(documentChange.getDocument().get("value", String.class) + "%");
+                            waterBox.setText(documentChange.getDocument().get("value", String.class));
                         }
                     });
                 }

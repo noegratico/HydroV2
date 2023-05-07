@@ -2,9 +2,11 @@ package com.example.aqua_v2.fragments;
 
 import static android.content.ContentValues.TAG;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.Color;
-import android.hardware.Sensor;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,42 +15,35 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.aqua_v2.GreenHouseActivity;
 import com.example.aqua_v2.R;
 import com.example.aqua_v2.WaterConditionActivity;
-import com.example.aqua_v2.model.Sensors;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.functions.FirebaseFunctions;
 
-import java.util.HashMap;
+import java.util.UUID;
 
 public class GreenhouseDashboardActivity extends Fragment {
     TextView temp, hum, ec, ph, greenHouseTxt, waterConditionTxt;
     ImageButton gHbtn, wCBtn;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance("asia-southeast1");
+    private Notification notification;
+    private Notification notification1;
 
 
     @Nullable
@@ -103,6 +98,17 @@ public class GreenhouseDashboardActivity extends Fragment {
                             Log.d(TAG, documentChange.getDocument().get("value", String.class));
 //                            Toast.makeText(getActivity(), documentChange.getDocument().get("value", String.class), Toast.LENGTH_SHORT).show();
                             hum.setText(documentChange.getDocument().get("value", String.class) + "%");
+                            int humlevel = Integer.parseInt(documentChange.getDocument().get("value", String.class));
+                            if(humlevel < 25 || humlevel > 80){
+                                hum.setTextColor(Color.parseColor("#FF0000"));
+                                if(humlevel < 25){
+                                    showNotification("Humidity Level", "Low");
+                                }else if(humlevel > 80 ){
+                                    showNotification("Humidity Level", "High");
+                                }
+                            }else{
+                                hum.setTextColor(Color.parseColor("#00FF00"));
+                            }
                         }
                     });
                 }
@@ -123,6 +129,18 @@ public class GreenhouseDashboardActivity extends Fragment {
                             Log.d(TAG, documentChange.getDocument().get("value", String.class));
 //                            Toast.makeText(getActivity(), documentChange.getDocument().get("value", String.class), Toast.LENGTH_SHORT).show();
                             temp.setText(documentChange.getDocument().get("value", String.class) + "°C");
+                            int templevel = Integer.parseInt(documentChange.getDocument().get("value",String.class));
+                            if(templevel < 30 || templevel > 80){
+                                temp.setTextColor(Color.parseColor("#FF0000"));
+                                if(templevel <25){
+                                    showNotification("Temperature Level", "Low");
+                                }else if(templevel >80){
+                                    showNotification("Temperature", "High");
+                                }
+                            }else{
+                                temp.setTextColor(Color.parseColor("#00FF00"));
+                            }
+
                         }
                     });
                 }
@@ -137,10 +155,24 @@ public class GreenhouseDashboardActivity extends Fragment {
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     snapshot.getDocumentChanges().stream().findFirst().ifPresent(documentChange -> {
-                        if (documentChange.getType() == DocumentChange.Type.ADDED) {
+                        if (documentChange.getType() == DocumentChange.Type.ADDED || documentChange.getType() == DocumentChange.Type.MODIFIED){
                             Log.d(TAG, documentChange.getDocument().get("value", String.class));
 //                            Toast.makeText(getActivity(), documentChange.getDocument().get("value", String.class), Toast.LENGTH_SHORT).show();
                             ph.setText(documentChange.getDocument().get("value", String.class));
+
+                            float phlevel = Float.parseFloat(documentChange.getDocument().get("value",String.class));
+                            if(phlevel < 7.0 || phlevel > 7){
+                                ph.setTextColor(Color.parseColor("#FF0000"));
+
+                                if(phlevel < 7.0){
+                                    showNotification("pH Level", "Low");
+                                }else if (phlevel > 7.0){
+                                    showNotification("pH Level", "High");
+                                }
+                            }else{
+                                ph.setTextColor(Color.parseColor("#00FF00"));
+                            }
+
                         }
                     });
                 }
@@ -158,14 +190,20 @@ public class GreenhouseDashboardActivity extends Fragment {
                         if (documentChange.getType() == DocumentChange.Type.ADDED || documentChange.getType() == DocumentChange.Type.MODIFIED) {
                             Log.d(TAG, documentChange.getDocument().get("value", String.class));
 //                            Toast.makeText(getActivity(), documentChange.getDocument().get("value", String.class), Toast.LENGTH_SHORT).show();
-                            int eclvl = Integer.parseInt(documentChange.getDocument().get("value", String.class));
-                            if (eclvl >= 600 && eclvl <= 900) {
+                            float eclvl = Float.parseFloat(documentChange.getDocument().get("value", String.class));
+                            if (eclvl >= 1.0 && eclvl <= 2.0) {
                                 ec.setTextColor(Color.parseColor("#00FF00"));
                                 ec.setText(documentChange.getDocument().get("value", String.class));
                             } else {
                                 ec.setTextColor(Color.parseColor("#FF0000"));
                                 ec.setText(documentChange.getDocument().get("value", String.class));
+                                if (eclvl < 1.0) {
+                                    showNotification("EC Level", "Low");
+                                } else if (eclvl > 2.0) {
+                                    showNotification("EC Level", "High");
+                                }
                             }
+
 
                         }
                     });
@@ -217,5 +255,27 @@ public class GreenhouseDashboardActivity extends Fragment {
 
 
         return rootView;
+    }
+
+    private void showNotification(String sensor, String status) {
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getActivity());
+
+        String CHANNEL_ID = UUID.randomUUID().toString();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, "My Notifications", NotificationManager.IMPORTANCE_HIGH);
+            // Configure the notification channel.
+
+            notificationChannel.setDescription("Sample Channel description");
+
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+            notificationChannel.enableVibration(true);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        notification = new NotificationCompat.Builder(getActivity(), CHANNEL_ID).setDefaults(Notification.DEFAULT_ALL).setWhen(System.currentTimeMillis()).setContentTitle("Switch Notice").setContentText(sensor + "is now " + status).setSmallIcon(R.mipmap.ic_launcher).build();
+        notificationManager.notify(1, notification);
     }
 }
