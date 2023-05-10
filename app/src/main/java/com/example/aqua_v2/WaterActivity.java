@@ -20,12 +20,14 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -105,6 +107,11 @@ public class WaterActivity extends AppCompatActivity {
     Switch allowWater;
     Switch allowAir;
 
+    private Handler handler = new Handler();
+
+    ProgressBar airLoad;
+    ProgressBar waterLoad;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
@@ -128,6 +135,8 @@ public class WaterActivity extends AppCompatActivity {
         allowUser = findViewById(R.id.allowSwitch);
         allowWater = findViewById(R.id.allowGrowLight);
         allowAir = findViewById(R.id.allowCoolFan);
+        airLoad = findViewById(R.id.progressBar2);
+        waterLoad = findViewById(R.id.progressBar3);
 
 //        snapABtn = findViewById(R.id.snapaschedBtn);
 //        snapBBtn = findViewById(R.id.snapbschedBtn);
@@ -169,10 +178,22 @@ public class WaterActivity extends AppCompatActivity {
                             String sensor = (String) dc.getDocument().getData().get("name");
                             boolean sensorSwitch = (boolean) dc.getDocument().getData().get("switch");
                             if (sensor.equals("Air Pump")) {
-                                showNotification(sensor, sensorSwitch);
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        showNotification(sensor, sensorSwitch);
+                                    }
+                                },10000);
+
 
                             } else if (sensor.equals("Water Pump")) {
-                                showNotification(sensor, sensorSwitch);
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        showNotification(sensor, sensorSwitch);
+                                    }
+                                },10000);
+
                             }
                             Log.d(TAG, "Modified city: " + dc.getDocument().getData());
                             break;
@@ -233,6 +254,8 @@ public class WaterActivity extends AppCompatActivity {
         airPumpSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                airPumpSwitch.setVisibility(View.GONE);
+                airLoad.setVisibility(View.VISIBLE);
                 JSONObject object = new JSONObject();
                 JSONObject data = new JSONObject();
                 if (checkAirSwitch) {
@@ -248,7 +271,15 @@ public class WaterActivity extends AppCompatActivity {
                             .call(object)
                             .addOnSuccessListener((result -> {
                                 addUserLog("User Turn OFF Air Pump");
-                                Toast.makeText(WaterActivity.this, "Air Pump is OFF", Toast.LENGTH_SHORT).show();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        airLoad.setVisibility(View.GONE);
+                                        airPumpSwitch.setVisibility(View.VISIBLE);
+                                        Toast.makeText(WaterActivity.this, "Air Pump is OFF", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                },10000);
                             }));
                 } else {
                     try {
@@ -263,7 +294,15 @@ public class WaterActivity extends AppCompatActivity {
                             .call(object)
                             .addOnSuccessListener((result -> {
                                 addUserLog("User Turn ON Air Pump");
-                                Toast.makeText(WaterActivity.this, "Air Pump is ON", Toast.LENGTH_SHORT).show();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        airLoad.setVisibility(View.GONE);
+                                        airPumpSwitch.setVisibility(View.VISIBLE);
+                                        Toast.makeText(WaterActivity.this, "Air Pump is ON", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                },10000);
                             }));
                 }
             }
@@ -272,6 +311,8 @@ public class WaterActivity extends AppCompatActivity {
         waterPumpSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                waterPumpSwitch.setVisibility(View.GONE);
+                waterLoad.setVisibility(View.VISIBLE);
                 JSONObject object = new JSONObject();
                 JSONObject data = new JSONObject();
                 if (checkPump) {
@@ -286,8 +327,17 @@ public class WaterActivity extends AppCompatActivity {
                             .getHttpsCallable("scheduler")
                             .call(object)
                             .addOnSuccessListener((result -> {
+
                                 addUserLog("User Turn OFF Water Pump Switch");
-                                Toast.makeText(WaterActivity.this, "Water Pump Switch is OFF", Toast.LENGTH_SHORT).show();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        waterLoad.setVisibility(View.GONE);
+                                        waterPumpSwitch.setVisibility(View.VISIBLE);
+                                        Toast.makeText(WaterActivity.this, "Water Pump Switch is OFF", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                },10000);
                             }));
                 } else {
                     try {
@@ -302,7 +352,15 @@ public class WaterActivity extends AppCompatActivity {
                             .call(object)
                             .addOnSuccessListener((result -> {
                                 addUserLog("User Turn ON Water Pump Switch");
-                                Toast.makeText(WaterActivity.this, "Water Pump Switch is ON", Toast.LENGTH_SHORT).show();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        waterLoad.setVisibility(View.GONE);
+                                        waterPumpSwitch.setVisibility(View.VISIBLE);
+                                        Toast.makeText(WaterActivity.this, "Water Pump Switch is ON", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                },10000);
                             }));
                 }
             }

@@ -28,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -110,6 +111,11 @@ public class DevicesActivity extends AppCompatActivity {
     Switch allowCoolFan;
     Switch allowGrowbtn;
 
+    ProgressBar growLoad;
+    ProgressBar coolLoad;
+
+    private Handler handler = new Handler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
@@ -125,7 +131,7 @@ public class DevicesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_devices_sched);
 
         settingBtn = findViewById(R.id.settingBtn);
-        growLightBtn = findViewById(R.id.wpumpschedBtn);
+//        growLightBtn = findViewById(R.id.wpumpschedBtn);
 //        coolingFanStatusBtn = findViewById(R.id.coolingFanStatusBtn);
         lightSwitch = findViewById(R.id.wpumpSwitch);
 //        airPumpSwitch = findViewById(R.id.airPumpSwitch);
@@ -135,6 +141,8 @@ public class DevicesActivity extends AppCompatActivity {
         allowUser = findViewById(R.id.allowSwitch);
         allowCoolFan = findViewById(R.id.allowCoolFan);
         allowGrowbtn = findViewById(R.id.allowGrowLight);
+        growLoad = findViewById(R.id.progressBar2);
+        coolLoad = findViewById(R.id.progressBar3);
 
 
         settings();
@@ -158,7 +166,7 @@ public class DevicesActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        growLightBtn.setOnClickListener(new View.OnClickListener() {
+        /*growLightBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.setContentView(R.layout.activity_scheduler_devices);
@@ -262,7 +270,7 @@ public class DevicesActivity extends AppCompatActivity {
                     }
                 });
             }
-        });
+        });*/
 
         db.collection("scheduler").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -280,10 +288,22 @@ public class DevicesActivity extends AppCompatActivity {
                             String sensor = (String) dc.getDocument().getData().get("name");
                             boolean sensorSwitch = (boolean) dc.getDocument().getData().get("switch");
                             if (sensor.equals("Cooling Fan")) {
-                                showNotification(sensor, sensorSwitch);
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        showNotification(sensor, sensorSwitch);
+                                    }
+                                },10000);
+
 
                             } else if (sensor.equals("Grow Light")) {
-                                showNotification(sensor, sensorSwitch);
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        showNotification(sensor, sensorSwitch);
+                                    }
+                                },10000);
+
                             }
                             Log.d(TAG, "Modified city: " + dc.getDocument().getData());
                             break;
@@ -333,8 +353,9 @@ public class DevicesActivity extends AppCompatActivity {
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                 sensorUserLevel = (String) value.get("userLevel");
 //                value.getDocumentReference("switch").equals("swict");
-                coolingFanSwitch.setChecked((Boolean) value.get("switch"));
                 checkCoolingSwitch = (boolean) value.get("switch");
+                coolingFanSwitch.setChecked((Boolean) value.get("switch"));
+
 //                showNotification((String) value.get("name"), (Boolean) value.get("switch"));
 //                allowCoolFanSwitch.setChecked((Boolean) value.get("isAllow"));
 //                if (userCurrentLevel.equals("member") && sensorUserLevel.equals("admin")) {
@@ -415,6 +436,9 @@ public class DevicesActivity extends AppCompatActivity {
         coolingFanSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                coolingFanSwitch.setVisibility(View.GONE);
+                coolLoad.setVisibility(View.VISIBLE);
+
                 JSONObject object = new JSONObject();
                 JSONObject data = new JSONObject();
                 if (userCurrentLevel.equals("admin")) {
@@ -429,7 +453,15 @@ public class DevicesActivity extends AppCompatActivity {
                         db.collection("scheduler").document("userLevel").update("cooling_fan", false);
                         mFunctions.getHttpsCallable("scheduler").call(object).addOnSuccessListener((result -> {
                             addUserLog("User Turn OFF Cooling Fan");
-                            Toast.makeText(DevicesActivity.this, "Cooling Fan is OFF", Toast.LENGTH_SHORT).show();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    coolLoad.setVisibility(View.GONE);
+                                    coolingFanSwitch.setVisibility(View.VISIBLE);
+                                    Toast.makeText(DevicesActivity.this, "Cooling Fan is OFF", Toast.LENGTH_SHORT).show();
+                                }
+                            }, 10000);
+
                         }));
                     } else {
                         try {
@@ -441,8 +473,20 @@ public class DevicesActivity extends AppCompatActivity {
                         }
                         db.collection("scheduler").document("userLevel").update("cooling_fan", false);
                         mFunctions.getHttpsCallable("scheduler").call(object).addOnSuccessListener((result -> {
+
+
                             addUserLog("User Turn ON Cooling Fan");
-                            Toast.makeText(DevicesActivity.this, "Cooling Fan is ON", Toast.LENGTH_SHORT).show();
+
+                            handler.postDelayed(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        coolLoad.setVisibility(View.GONE);
+                                                        coolingFanSwitch.setVisibility(View.VISIBLE);
+                                                        Toast.makeText(DevicesActivity.this, "Cooling Fan is ON", Toast.LENGTH_SHORT).show();
+
+                                                    }
+                                                }, 10000
+                            );
                         }));
                     }
                 } else if (userCurrentLevel.equals("member")) {
@@ -458,7 +502,15 @@ public class DevicesActivity extends AppCompatActivity {
                             db.collection("scheduler").document("userLevel").update("cooling_fan", true);
                             mFunctions.getHttpsCallable("scheduler").call(object).addOnSuccessListener((result -> {
                                 addUserLog("User Turn OFF Cooling Fan");
-                                Toast.makeText(DevicesActivity.this, "Cooling Fan is OFF", Toast.LENGTH_SHORT).show();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        coolLoad.setVisibility(View.GONE);
+                                        coolingFanSwitch.setVisibility(View.VISIBLE);
+                                        Toast.makeText(DevicesActivity.this, "Cooling Fan is OFF", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                }, 10000);
                             }));
                         } else {
                             try {
@@ -471,7 +523,15 @@ public class DevicesActivity extends AppCompatActivity {
                             db.collection("scheduler").document("userLevel").update("cooling_fan", true);
                             mFunctions.getHttpsCallable("scheduler").call(object).addOnSuccessListener((result -> {
                                 addUserLog("User Turn ON Cooling Fan");
-                                Toast.makeText(DevicesActivity.this, "Cooling Fan is ON", Toast.LENGTH_SHORT).show();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        coolLoad.setVisibility(View.GONE);
+                                        coolingFanSwitch.setVisibility(View.VISIBLE);
+                                        Toast.makeText(DevicesActivity.this, "Cooling Fan is ON", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                }, 10000);
                             }));
                         }
                     }
@@ -484,6 +544,8 @@ public class DevicesActivity extends AppCompatActivity {
         lightSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                lightSwitch.setVisibility(View.GONE);
+                growLoad.setVisibility(View.VISIBLE);
                 JSONObject object = new JSONObject();
                 JSONObject data = new JSONObject();
                 if (userCurrentLevel.equals("admin")) {
@@ -496,10 +558,19 @@ public class DevicesActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        db.collection("scheduler").document("userLevel").update("grow_light",false);
+                        db.collection("scheduler").document("userLevel").update("grow_light", false);
                         mFunctions.getHttpsCallable("scheduler").call(object).addOnSuccessListener((result -> {
+
                             addUserLog("User Turn OFF Grow Light");
-                            Toast.makeText(DevicesActivity.this, "Grow Light is OFF", Toast.LENGTH_SHORT).show();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    lightSwitch.setVisibility(View.VISIBLE);
+                                    growLoad.setVisibility(View.GONE);
+                                    Toast.makeText(DevicesActivity.this, "Grow Light is OFF", Toast.LENGTH_SHORT).show();
+                                }
+                            }, 10000);
+
                         }));
                     } else {
                         try {
@@ -509,10 +580,18 @@ public class DevicesActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        db.collection("scheduler").document("userLevel").update("grow_light",false);
+                        db.collection("scheduler").document("userLevel").update("grow_light", false);
                         mFunctions.getHttpsCallable("scheduler").call(object).addOnSuccessListener((result -> {
                             addUserLog("User Turn ON Grow Light");
-                            Toast.makeText(DevicesActivity.this, "Grow Light is ON", Toast.LENGTH_SHORT).show();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    lightSwitch.setVisibility(View.VISIBLE);
+                                    growLoad.setVisibility(View.GONE);
+                                    Toast.makeText(DevicesActivity.this, "Grow Light is ON", Toast.LENGTH_SHORT).show();
+                                }
+                            }, 10000);
+
                         }));
                     }
                 } else if (userCurrentLevel.equals("member")) {
@@ -525,10 +604,18 @@ public class DevicesActivity extends AppCompatActivity {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            db.collection("scheduler").document("userLevel").update("grow_light",true);
+                            db.collection("scheduler").document("userLevel").update("grow_light", true);
                             mFunctions.getHttpsCallable("scheduler").call(object).addOnSuccessListener((result -> {
                                 addUserLog("User Turn OFF Grow Light");
-                                Toast.makeText(DevicesActivity.this, "Grow Light is OFF", Toast.LENGTH_SHORT).show();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        growLoad.setVisibility(View.GONE);
+                                        lightSwitch.setVisibility(View.VISIBLE);
+                                        Toast.makeText(DevicesActivity.this, "Grow Light is OFF", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                }, 10000);
                             }));
                         } else {
                             try {
@@ -538,10 +625,18 @@ public class DevicesActivity extends AppCompatActivity {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            db.collection("scheduler").document("userLevel").update("grow_light",true);
+                            db.collection("scheduler").document("userLevel").update("grow_light", true);
                             mFunctions.getHttpsCallable("scheduler").call(object).addOnSuccessListener((result -> {
                                 addUserLog("User Turn ON Grow Light");
-                                Toast.makeText(DevicesActivity.this, "Grow Light is ON", Toast.LENGTH_SHORT).show();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        growLoad.setVisibility(View.GONE);
+                                        lightSwitch.setVisibility(View.VISIBLE);
+                                        Toast.makeText(DevicesActivity.this, "Grow Light is ON", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                }, 10000);
                             }));
                         }
                     }

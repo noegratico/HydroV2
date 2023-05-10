@@ -78,10 +78,11 @@
             android:layout_marginBottom="10dp"
             android:orientation="vertical">
 
-            <LinearLayout
+            <com.google.android.flexbox.FlexboxLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                app:justifyContent="space_between"
+                app:alignItems="center">
 
                 <TextView
                     android:id="@+id/wpumptextView"
@@ -98,8 +99,17 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:layout_weight="1"
+                    android:visibility="visible"
                     android:checked="false" />
-            </LinearLayout>
+                <ProgressBar
+                    android:textAlignment="center"
+                    android:id="@+id/progressBar3"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="27dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_height="27dp"
+                    android:visibility="gone" />
+            </com.google.android.flexbox.FlexboxLayout>
         </LinearLayout>
 
 
@@ -250,6 +260,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
+            app:alignItems="center"
             app:justifyContent="space_between">
 
 
@@ -270,6 +281,14 @@
                 android:layout_weight="1"
                 android:checked="false"
                 app:layout_alignSelf="center" />
+            <ProgressBar
+                android:textAlignment="center"
+                android:id="@+id/progressBar2"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="27dp"
+                android:layout_marginLeft="20dp"
+                android:layout_height="27dp"
+                android:visibility="gone" />
 
         </com.google.android.flexbox.FlexboxLayout>
     </androidx.cardview.widget.CardView>

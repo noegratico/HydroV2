@@ -73,7 +73,7 @@ public class WaterLevelDashboardActivity extends Fragment {
 
             }
         });
-        db.collection("light_resistance").orderBy("datetime", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        db.collection("water_leak_2").orderBy("datetime", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException error) {
                 if (error != null) {
@@ -103,7 +103,7 @@ public class WaterLevelDashboardActivity extends Fragment {
 
 
 
-        db.collection("water_level").orderBy("datetime", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        db.collection("water_leak_1").orderBy("datetime", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
