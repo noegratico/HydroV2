@@ -15,6 +15,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -92,6 +93,8 @@ public class DetailedActivityReport extends AppCompatActivity {
     private String name;
     private String email;
 
+    TextView status;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,15 +115,16 @@ public class DetailedActivityReport extends AppCompatActivity {
         infoBtn = findViewById(R.id.infoBtn);
         reportBtn = findViewById(R.id.reportBtn);
         displaySensorText = findViewById(R.id.realTimeView);
+        status = findViewById(R.id.statusText);
         Bundle bundle = getIntent().getExtras();
         dataList = bundle.<TempModel>getParcelable("data").getTemperatureSensors();
         count = bundle.getInt("count");
         sensor = bundle.getString("sensorName");
         sensorName.setText(sensor);
         getSensorData();
-        if(sensor.equals("pH Level")){
+        if (sensor.equals("pH Level")) {
             infoBtn.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             infoBtn.setVisibility(View.INVISIBLE);
         }
         infoBtn.setOnClickListener(new View.OnClickListener() {
@@ -130,9 +134,9 @@ public class DetailedActivityReport extends AppCompatActivity {
                 dialog.setContentView(R.layout.info_diaglog);
                 dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                 infoRecycle = dialog.findViewById(R.id.infoRecycle);
-                if(sensor.equals("pH Level")){
+                if (sensor.equals("pH Level")) {
                     addInfo();
-                    InfoAdapter adapter= new InfoAdapter(info);
+                    InfoAdapter adapter = new InfoAdapter(info);
                     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
                     infoRecycle.setLayoutManager(layoutManager);
                     infoRecycle.setItemAnimator(new DefaultItemAnimator());
@@ -145,21 +149,21 @@ public class DetailedActivityReport extends AppCompatActivity {
         reportBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(sensor.equals("pH Level")){
+                if (sensor.equals("pH Level")) {
                     report = "ph_level";
-                }else if(sensor.equals("ECC Level")){
+                } else if (sensor.equals("ECC Level")) {
                     report = "ec_level";
-                }else if(sensor.equals("Water Level")){
+                } else if (sensor.equals("Water Level")) {
                     report = "water_level";
-                }else if(sensor.equals("Light Resistance")){
+                } else if (sensor.equals("Light Resistance")) {
                     report = "light_resistance";
-                }else if(sensor.equals("Temperature")){
+                } else if (sensor.equals("Temperature")) {
                     report = "temperature";
-                }else if(sensor.equals("Humidity")){
+                } else if (sensor.equals("Humidity")) {
                     report = "humidity";
                 }
                 Intent intent = new Intent(DetailedActivityReport.this, GreenhouseRerportActivity.class);
-                intent.putExtra("sensor", report );
+                intent.putExtra("sensor", report);
                 startActivity(intent);
             }
         });
@@ -175,10 +179,78 @@ public class DetailedActivityReport extends AppCompatActivity {
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     snapshot.getDocumentChanges().stream().findFirst().ifPresent(documentChange -> {
-                        if (documentChange.getType() == DocumentChange.Type.ADDED) {
+                        if (documentChange.getType() == DocumentChange.Type.ADDED || documentChange.getType() == DocumentChange.Type.MODIFIED) {
                             Log.d(TAG, documentChange.getDocument().get("value", String.class));
 //                            Toast.makeText(getActivity(), documentChange.getDocument().get("value", String.class), Toast.LENGTH_SHORT).show();
                             displaySensorText.setText(documentChange.getDocument().get("value", String.class));
+
+                            if (sensor.equals("Temperature") || sensor.equals("Humidity")) {
+                                int sensorValue = Integer.parseInt(documentChange.getDocument().get("value", String.class));
+                                if(sensor.equals("Temperature")){
+                                    if(sensorValue < 30 || sensorValue > 80){
+                                        displaySensorText.setTextColor(Color.parseColor("#FF0000"));
+                                        if(sensorValue <30){
+                                            status.setText("Low");
+                                            status.setTextColor(Color.parseColor("#FF0000"));
+                                        }else if(sensorValue > 80){
+                                            status.setText("High");
+                                            status.setTextColor(Color.parseColor("#FF0000"));
+                                        }
+                                    }else{
+                                        displaySensorText.setTextColor(Color.parseColor("#00FF00"));
+                                        status.setText("Good");
+                                        status.setTextColor(Color.parseColor("#00FF00"));
+                                    }
+                                }else if(sensor.equals("Humidity")){
+                                    if(sensorValue < 25 || sensorValue > 80){
+                                        displaySensorText.setTextColor(Color.parseColor("#FF0000"));
+                                        if(sensorValue <30){
+                                            status.setText("Low");
+                                            status.setTextColor(Color.parseColor("#FF0000"));
+                                        }else if(sensorValue > 80){
+                                            status.setText("High");
+                                            status.setTextColor(Color.parseColor("#FF0000"));
+                                        }
+                                    }else{
+                                        displaySensorText.setTextColor(Color.parseColor("#00FF00"));
+                                        status.setText("Good");
+                                        status.setTextColor(Color.parseColor("#00FF00"));
+                                    }
+                                }
+                            } else if (sensor.equals("pH Level") || sensor.equals("ECC Level")) {
+                                float sensorValue = Float.parseFloat(documentChange.getDocument().get("value",String.class));
+                                if(sensor.equals("pH Level")){
+                                    if(sensorValue < 7.0 || sensorValue > 7.0){
+                                        displaySensorText.setTextColor(Color.parseColor("#FF0000"));
+                                        if(sensorValue < 7.0){
+                                            status.setText("Acidic");
+                                            status.setTextColor(Color.parseColor("#FF0000"));
+                                        }else if(sensorValue > 7.0){
+                                            status.setText("Alkaline");
+                                            status.setTextColor(Color.parseColor("#FF0000"));
+                                        }
+                                    }else{
+                                        displaySensorText.setTextColor(Color.parseColor("#00FF00"));
+                                        status.setText("Neutral");
+                                        status.setTextColor(Color.parseColor("#00FF00"));
+                                    }
+                                }else if(sensor.equals("ECC Level")){
+                                    if(sensorValue < 1.0 || sensorValue > 2.0){
+                                        displaySensorText.setTextColor(Color.parseColor("#FF0000"));
+                                        if(sensorValue <1.0){
+                                            status.setText("Low");
+                                            status.setTextColor(Color.parseColor("#FF0000"));
+                                        }else if(sensorValue > 2.0){
+                                            status.setText("High");
+                                            status.setTextColor(Color.parseColor("#FF0000"));
+                                        }
+                                    }else{
+                                        displaySensorText.setTextColor(Color.parseColor("#00FF00"));
+                                        status.setText("Good");
+                                        status.setTextColor(Color.parseColor("#00FF00"));
+                                    }
+                                }
+                            }
                         }
                     });
                 }
@@ -188,21 +260,21 @@ public class DetailedActivityReport extends AppCompatActivity {
     }
 
     private void addInfo() {
-        info.add(new InfoModel("0","Bad"));
-        info.add(new InfoModel("1","Bad"));
-        info.add(new InfoModel("2","Bad"));
-        info.add(new InfoModel("3","Bad"));
-        info.add(new InfoModel("4","Bad"));
-        info.add(new InfoModel("5","Good"));
-        info.add(new InfoModel("6","Good"));
-        info.add(new InfoModel("7","Good"));
-        info.add(new InfoModel("8","Bad"));
-        info.add(new InfoModel("9","Bad"));
-        info.add(new InfoModel("10","Bad"));
-        info.add(new InfoModel("11","Bad"));
-        info.add(new InfoModel("12","Bad"));
-        info.add(new InfoModel("13","Bad"));
-        info.add(new InfoModel("14","Bad"));
+        info.add(new InfoModel("0", "Bad"));
+        info.add(new InfoModel("1", "Bad"));
+        info.add(new InfoModel("2", "Bad"));
+        info.add(new InfoModel("3", "Bad"));
+        info.add(new InfoModel("4", "Bad"));
+        info.add(new InfoModel("5", "Good"));
+        info.add(new InfoModel("6", "Good"));
+        info.add(new InfoModel("7", "Good"));
+        info.add(new InfoModel("8", "Bad"));
+        info.add(new InfoModel("9", "Bad"));
+        info.add(new InfoModel("10", "Bad"));
+        info.add(new InfoModel("11", "Bad"));
+        info.add(new InfoModel("12", "Bad"));
+        info.add(new InfoModel("13", "Bad"));
+        info.add(new InfoModel("14", "Bad"));
 
 
     }
@@ -265,6 +337,7 @@ public class DetailedActivityReport extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(recycleData);
     }
+
     private void settings() {
         Dialog dialog = new Dialog(DetailedActivityReport.this);
         PopupMenu popupMenu = new PopupMenu(this, settingBtn);

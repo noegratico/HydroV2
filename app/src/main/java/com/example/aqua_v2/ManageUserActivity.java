@@ -19,17 +19,21 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
 
@@ -80,7 +84,8 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
     private String checkemail;
     private String checkname;
 
-
+    MaterialButton logoutUserBtn;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
     @Override
@@ -106,6 +111,7 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
         activeBtn = findViewById(R.id.activateUserBtn);
         resetBtn = findViewById(R.id.resetBtn);
         spinner = (Spinner) findViewById(R.id.adminTxt);
+        logoutUserBtn = findViewById(R.id.logoutUserBtn);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource
                 (this, R.array.user_level, android.R.layout.simple_spinner_item);
@@ -127,12 +133,27 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
         active = extras.getBoolean("active");
 
         changeActiveBtn(active);
+        db.collection("users").document(id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                DocumentSnapshot documentSnapshot = task.getResult();
+                if(documentSnapshot.exists()){
+                    boolean isLogin = (boolean) documentSnapshot.getData().get("isLogin");
+                    if(isLogin){
+                        logoutUserBtn.setVisibility(View.VISIBLE);
+                    }else{
+                        logoutUserBtn.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
 
 
         activeBtn.setOnClickListener(this);
 
         updateBtn.setOnClickListener(this);
         resetBtn.setOnClickListener(this);
+        logoutUserBtn.setOnClickListener(this);
     }
 
     private void changeActiveBtn(boolean active) {
@@ -158,7 +179,7 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
                         active = !active;
                         Toast.makeText(this, String.format("User %s!", active ? "Activated" : "Deactivated"), Toast.LENGTH_SHORT).show();
                         changeActiveBtn(active);
-                        addUserLog(active ?"User "+ name.getText().toString()+" Activated": "User "+name.getText().toString()+" Deactivated");
+                        addUserLog(active ? "User " + name.getText().toString() + " Activated" : "User " + name.getText().toString() + " Deactivated");
                     }).addOnFailureListener(e -> {
                         Toast.makeText(this, String.format("Failed user %s!", !active ? "Activation" : "Deactivation"), Toast.LENGTH_SHORT).show();
                     });
@@ -195,9 +216,10 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
             }).addOnFailureListener((e) -> {
                 Log.e("Error", e.getMessage(), e);
             });
+        } else if (v.getId() == R.id.logoutUserBtn) {
+            db.collection("users").document(id).update("isLogin", false);
         }
     }
-
 
 
     @Override
@@ -459,7 +481,6 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
                 .getHttpsCallable("logUserActivity")
                 .call(data);
     }
-
 
 
 }

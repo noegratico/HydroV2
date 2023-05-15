@@ -42,6 +42,7 @@
 
     </LinearLayout>
 
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/username"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -123,7 +124,6 @@
         android:id="@+id/updateBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/password"
         android:layout_centerHorizontal="true"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="10dp"
@@ -154,7 +154,6 @@
         android:id="@+id/resetBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/password"
         android:layout_centerHorizontal="true"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="10dp"
@@ -170,7 +169,6 @@
         android:id="@+id/activateUserBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/password"
         android:layout_centerHorizontal="true"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="10dp"
@@ -180,6 +178,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/resetBtn" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/logoutUserBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Log out"
+        android:padding="15dp"
+        android:backgroundTint="#1C7A6A"
+        android:visibility="gone"
+        android:layout_marginHorizontal="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/activateUserBtn" />
+
+
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/adminHolder"

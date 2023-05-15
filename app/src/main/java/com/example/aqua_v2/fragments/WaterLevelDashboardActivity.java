@@ -65,14 +65,14 @@ public class WaterLevelDashboardActivity extends Fragment {
         gHBtn = rootView.findViewById(R.id.gHBtn);
         plantBtn = rootView.findViewById(R.id.plantBtn);
 
-        waterTxt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), WaterActivity.class);
-                startActivity(intent);
-
-            }
-        });
+//        waterTxt.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getActivity(), WaterActivity.class);
+//                startActivity(intent);
+//
+//            }
+//        });
         db.collection("water_leak_2").orderBy("datetime", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException error) {

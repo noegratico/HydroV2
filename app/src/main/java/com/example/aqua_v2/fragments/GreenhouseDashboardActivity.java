@@ -161,7 +161,7 @@ public class GreenhouseDashboardActivity extends Fragment {
                             ph.setText(documentChange.getDocument().get("value", String.class));
 
                             float phlevel = Float.parseFloat(documentChange.getDocument().get("value",String.class));
-                            if(phlevel < 7.0 || phlevel > 7){
+                            if(phlevel < 7.0 || phlevel > 7.0){
                                 ph.setTextColor(Color.parseColor("#FF0000"));
 
                                 if(phlevel < 7.0){
