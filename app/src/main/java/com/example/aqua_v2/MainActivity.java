@@ -83,7 +83,12 @@ public class MainActivity extends AppCompatActivity {
                                             .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                 @Override
                                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                    boolean isLogin = documentSnapshot.getBoolean("isLogin");
+                                                    boolean isLogin;
+                                                    if(documentSnapshot.getBoolean("isLogin")!= null){
+                                                        isLogin = (boolean) documentSnapshot.getBoolean("isLogin");
+                                                    }else{
+                                                        isLogin = false;
+                                                    }
                                                     String name = documentSnapshot.getString("name");
                                                     if (!isLogin) {
                                                         db.collection("users").document(id)
@@ -96,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                                                                 }).addOnFailureListener(new OnFailureListener() {
                                                                     @Override
                                                                     public void onFailure(@NonNull Exception e) {
-                                                                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+
                                                                     }
                                                                 });
                                                        HashMap<String, Object> data = new HashMap<>();

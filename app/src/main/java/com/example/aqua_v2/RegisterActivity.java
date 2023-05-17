@@ -134,6 +134,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         data.put("name", name);
         data.put("password", password);
         data.put("userLevel", userLevel);
+        data.put("isLogin",false);
         data.put("push", true);
         mFunctions
                 .getHttpsCallable("signUp")

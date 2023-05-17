@@ -137,8 +137,14 @@ public class ManageUserActivity extends AppCompatActivity implements AdapterView
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 DocumentSnapshot documentSnapshot = task.getResult();
+                boolean isLogin;
                 if(documentSnapshot.exists()){
-                    boolean isLogin = (boolean) documentSnapshot.getData().get("isLogin");
+                    if(documentSnapshot.getData().get("isLogin") != null){
+                      isLogin =  (boolean) documentSnapshot.getData().get("isLogin");
+                    }else{
+                        isLogin = false;
+                    }
+
                     if(isLogin){
                         logoutUserBtn.setVisibility(View.VISIBLE);
                     }else{

@@ -376,7 +376,7 @@ public class DevicesActivity extends AppCompatActivity {
         db.collection("scheduler").document("grow_light").addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                growUserLevel = (String) value.get("userLevel");
+//                growUserLevel = (String) value.get("userLevel");
                 lightSwitch.setChecked((Boolean) value.get("switch"));
                 checkSwitch = (boolean) value.get("switch");
             }

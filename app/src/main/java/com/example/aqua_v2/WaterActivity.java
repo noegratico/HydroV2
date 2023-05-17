@@ -266,6 +266,7 @@ public class WaterActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    db.collection("scheduler").document("userLevel").update("air_pump", false);
                     mFunctions
                             .getHttpsCallable("scheduler")
                             .call(object)
@@ -289,6 +290,7 @@ public class WaterActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    db.collection("scheduler").document("userLevel").update("air_pump", false);
                     mFunctions
                             .getHttpsCallable("scheduler")
                             .call(object)
@@ -323,6 +325,7 @@ public class WaterActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    db.collection("scheduler").document("userLevel").update("water_pump", false);
                     mFunctions
                             .getHttpsCallable("scheduler")
                             .call(object)
@@ -347,6 +350,7 @@ public class WaterActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    db.collection("scheduler").document("userLevel").update("water_pump", false);
                     mFunctions
                             .getHttpsCallable("scheduler")
                             .call(object)

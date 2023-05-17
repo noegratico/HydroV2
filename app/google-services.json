@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "549079427797",
-    "project_id": "aqua-monitoring-system",
-    "storage_bucket": "aqua-monitoring-system.appspot.com"
+    "project_number": "680691801753",
+    "project_id": "aqua-monitoring-system-c7b63",
+    "storage_bucket": "aqua-monitoring-system-c7b63.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:549079427797:android:662ce4291c44650b19d05c",
+        "mobilesdk_app_id": "1:680691801753:android:e09496ed17e48f40b1e208",
         "android_client_info": {
           "package_name": "com.example.aqua_v2"
         }
       },
       "oauth_client": [
         {
-          "client_id": "549079427797-h46038jqgavnmhcc65k53j0aijp1d7hf.apps.googleusercontent.com",
+          "client_id": "680691801753-j6ap8v1bssmg9p6v7lh7fvrrmefg4q62.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyByEK7ilAp7_-eSloM5goK1eVF_b7aUxh4"
+          "current_key": "AIzaSyD9vYjDG_8rEey4b5wti8yj7nltWsm2xMc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "549079427797-h46038jqgavnmhcc65k53j0aijp1d7hf.apps.googleusercontent.com",
+              "client_id": "680691801753-j6ap8v1bssmg9p6v7lh7fvrrmefg4q62.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
