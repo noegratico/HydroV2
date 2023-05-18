@@ -102,9 +102,9 @@ public class GreenhouseDashboardActivity extends Fragment {
                             if(humlevel < 25 || humlevel > 80){
                                 hum.setTextColor(Color.parseColor("#FF0000"));
                                 if(humlevel < 25){
-                                    showNotification("Humidity Level", "Low");
+                                    showNotification("Humidity Level ", "Low");
                                 }else if(humlevel > 80 ){
-                                    showNotification("Humidity Level", "High");
+                                    showNotification("Humidity Level ", "High");
                                 }
                             }else{
                                 hum.setTextColor(Color.parseColor("#00FF00"));
@@ -133,9 +133,9 @@ public class GreenhouseDashboardActivity extends Fragment {
                             if(templevel < 30 || templevel > 80){
                                 temp.setTextColor(Color.parseColor("#FF0000"));
                                 if(templevel <25){
-                                    showNotification("Temperature Level", "Low");
+                                    showNotification("Temperature Level ", "Low");
                                 }else if(templevel >80){
-                                    showNotification("Temperature", "High");
+                                    showNotification("Temperature Level ", "High");
                                 }
                             }else{
                                 temp.setTextColor(Color.parseColor("#00FF00"));
@@ -165,9 +165,9 @@ public class GreenhouseDashboardActivity extends Fragment {
                                 ph.setTextColor(Color.parseColor("#FF0000"));
 
                                 if(phlevel < 7.0){
-                                    showNotification("pH Level", "Low");
+                                    showNotification("pH Level ", "Low");
                                 }else if (phlevel > 7.0){
-                                    showNotification("pH Level", "High");
+                                    showNotification("pH Level ", "High");
                                 }
                             }else{
                                 ph.setTextColor(Color.parseColor("#00FF00"));
@@ -198,9 +198,9 @@ public class GreenhouseDashboardActivity extends Fragment {
                                 ec.setTextColor(Color.parseColor("#FF0000"));
                                 ec.setText(documentChange.getDocument().get("value", String.class));
                                 if (eclvl < 1.0) {
-                                    showNotification("EC Level", "Low");
+                                    showNotification("EC Level ", "Low");
                                 } else if (eclvl > 2.0) {
-                                    showNotification("EC Level", "High");
+                                    showNotification("EC Level ", "High");
                                 }
                             }
 
